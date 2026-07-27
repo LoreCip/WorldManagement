@@ -1,13 +1,12 @@
-import React from "react";
-import { MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from "react-leaflet";
+import React, { useEffect } from "react";
+import { useMap, MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { convertFileSrc } from "@tauri-apps/api/core";
-import { MapMeta, MapPortal } from "../../types/map";
-import { colors, fonts, radii } from "../theme/theme";
 import "leaflet/dist/leaflet.css";
 
-import { useEffect } from "react";
-import { useMap } from "react-leaflet";
+import { convertFileSrc } from "@tauri-apps/api/core";
+
+import { MapMeta, MapPortal } from "../../types/map";
+import { colors, fonts, radii } from "../theme/theme";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
     const map = useMap();
@@ -15,14 +14,21 @@ const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) 
     useEffect(() => {
         if (!bounds) return;
 
-        // Adatta lo zoom per mostrare l'intera mappa perfettamente centrata nel canvas
-        map.fitBounds(bounds, {
-            padding: [20, 20], // Margine di respiro opzionale (in pixel)
-            animate: true,
-        });
+        // 1. Forziamo Leaflet a ricalcolare le dimensioni del div contenitore
+        map.invalidateSize();
 
-        // Opzionale: imposta i confini massimi per evitare di trascinare la mappa fuori dallo schermo
-        map.setMaxBounds(bounds);
+        // 2. Usiamo setTimeout(..., 50) per dare il tempo a Flexbox e alla DOM di calcolare le dimensioni reali del Canvas
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+            map.fitBounds(bounds, {
+                padding: [20, 20],
+                animate: false, // Disabilitiamo l'animazione al primo inquadramento per evitare scatti
+            });
+            // Impostiamo maxBounds subito DOPO aver inquadrato
+            map.setMaxBounds(bounds);
+        }, 50);
+
+        return () => clearTimeout(timer);
     }, [map, bounds]);
 
     return null;
@@ -53,7 +59,6 @@ const MapClickHandler: React.FC<{
     useMapEvents({
         click(e) {
             if (isAddingPortal) {
-                // e.latlng mappa direttamente sulle coordinate pixel [y, x] in CRS.Simple
                 onMapClick(e.latlng.lng, e.latlng.lat);
             }
         },
@@ -83,7 +88,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     onDeletePortal,
 }) => {
     const imageUrl = convertFileSrc(map.image_path);
-    
+
     const bounds: L.LatLngBoundsExpression = [
         [0, 0],
         [map.height || 1080, map.width || 1920],
@@ -92,17 +97,18 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     return (
         <div
             className={`map-transition-overlay ${isTransitioning ? "fading" : ""}`}
-            style={{ flex: 1, position: "relative" }}
+            style={{ flex: 1, position: "relative", width: "100%", height: "100%" }}
         >
             <MapContainer
                 key={map.id}
                 crs={L.CRS.Simple}
                 bounds={bounds}
-                maxZoom={3}
-                minZoom={-3}
+                maxZoom={5}
+                minZoom={-5}
                 scrollWheelZoom={true}
                 style={{ width: "100%", height: "100%" }}
             >
+                <MapAutoFit bounds={bounds} />
                 <ImageOverlay url={imageUrl} bounds={bounds} />
 
                 <MapClickHandler
@@ -113,12 +119,14 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                 {/* Rendering dei Portali Cliccabili */}
                 {portals.map((portal) => (
                     <Marker key={portal.id} position={[portal.y, portal.x]} icon={portalIcon}>
-                        <Popup placement="top">
+                        {/* Rimosso 'placement="top"' per risolvere l'errore di build TypeScript */}
+                        <Popup>
                             <div style={{ fontFamily: fonts.body, color: colors.bgVoid, textAlign: "center" }}>
                                 <strong>{portal.label || "Portale"}</strong>
                                 <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.4rem", justifyContent: "center" }}>
                                     <button
-                                        onClick={() => onEnterPortal(portal.target_map_id)}
+                                        /* Aggiunto il controllo con && per garantire che target_map_id sia definito per TypeScript */
+                                        onClick={() => portal.target_map_id && onEnterPortal(portal.target_map_id)}
                                         style={{
                                             padding: "0.25rem 0.6rem",
                                             borderRadius: "4px",

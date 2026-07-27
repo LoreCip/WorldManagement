@@ -3,14 +3,19 @@ import { Sidebar } from "../components/wiki/Sidebar";
 import { ArticleEditor } from "../components/wiki/ArticleEditor";
 import { useWiki } from "../hooks/useWiki";
 
+// 1. Interfaccia aggiornata con le props di navigazione
 interface WikiViewProps {
   selectedArticleId?: string | null;
   onSelectArticle?: (id: string | null) => void;
+  onNavigateToCharacterSheet?: (sheetId: string) => void;
+  onNavigateToMap?: (mapId: string) => void; // <-- NUOVA PROP
 }
 
 export const WikiView: React.FC<WikiViewProps> = ({
   selectedArticleId,
   onSelectArticle,
+  onNavigateToCharacterSheet,
+  onNavigateToMap, // <-- RICEZIONE PROP
 }) => {
   const {
     articles,
@@ -27,10 +32,9 @@ export const WikiView: React.FC<WikiViewProps> = ({
     handleNavigateToTitle,
   } = useWiki();
 
-  // Quando si passa un selectedArticleId dall'esterno (es. dalle Mappe)
+  // Quando si passa un selectedArticleId dall'esterno (es. dalle Mappe o dai Personaggi)
   useEffect(() => {
     if (selectedArticleId && articles.length > 0) {
-      // Se l'articolo richiesto non è quello già caricato, selezionalo
       if (currentArticle?.id !== selectedArticleId) {
         handleSelectArticle(selectedArticleId);
       }
@@ -62,6 +66,8 @@ export const WikiView: React.FC<WikiViewProps> = ({
         onEdit={() => setIsEditing(true)}
         onDelete={() => handleDeleteArticle(currentArticle?.id)}
         onNavigateToTitle={handleNavigateToTitle}
+        onNavigateToCharacterSheet={onNavigateToCharacterSheet}
+        onNavigateToMap={onNavigateToMap} // <-- INOLTRO A ARTICLE EDITOR
       />
     </div>
   );

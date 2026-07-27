@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useMaps } from "../hooks/useMaps";
 import { MapHeader } from "../components/maps/MapHeader";
@@ -11,9 +11,10 @@ import { colors, fonts, radii } from "../components/theme/theme";
 
 interface MapViewProps {
     onOpenArticle?: (articleId: string) => void;
+    initialMapId?: string | null;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ onOpenArticle }) => {
+export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId }) => {
     const {
         maps,
         currentMapData,
@@ -38,6 +39,28 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle }) => {
     const [isEditMapOpen, setIsEditMapOpen] = useState(false);
     const [droppedFilePath, setDroppedFilePath] = useState<string | null>(null);
     const [isHoveringDrop, setIsHoveringDrop] = useState(false);
+
+    // Ref per tracciare l'ultima mappa richiesta esternamente
+    const lastNavigatedMapIdRef = useRef<string | null>(null);
+
+    // Navigazione alla mappa richiesta (sottolivello o radice) quando si arriva da fuori
+    useEffect(() => {
+        if (initialMapId && maps.length > 0) {
+            const targetExists = maps.some((m) => m.id === initialMapId);
+
+            if (targetExists && lastNavigatedMapIdRef.current !== initialMapId) {
+                lastNavigatedMapIdRef.current = initialMapId;
+                navigateToMap(initialMapId);
+            }
+        }
+    }, [initialMapId, maps, navigateToMap]);
+
+    // Sincronizza la ref se la mappa cambia internamente
+    useEffect(() => {
+        if (currentMapData?.map.id) {
+            lastNavigatedMapIdRef.current = currentMapData.map.id;
+        }
+    }, [currentMapData?.map.id]);
 
     // Gestione Drag & Drop nativa di Tauri
     useEffect(() => {
@@ -107,7 +130,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle }) => {
                         background-color: ${colors.bgVoid} !important;
                     }
                     
-                    /* Nasconde il testo sui bottoni secondari quando la finestra si rimpicciolisce */
                     @media (max-width: 900px) {
                         .hide-on-small {
                             display: none;
@@ -191,7 +213,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle }) => {
                     </div>
                 )}
 
-                {/* Canvas Mappa con dissolvenza e zoom al passaggio */}
+                {/* Canvas Mappa */}
                 {currentMapData ? (
                     <MapCanvas
                         map={currentMapData.map}

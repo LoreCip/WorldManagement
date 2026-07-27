@@ -1,0 +1,115 @@
+[01;34m..[0m
+├── README.md
+└── [01;34mworldManagement[0m
+    ├── index.html
+    ├── package.json
+    ├── pnpm-lock.yaml
+    ├── pnpm-workspace.yaml
+    ├── [01;34mpublic[0m
+    │   ├── [01;35mtauri.svg[0m
+    │   └── [01;35mvite.svg[0m
+    ├── README.md
+    ├── [01;34msheetTemplates[0m
+    │   └── DnD_5E_pg.pdf
+    ├── [01;34msrc[0m
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── [01;34massets[0m
+    │   │   └── [01;35mreact.svg[0m
+    │   ├── [01;34mcomponents[0m
+    │   │   ├── [01;34mcharacters[0m
+    │   │   │   ├── CharacterSidebar.tsx
+    │   │   │   ├── NewSheetModal.tsx
+    │   │   │   └── SystemModal.tsx
+    │   │   ├── [01;34mmaps[0m
+    │   │   │   ├── AddMapModal.tsx
+    │   │   │   ├── EditMapModal.tsx
+    │   │   │   ├── MapCanvas.tsx
+    │   │   │   ├── MapHeader.tsx
+    │   │   │   ├── MapSelector.tsx
+    │   │   │   ├── MapSidebar.tsx
+    │   │   │   └── PortalControls.tsx
+    │   │   ├── [01;34mtheme[0m
+    │   │   │   └── theme.ts
+    │   │   └── [01;34mwiki[0m
+    │   │       ├── ArticleEditor.tsx
+    │   │       ├── Sidebar.tsx
+    │   │       └── TagInput.tsx
+    │   ├── [01;34mcontext[0m
+    │   │   └── MapsContext.tsx
+    │   ├── [01;34mhooks[0m
+    │   │   ├── useCharacters.ts
+    │   │   ├── useMaps.ts
+    │   │   └── useWiki.ts
+    │   ├── main.tsx
+    │   ├── [01;34mtypes[0m
+    │   │   ├── character.ts
+    │   │   ├── map.ts
+    │   │   └── wiki.ts
+    │   ├── [01;34mutils[0m
+    │   │   └── mapHierarchy.ts
+    │   ├── [01;34mviews[0m
+    │   │   ├── CharacterView.tsx
+    │   │   ├── MapView.tsx
+    │   │   └── WikiView.tsx
+    │   └── vite-env.d.ts
+    ├── [01;34msrc-tauri[0m
+    │   ├── build.rs
+    │   ├── [01;34mcapabilities[0m
+    │   │   └── default.json
+    │   ├── Cargo.lock
+    │   ├── Cargo.toml
+    │   ├── [01;34mgen[0m
+    │   │   └── [01;34mschemas[0m
+    │   │       ├── acl-manifests.json
+    │   │       ├── capabilities.json
+    │   │       ├── desktop-schema.json
+    │   │       └── linux-schema.json
+    │   ├── [01;34micons[0m
+    │   │   ├── [01;35m128x128@2x.png[0m
+    │   │   ├── [01;35m128x128.png[0m
+    │   │   ├── [01;35m32x32.png[0m
+    │   │   ├── icon.icns
+    │   │   ├── icon.ico
+    │   │   ├── [01;35micon.png[0m
+    │   │   ├── [01;35mSquare107x107Logo.png[0m
+    │   │   ├── [01;35mSquare142x142Logo.png[0m
+    │   │   ├── [01;35mSquare150x150Logo.png[0m
+    │   │   ├── [01;35mSquare284x284Logo.png[0m
+    │   │   ├── [01;35mSquare30x30Logo.png[0m
+    │   │   ├── [01;35mSquare310x310Logo.png[0m
+    │   │   ├── [01;35mSquare44x44Logo.png[0m
+    │   │   ├── [01;35mSquare71x71Logo.png[0m
+    │   │   ├── [01;35mSquare89x89Logo.png[0m
+    │   │   └── [01;35mStoreLogo.png[0m
+    │   ├── [01;34msrc[0m
+    │   │   ├── [01;34mdb[0m
+    │   │   │   └── mod.rs
+    │   │   ├── lib.rs
+    │   │   ├── main.rs
+    │   │   ├── [01;34mmodules[0m
+    │   │   │   ├── [01;34mcharacters[0m
+    │   │   │   │   ├── commands.rs
+    │   │   │   │   ├── models.rs
+    │   │   │   │   └── mod.rs
+    │   │   │   ├── [01;34mmaps[0m
+    │   │   │   │   ├── commands.rs
+    │   │   │   │   ├── models.rs
+    │   │   │   │   └── mod.rs
+    │   │   │   ├── mod.rs
+    │   │   │   └── [01;34mwiki[0m
+    │   │   │       ├── commands.rs
+    │   │   │       ├── models.rs
+    │   │   │       └── mod.rs
+    │   │   ├── [01;34mservices[0m
+    │   │   │   ├── media.rs
+    │   │   │   ├── mod.rs
+    │   │   │   └── state.rs
+    │   │   └── utils.rs
+    │   └── tauri.conf.json
+    ├── struttura.txt
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    └── vite.config.ts
+
+28 directories, 85 files

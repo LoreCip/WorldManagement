@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { CharacterSheet, GameSystem, SaveCharacterPayload, SaveGameSystemPayload, SystemSchema } from "../types/character";
+import { CharacterSheet, GameSystem, SaveCharacterSheetPayload, SaveGameSystemPayload } from "../types/character";
 
 const ACTIVE_SYSTEM_STORAGE_KEY = "worldbuilder_active_game_system_id";
 
@@ -9,9 +9,6 @@ export function useCharacters() {
 	const [sheets, setSheets] = useState<CharacterSheet[]>([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedSheet, setSelectedSheet] = useState<CharacterSheet | null>(null);
-	const [parsedData, setParsedData] = useState<Record<string, any>>({});
-	const [renderedMarkdown, setRenderedMarkdown] = useState<string>("");
-	const [isEditing, setIsEditing] = useState(false);
 	const [isSystemModalOpen, setIsSystemModalOpen] = useState(false);
 	const [isNewSheetModalOpen, setIsNewSheetModalOpen] = useState(false);
 
@@ -72,40 +69,9 @@ export function useCharacters() {
 		});
 	}, []);
 
-	useEffect(() => {
-		if (selectedSheet) {
-			try {
-				setParsedData(JSON.parse(selectedSheet.data_json || "{}"));
-			} catch {
-				setParsedData({});
-			}
-			updateMarkdownPreview(selectedSheet);
-		} else {
-			setParsedData({});
-			setRenderedMarkdown("");
-		}
-	}, [selectedSheet]);
-
-	const updateMarkdownPreview = async (sheet: CharacterSheet) => {
-		const system = systems.find((s) => s.id === sheet.system_id);
-		if (!system) return;
-
-		try {
-			const combinedData = { name: sheet.name, ...JSON.parse(sheet.data_json || "{}") };
-			const md = await invoke<string>("render_sheet_markdown", {
-				dataJson: JSON.stringify(combinedData),
-				template: system.markdown_template,
-			});
-			setRenderedMarkdown(md);
-		} catch (err) {
-			console.error("Errore rendering markdown:", err);
-		}
-	};
-
 	const handleSelectSheet = (id: string) => {
 		const sheet = sheets.find((s) => s.id === id) || null;
 		setSelectedSheet(sheet);
-		setIsEditing(false);
 	};
 
 	// Apre il modal di richiesta nome; la creazione vera avviene in createNewSheet
@@ -127,16 +93,15 @@ export function useCharacters() {
 		if (!trimmed || !activeSystemId) return;
 
 		try {
-			const savedId = await invoke<string>("save_character_sheet", {
-				payload: {
-					id: null,
-					name: trimmed,
-					system_id: activeSystemId,
-					article_id: null,
-					data_json: "{}",
-					sheet_variant: "pg",
-				},
-			});
+			const payload: SaveCharacterSheetPayload = {
+				id: null,
+				name: trimmed,
+				system_id: activeSystemId,
+				article_id: null,
+				data_json: "{}",
+				sheet_variant: "pg",
+			};
+			const savedId = await invoke<string>("save_character_sheet", { payload });
 
 			await loadInitialData();
 			handleSelectSheet(savedId);
@@ -147,34 +112,11 @@ export function useCharacters() {
 		}
 	};
 
-	const handleSaveSheet = async () => {
-		if (!selectedSheet || !selectedSheet.name.trim()) return;
-
-		const payload = {
-			id: selectedSheet.id || null,
-			system_id: selectedSheet.system_id,
-			article_id: selectedSheet.article_id,
-			name: selectedSheet.name,
-			data_json: JSON.stringify(parsedData),
-			sheet_variant: selectedSheet.sheet_variant || "pg",
-		};
-
-		try {
-			const savedId = await invoke<string>("save_character_sheet", { payload });
-			await loadInitialData();
-			handleSelectSheet(savedId);
-			setIsEditing(false);
-		} catch (err) {
-			console.error("Errore salvataggio scheda:", err);
-		}
-	};
-
 	const handleDeleteSheet = async (id: string) => {
 		if (!id || !window.confirm("Sei sicuro di voler eliminare questa scheda?")) return;
 		try {
 			await invoke("delete_character_sheet", { id });
 			setSelectedSheet(null);
-			setIsEditing(false);
 			loadInitialData();
 		} catch (err) {
 			console.error("Errore eliminazione scheda:", err);
@@ -219,16 +161,6 @@ export function useCharacters() {
 			alert(`Impossibile eliminare: ${err}`);
 		}
 	};
-	const currentSystem = systems.find((s) => s.id === selectedSheet?.system_id);
-	let currentFields: SystemSchema = { fields: [] };
-	if (currentSystem) {
-		try {
-			currentFields = JSON.parse(currentSystem.schema_json);
-		} catch {
-			currentFields = { fields: [] };
-		}
-	}
-
 	return {
 		systems,
 		sheets,
@@ -236,22 +168,15 @@ export function useCharacters() {
 		setSearchQuery,
 		selectedSheet,
 		setSelectedSheet,
-		parsedData,
-		setParsedData,
-		renderedMarkdown,
-		isEditing,
-		setIsEditing,
 		isSystemModalOpen,
 		setIsSystemModalOpen,
 		isNewSheetModalOpen,
 		setIsNewSheetModalOpen,
 		activeSystemId,
 		setActiveSystemId,
-		currentFields,
 		handleSelectSheet,
 		handleNewSheet,
 		createNewSheet,
-		handleSaveSheet,
 		handleDeleteSheet,
 		handleSaveSystem,
 		handleDeleteSystem,

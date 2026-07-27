@@ -28,7 +28,7 @@ export const useMaps = () => {
         try {
             const res = await invoke<MapItem[]>("get_all_maps");
             setMaps(res);
-            
+
             if (res.length > 0 && !currentMapData) {
                 const topMap = getTopLevelMap(res);
                 if (topMap) {
@@ -49,7 +49,11 @@ export const useMaps = () => {
 
         setTimeout(async () => {
             await loadMapDetails(targetMapId);
-            setHistory((prev) => [...prev, previousId]);
+            setHistory((prev) => {
+                // Evita di spingere in history la stessa mappa consecutivamente
+                if (prev[prev.length - 1] === previousId) return prev;
+                return [...prev, previousId];
+            });
             setTimeout(() => setIsTransitioning(false), 100);
         }, 300);
     }, [currentMapData, isTransitioning, loadMapDetails]);

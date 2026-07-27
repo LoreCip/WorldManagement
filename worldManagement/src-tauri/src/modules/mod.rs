@@ -11,6 +11,8 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         wiki::search_wiki,
         wiki::get_article_by_id,
         wiki::delete_article,
+        wiki::get_character_sheet_id_by_article,
+        wiki::get_map_id_by_article,
         // Comandi Mappe
         maps::delete_map,
         maps::update_map,
@@ -27,7 +29,6 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         characters::commands::save_character_sheet,
         characters::commands::save_character_pdf,
         characters::commands::delete_character_sheet,
-        characters::commands::render_sheet_markdown,
         characters::commands::export_character_pdf,
         characters::commands::load_sheet_pdf_bytes,
         characters::commands::upload_pdf_template

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { GameSystem, SaveGameSystemPayload } from "../types/character";
+import { GameSystem, SaveGameSystemPayload } from "../../types/character";
 import { colors, fonts, radii } from "../theme/theme";
 
 interface SystemModalProps {

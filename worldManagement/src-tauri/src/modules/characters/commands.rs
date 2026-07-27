@@ -5,10 +5,9 @@ use crate::utils::ResultExt;
 
 use std::fs;
 use std::path::PathBuf;
+use tauri::ipc::Response;
 use tauri::State;
 use uuid::Uuid;
-use handlebars::Handlebars;
-use serde_json::Value;
 
 /// Risolve il path del PDF compilato salvato per una scheda+variante.
 /// Ordine di ricerca: "<id>_<variant>.pdf" -> (solo se variant == "pg") "<id>.pdf" legacy -> None.
@@ -33,12 +32,12 @@ fn resolve_saved_pdf_path(paths: &AppPaths, sheet_id: &str, variant: &str) -> Op
 // ==========================================
 
 #[tauri::command]
-pub fn load_sheet_pdf_bytes(
+pub async fn load_sheet_pdf_bytes(
     sheet_id: String,
     variant: String,
     template_filename: String,
     paths: State<'_, AppPaths>,
-) -> Result<Vec<u8>, String> {
+) -> Result<Response, String> {
     // 1. Prova prima a cercare il PDF specifico salvato per questa scheda+variante
     // 2. Se non esiste, fallback sul file predefinito per il sistema di gioco
     let target_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant) {
@@ -53,8 +52,12 @@ pub fn load_sheet_pdf_bytes(
         ));
     }
 
-    // 3. Ritorna i byte del file letto da disco
-    fs::read(&target_path).map_err(|e| format!("Errore durante la lettura del file PDF: {}", e))
+    // 3. Ritorna i byte grezzi del file: bypassa la serializzazione JSON
+    // (che per un Vec<u8> lo trasformerebbe in un enorme array di numeri).
+    let bytes = fs::read(&target_path)
+        .map_err(|e| format!("Errore durante la lettura del file PDF: {}", e))?;
+
+    Ok(Response::new(bytes))
 }
 
 #[tauri::command]
@@ -174,6 +177,10 @@ pub fn save_game_system(
                 [&id],
                 |row| row.get(0),
             ).map_err(|_| "Sistema non trovato.".to_string())?;
+
+            if is_builtin == 1 {
+                return Err("Impossibile modificare un sistema di gioco predefinito.".into());
+            }
 
             conn.execute(
                 "UPDATE game_systems 
@@ -413,17 +420,4 @@ pub fn upload_pdf_template(
         .map_err(|e| format!("Impossibile salvare il template PDF: {}", e))?;
 
     Ok(final_name)
-}
-
-#[tauri::command]
-pub fn render_sheet_markdown(data_json: String, template: String) -> Result<String, String> {
-    let handlebars = Handlebars::new();
-    let json_data: Value = serde_json::from_str(&data_json)
-        .map_err(|e| format!("JSON dati scheda non valido: {}", e))?;
-
-    let rendered = handlebars
-        .render_template(&template, &json_data)
-        .map_err(|e| format!("Errore durante il rendering del template Markdown: {}", e))?;
-
-    Ok(rendered)
 }

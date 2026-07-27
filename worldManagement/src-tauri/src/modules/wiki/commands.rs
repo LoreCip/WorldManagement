@@ -182,3 +182,45 @@ pub fn delete_article(
 
     Ok(())
 }
+
+#[tauri::command]
+pub fn get_character_sheet_id_by_article(
+    article_id: String,
+    db: State<'_, DbState>,
+) -> Result<Option<String>, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+
+    let mut stmt = conn
+        .prepare("SELECT id FROM character_sheets WHERE article_id = ?1 LIMIT 1")
+        .map_err(|e| e.to_string())?;
+
+    let mut rows = stmt.query([&article_id]).map_err(|e| e.to_string())?;
+
+    if let Some(row) = rows.next().map_err(|e| e.to_string())? {
+        let sheet_id: String = row.get(0).map_err(|e| e.to_string())?;
+        Ok(Some(sheet_id))
+    } else {
+        Ok(None)
+    }
+}
+
+#[tauri::command]
+pub fn get_map_id_by_article(
+    article_id: String,
+    db: State<'_, DbState>,
+) -> Result<Option<String>, String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+
+    let mut stmt = conn
+        .prepare("SELECT id FROM maps WHERE article_id = ?1 LIMIT 1")
+        .map_err(|e| e.to_string())?;
+
+    let mut rows = stmt.query([&article_id]).map_err(|e| e.to_string())?;
+
+    if let Some(row) = rows.next().map_err(|e| e.to_string())? {
+        let map_id: String = row.get(0).map_err(|e| e.to_string())?;
+        Ok(Some(map_id))
+    } else {
+        Ok(None)
+    }
+}

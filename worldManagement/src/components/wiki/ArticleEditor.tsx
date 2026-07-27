@@ -15,6 +15,8 @@ interface ArticleEditorProps {
 	onEdit: () => void;
 	onDelete: () => void;
 	onNavigateToTitle?: (title: string) => void;
+	onNavigateToCharacterSheet?: (sheetId: string) => void;
+	onNavigateToMap?: (mapId: string) => void;
 }
 
 const getCaretIndexFromPoint = (textarea: HTMLTextAreaElement, clientX: number, clientY: number): number => {
@@ -74,8 +76,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 	onEdit,
 	onDelete,
 	onNavigateToTitle,
+	onNavigateToCharacterSheet,
+	onNavigateToMap,
 }) => {
 	const [isDragging, setIsDragging] = useState(false);
+	const [linkedSheetId, setLinkedSheetId] = useState<string | null>(null);
+	const [linkedMapId, setLinkedMapId] = useState<string | null>(null);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	const articleRef = useRef(article);
@@ -84,6 +90,38 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 		articleRef.current = article;
 		isEditingRef.current = isEditing;
 	}, [article, isEditing]);
+
+	// Controlla se a questa voce Wiki sono collegate schede personaggio o mappe
+	useEffect(() => {
+		const checkLinkedEntities = async () => {
+			if (!article.id) {
+				setLinkedSheetId(null);
+				setLinkedMapId(null);
+				return;
+			}
+			try {
+				const sheetId = await invoke<string | null>("get_character_sheet_id_by_article", {
+					articleId: article.id,
+				});
+				setLinkedSheetId(sheetId);
+			} catch (err) {
+				console.error("Errore recupero scheda associata:", err);
+				setLinkedSheetId(null);
+			}
+
+			try {
+				const mapId = await invoke<string | null>("get_map_id_by_article", {
+					articleId: article.id,
+				});
+				setLinkedMapId(mapId);
+			} catch (err) {
+				console.error("Errore recupero mappa associata:", err);
+				setLinkedMapId(null);
+			}
+		};
+
+		checkLinkedEntities();
+	}, [article.id]);
 
 	const handleAddTag = (newTag: string) => {
 		if (!article.tags.includes(newTag)) {
@@ -273,26 +311,87 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 						<h1 style={{ fontFamily: fonts.display, fontSize: "2.1rem", fontWeight: 600, margin: 0, color: colors.textPrimary }}>
 							{article.title}
 						</h1>
-						<span
-							style={{
-								display: "inline-flex",
-								alignItems: "center",
-								gap: "6px",
-								fontSize: "0.72rem",
-								fontWeight: 600,
-								letterSpacing: "0.08em",
-								textTransform: "uppercase",
-								color: categoryColor,
-								backgroundColor: `${categoryColor}1f`,
-								border: `1px solid ${categoryColor}59`,
-								padding: "3px 10px",
-								borderRadius: radii.pill,
-								marginTop: "0.6rem",
-							}}
-						>
-							<span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: categoryColor }} />
-							{getCategoryLabel(article.category)}
-						</span>
+						<div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "0.6rem", flexWrap: "wrap" }}>
+							<span
+								style={{
+									display: "inline-flex",
+									alignItems: "center",
+									gap: "6px",
+									fontSize: "0.72rem",
+									fontWeight: 600,
+									letterSpacing: "0.08em",
+									textTransform: "uppercase",
+									color: categoryColor,
+									backgroundColor: `${categoryColor}1f`,
+									border: `1px solid ${categoryColor}59`,
+									padding: "3px 10px",
+									borderRadius: radii.pill,
+								}}
+							>
+								<span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: categoryColor }} />
+								{getCategoryLabel(article.category)}
+							</span>
+
+							{linkedSheetId && onNavigateToCharacterSheet && (
+								<button
+									onClick={() => onNavigateToCharacterSheet(linkedSheetId)}
+									style={{
+										backgroundColor: `${colors.gold}1f`,
+										color: colors.gold,
+										border: `1px solid ${colors.gold}59`,
+										padding: "3px 10px",
+										borderRadius: radii.pill,
+										fontSize: "0.72rem",
+										fontWeight: 600,
+										cursor: "pointer",
+										display: "inline-flex",
+										alignItems: "center",
+										gap: "4px",
+										transition: "all 0.15s ease",
+									}}
+									onMouseEnter={(e) => {
+										e.currentTarget.style.backgroundColor = `${colors.gold}35`;
+										e.currentTarget.style.borderColor = colors.gold;
+									}}
+									onMouseLeave={(e) => {
+										e.currentTarget.style.backgroundColor = `${colors.gold}1f`;
+										e.currentTarget.style.borderColor = `${colors.gold}59`;
+									}}
+								>
+									🎭 Apri Scheda PG →
+								</button>
+							)}
+
+							{linkedMapId && onNavigateToMap && (
+								<button
+									onClick={() => onNavigateToMap(linkedMapId)}
+									style={{
+										backgroundColor: `${colors.gold}1f`,
+										color: colors.gold,
+										border: `1px solid ${colors.gold}59`,
+										padding: "3px 10px",
+										borderRadius: radii.pill,
+										fontSize: "0.72rem",
+										fontWeight: 600,
+										cursor: "pointer",
+										display: "inline-flex",
+										alignItems: "center",
+										gap: "4px",
+										transition: "all 0.15s ease",
+									}}
+									onMouseEnter={(e) => {
+										e.currentTarget.style.backgroundColor = `${colors.gold}35`;
+										e.currentTarget.style.borderColor = colors.gold;
+									}}
+									onMouseLeave={(e) => {
+										e.currentTarget.style.backgroundColor = `${colors.gold}1f`;
+										e.currentTarget.style.borderColor = `${colors.gold}59`;
+									}}
+								>
+									🗺️ Apri Mappa →
+								</button>
+							)}
+						</div>
 					</div>
 				)}
 

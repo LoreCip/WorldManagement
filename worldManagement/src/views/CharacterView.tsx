@@ -12,7 +12,9 @@ import { colors, fonts, radii, fontImportTag } from "../components/theme/theme";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
+import workerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
 interface WikiArticle {
 	id: string;
@@ -20,11 +22,18 @@ interface WikiArticle {
 	category: string;
 }
 
+// 1. INTERFACCIA AGGIORNATA CON LE NUOVE PROP
 interface CharacterViewProps {
 	onNavigateToWiki?: (articleId: string) => void;
+	initialSheetId?: string | null;
+	onSelectSheet?: (id: string | null) => void;
 }
 
-export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }) => {
+export const CharacterView: React.FC<CharacterViewProps> = ({
+	onNavigateToWiki,
+	initialSheetId,
+	onSelectSheet,
+}) => {
 	const {
 		systems,
 		sheets,
@@ -51,6 +60,27 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 
 	const formDataRef = useRef<Record<string, any>>({});
 	const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+	const pristineBufferRef = useRef<ArrayBuffer | null>(null);
+
+	const pdfCacheRef = useRef<Map<string, ArrayBuffer>>(new Map());
+	const pdfCacheKey = (sheetId: string, variant: string) => `${sheetId}::${variant}`;
+
+	// 2. EFFETTO PER SELEZIONARE LA SCHEDA QUANDO SI ARRIVA DALLA WIKI
+	useEffect(() => {
+		if (initialSheetId && sheets.length > 0) {
+			if (selectedSheet?.id !== initialSheetId) {
+				handleSelectSheet(initialSheetId);
+			}
+		}
+	}, [initialSheetId, sheets]);
+
+	// Wrapper per aggiornare sia lo stato interno sia lo stato in App.tsx
+	const onSelectSheetWrapper = (id: string) => {
+		handleSelectSheet(id);
+		if (onSelectSheet) {
+			onSelectSheet(id);
+		}
+	};
 
 	// 1. Carica articoli Wiki (categoria Personaggio)
 	useEffect(() => {
@@ -79,7 +109,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 
 	const activeVariant = selectedSheet?.sheet_variant || "pg";
 
-	// Elenco delle varianti disponibili per il sistema corrente (per mostrare/nascondere il toggle)
 	const availableVariants = useMemo(() => {
 		if (!selectedSystem) return ["pg"];
 		try {
@@ -100,20 +129,19 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 			if (activeVariant === "png" && parsedSchema.pdf_template_png) {
 				return parsedSchema.pdf_template_png;
 			}
-			// Variante "pg", o fallback su "pg" se la scheda è impostata su "png"
-			// ma il sistema (vecchio, pre-migrazione) non ha ancora quella distinzione.
 			return parsedSchema.pdf_template_pg || parsedSchema.pdf_template || "5E_CharacterSheet_Fillable.pdf";
 		} catch {
 			return "5E_CharacterSheet_Fillable.pdf";
 		}
 	}, [selectedSystem, activeVariant]);
 
-	// 3. Carica i byte del PDF tramite Rust (con fallback automatico al template se il salvato non esiste)
+	// 3. Carica i byte del PDF tramite Rust
 	useEffect(() => {
 		const loadPdfBytes = async () => {
 			if (!selectedSheet) {
 				setPdfArrayBuffer(null);
 				formDataRef.current = {};
+				pristineBufferRef.current = null;
 				return;
 			}
 
@@ -128,15 +156,22 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 				}
 				formDataRef.current = initialData;
 
-				// Invocazione a Rust: cerca prima in savedSheets/<sheet_id>_<variant>.pdf
-				// Se non lo trova, carica automaticamente sheetTemplates/<pdfTemplateFilename>
-				const bytes = await invoke<number[]>("load_sheet_pdf_bytes", {
-					sheetId: selectedSheet.id,
-					variant: activeVariant,
-					templateFilename: pdfTemplateFilename,
-				});
+				const cacheKey = pdfCacheKey(selectedSheet.id, activeVariant);
+				const cached = pdfCacheRef.current.get(cacheKey);
 
-				const buffer = new Uint8Array(bytes).buffer;
+				let buffer: ArrayBuffer;
+				if (cached) {
+					buffer = cached.slice(0);
+				} else {
+					buffer = await invoke<ArrayBuffer>("load_sheet_pdf_bytes", {
+						sheetId: selectedSheet.id,
+						variant: activeVariant,
+						templateFilename: pdfTemplateFilename,
+					});
+					pdfCacheRef.current.set(cacheKey, buffer.slice(0));
+				}
+
+				pristineBufferRef.current = buffer.slice(0);
 				setPdfArrayBuffer(buffer);
 			} catch (err) {
 				console.error("Errore caricamento PDF:", err);
@@ -147,7 +182,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		loadPdfBytes();
 	}, [selectedSheet, activeVariant, pdfTemplateFilename]);
 
-	// Popola gli input nell'AnnotationLayer una volta che la pagina PDF è renderizzata
 	const populatePageAnnotations = useCallback(() => {
 		if (!pdfContainerRef.current) return;
 		const inputs = pdfContainerRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea, select");
@@ -167,7 +201,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		});
 	}, []);
 
-	// Gestione input senza causare re-render React continuativi
 	const handleFormInputChange = (e: React.FormEvent<HTMLDivElement>) => {
 		const target = e.target as HTMLInputElement | HTMLTextAreaElement;
 		if (!target || !target.name) return;
@@ -178,23 +211,15 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		formDataRef.current[fieldName] = value;
 	};
 
-	// Salvataggio definitivo del PDF e dei dati nel DB
 	const handleSavePdf = async () => {
 		if (!selectedSheet) return;
 
 		try {
-			// IMPORTANTE: non riusare `pdfArrayBuffer` (stato del visualizzatore).
-			// react-pdf/pdf.js trasferisce quel buffer al proprio worker per il parsing,
-			// rendendolo "detached": pdf-lib non potrebbe più leggerlo.
-			// Richiediamo quindi byte freschi e indipendenti al backend Rust.
-			const freshBytes = await invoke<number[]>("load_sheet_pdf_bytes", {
-				sheetId: selectedSheet.id,
-				variant: activeVariant,
-				templateFilename: pdfTemplateFilename,
-			});
-			const freshBuffer = new Uint8Array(freshBytes).buffer;
+			if (!pristineBufferRef.current) {
+				throw new Error("PDF non ancora caricato in memoria.");
+			}
 
-			const pdfDoc = await PDFDocument.load(freshBuffer);
+			const pdfDoc = await PDFDocument.load(pristineBufferRef.current.slice(0));
 			const form = pdfDoc.getForm();
 
 			Object.entries(formDataRef.current).forEach(([fieldName, val]) => {
@@ -239,8 +264,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		}
 	};
 
-	// Cambio variante scheda (PG <-> PNG): ricarica il PDF corrispondente e persiste la scelta
-	const handleSetVariant = async (variant: string) => {
+	const handleSetVariant = async (variant: "pg" | "png") => {
 		if (!selectedSheet || selectedSheet.sheet_variant === variant) return;
 
 		try {
@@ -255,6 +279,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 				},
 			});
 
+			// Cast esplicito su sheet_variant
 			setSelectedSheet({ ...selectedSheet, sheet_variant: variant });
 		} catch (err) {
 			console.error("Errore cambio variante scheda:", err);
@@ -262,7 +287,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		}
 	};
 
-	// Associazione articolo Wiki
 	const handleLinkArticle = async (articleId: string | null) => {
 		if (!selectedSheet) return;
 
@@ -284,7 +308,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 		}
 	};
 
-	// Esportazione del PDF
 	const handleExportPdf = async () => {
 		if (!selectedSheet) return;
 
@@ -334,7 +357,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 				activeSystemId={activeSystemId}
 				onActiveSystemChange={setActiveSystemId}
 				onSearchChange={setSearchQuery}
-				onSelectSheet={handleSelectSheet}
+				onSelectSheet={onSelectSheetWrapper}
 				onNewSheet={handleNewSheet}
 				onOpenSystemModal={() => setIsSystemModalOpen(true)}
 			/>
@@ -498,7 +521,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki }
 							</div>
 						</div>
 
-						{/* Visualizzatore PDF.js Canvas Interattivo */}
+						{/* Visualizzatore PDF */}
 						<div
 							ref={pdfContainerRef}
 							onInput={handleFormInputChange}
