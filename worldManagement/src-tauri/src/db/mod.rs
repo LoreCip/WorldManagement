@@ -6,6 +6,11 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
         "
         PRAGMA foreign_keys = ON;
 
+        CREATE TABLE IF NOT EXISTS app_settings (
+            key TEXT PRIMARY KEY NOT NULL,
+            value TEXT NOT NULL
+        );
+
         -- TABELLE WIKI
         CREATE TABLE IF NOT EXISTS wiki_articles (
             id TEXT PRIMARY KEY NOT NULL,
@@ -98,18 +103,74 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
             FOREIGN KEY(system_id) REFERENCES game_systems(id) ON DELETE RESTRICT,
             FOREIGN KEY(article_id) REFERENCES wiki_articles(id) ON DELETE SET NULL
         );
+
+        -- TABELLA TIMELINE
+        CREATE TABLE IF NOT EXISTS timeline_categories (
+            id TEXT PRIMARY KEY NOT NULL,
+            name TEXT UNIQUE NOT NULL,
+            color TEXT NOT NULL,
+            icon TEXT NOT NULL DEFAULT '📌'
+        );
+
+        CREATE TABLE IF NOT EXISTS timeline_events (
+            id TEXT PRIMARY KEY NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT,
+            time_value INTEGER NOT NULL,
+            end_time_value INTEGER,
+            precision TEXT NOT NULL DEFAULT 'day',
+            article_id TEXT,
+            map_id TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(article_id) REFERENCES wiki_articles(id) ON DELETE SET NULL,
+            FOREIGN KEY(map_id) REFERENCES maps(id) ON DELETE SET NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_timeline_events_time_value
+            ON timeline_events(time_value);
+
+        CREATE TABLE IF NOT EXISTS timeline_views (
+            id TEXT PRIMARY KEY NOT NULL,
+            name TEXT NOT NULL,
+            center_value INTEGER NOT NULL,
+            pixels_per_day REAL NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS campaign_settings (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            current_date_value INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS timeline_eras (
+            id TEXT PRIMARY KEY NOT NULL,
+            label TEXT NOT NULL,
+            start_value INTEGER NOT NULL,
+            end_value INTEGER NOT NULL,
+            color TEXT NOT NULL DEFAULT '#8a6fd1'
+        );
         "
     )?;
 
     ensure_root_map_exists(conn)?;
     ensure_default_game_systems_exist(conn)?;
     ensure_sheet_variant_column_exists(conn)?;
+    ensure_timeline_category_column_exists(conn)?;
+    ensure_default_timeline_categories_exist(conn)?;
+    ensure_campaign_settings_row_exists(conn)?;
 
     Ok(())
 }
 
-/// Migrazione: aggiunge la colonna sheet_variant a character_sheets se non esiste già
-/// (necessaria per i DB creati prima dell'introduzione delle varianti PG/PNG).
+pub fn ensure_campaign_settings_row_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "INSERT OR IGNORE INTO campaign_settings (id, current_date_value) VALUES (1, NULL)",
+        [],
+    )?;
+    Ok(())
+}
+
 pub fn ensure_sheet_variant_column_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
     let mut stmt = conn.prepare("PRAGMA table_info(character_sheets)")?;
     let column_exists = stmt
@@ -127,7 +188,49 @@ pub fn ensure_sheet_variant_column_exists(conn: &Connection) -> Result<(), rusql
     Ok(())
 }
 
-/// Helper condiviso per verificare se un'immagine è ancora in uso nel DB
+/// Migrazione: aggiunge category_id a timeline_events per i DB creati in fase 1.
+/// Niente REFERENCES via ALTER TABLE (SQLite non la applica in modo affidabile
+/// su tabelle già popolate) — stesso approccio "soft link" già usato per
+/// map_portals.article_id.
+pub fn ensure_timeline_category_column_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
+    let mut stmt = conn.prepare("PRAGMA table_info(timeline_events)")?;
+    let column_exists = stmt
+        .query_map([], |row| row.get::<_, String>(1))?
+        .filter_map(|r| r.ok())
+        .any(|col_name| col_name == "category_id");
+
+    if !column_exists {
+        conn.execute("ALTER TABLE timeline_events ADD COLUMN category_id TEXT", [])?;
+    }
+
+    Ok(())
+}
+
+/// Categorie predefinite alla prima creazione del DB (l'utente può rinominarle,
+/// cambiarne colore/icona o eliminarle liberamente).
+pub fn ensure_default_timeline_categories_exist(conn: &Connection) -> Result<(), rusqlite::Error> {
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM timeline_categories", [], |row| row.get(0))?;
+
+    if count == 0 {
+        let defaults = [
+            ("Politica", "#8a6fd1", "👑"),
+            ("Guerra", "#c0524a", "⚔️"),
+            ("Nascita e Morte", "#5a9e6f", "🕯️"),
+            ("Scoperta", "#4a90c0", "🔭"),
+            ("Evento Naturale", "#c9a15a", "🌪️"),
+        ];
+        for (name, color, icon) in defaults {
+            let id = Uuid::new_v4().to_string();
+            conn.execute(
+                "INSERT INTO timeline_categories (id, name, color, icon) VALUES (?1, ?2, ?3, ?4)",
+                (&id, name, color, icon),
+            )?;
+        }
+    }
+
+    Ok(())
+}
+
 pub fn is_image_referenced(conn: &Connection, filename: &str) -> bool {
     let like_pattern = format!("%{}%", filename);
     let count: i64 = conn
@@ -142,7 +245,6 @@ pub fn is_image_referenced(conn: &Connection, filename: &str) -> bool {
     count > 0
 }
 
-/// Helper di pulizia file isolato
 pub fn delete_image_if_unused(conn: &Connection, media_dir: &std::path::Path, path_or_filename: &str) {
     if let Some(filename) = std::path::Path::new(path_or_filename).file_name().map(|f| f.to_string_lossy()) {
         if !is_image_referenced(conn, &filename) {
@@ -154,7 +256,6 @@ pub fn delete_image_if_unused(conn: &Connection, media_dir: &std::path::Path, pa
     }
 }
 
-/// Se non esiste alcuna mappa nel DB, crea la Mappa Principale predefinita.
 pub fn ensure_root_map_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
     let count: i64 = conn.query_row("SELECT COUNT(*) FROM maps", [], |row| row.get(0))?;
 
@@ -170,7 +271,6 @@ pub fn ensure_root_map_exists(conn: &Connection) -> Result<(), rusqlite::Error> 
     Ok(())
 }
 
-/// Crea il sistema predefinito D&D 5e basato sul PDF interattivo
 pub fn ensure_default_game_systems_exist(conn: &Connection) -> Result<(), rusqlite::Error> {
     let count: i64 = conn.query_row("SELECT COUNT(*) FROM game_systems", [], |row| row.get(0))?;
 

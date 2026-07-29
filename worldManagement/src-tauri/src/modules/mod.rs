@@ -1,9 +1,15 @@
 pub mod maps;
 pub mod wiki;
 pub mod characters;
+pub mod timeline;
+pub mod settings;
 
 pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
     tauri::generate_handler![
+        // Settings
+        settings::commands::get_all_settings,
+        settings::commands::save_setting,
+        settings::commands::delete_setting,
         // Comandi Wiki
         wiki::save_image,
         wiki::save_article,
@@ -31,6 +37,24 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         characters::commands::delete_character_sheet,
         characters::commands::export_character_pdf,
         characters::commands::load_sheet_pdf_bytes,
-        characters::commands::upload_pdf_template
+        characters::commands::upload_pdf_template,
+        // Timeline
+        timeline::commands::save_timeline_event,
+        timeline::commands::get_all_timeline_events,
+        timeline::commands::get_timeline_event_by_id,
+        timeline::commands::delete_timeline_event,
+        timeline::commands::get_timeline_events_by_article,
+        timeline::commands::get_timeline_events_by_map,
+        timeline::commands::get_timeline_categories,
+        timeline::commands::save_timeline_category,
+        timeline::commands::delete_timeline_category,
+        timeline::commands::get_timeline_views,
+        timeline::commands::save_timeline_view,
+        timeline::commands::delete_timeline_view,
+        timeline::commands::get_campaign_settings,
+        timeline::commands::save_campaign_settings,
+        timeline::commands::get_timeline_eras,
+        timeline::commands::save_timeline_era,
+        timeline::commands::delete_timeline_era,
     ]
 }

@@ -22,12 +22,16 @@ interface WikiArticle {
 	category: string;
 }
 
-// 1. INTERFACCIA AGGIORNATA CON LE NUOVE PROP
 interface CharacterViewProps {
 	onNavigateToWiki?: (articleId: string) => void;
 	initialSheetId?: string | null;
 	onSelectSheet?: (id: string | null) => void;
 }
+
+// Limiti di zoom
+const MIN_SCALE = 0.4;
+const MAX_SCALE = 3;
+const ZOOM_SENSITIVITY = 0.012; // quanto reattivo è il pinch/ctrl+wheel
 
 export const CharacterView: React.FC<CharacterViewProps> = ({
 	onNavigateToWiki,
@@ -57,15 +61,26 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 	const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null);
 	const [numPages, setNumPages] = useState<number>(0);
 	const [characterArticles, setCharacterArticles] = useState<WikiArticle[]>([]);
+	const [scale, setScale] = useState<number>(1);
 
 	const formDataRef = useRef<Record<string, any>>({});
 	const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+	const pdfContentRef = useRef<HTMLDivElement | null>(null);
 	const pristineBufferRef = useRef<ArrayBuffer | null>(null);
 
 	const pdfCacheRef = useRef<Map<string, ArrayBuffer>>(new Map());
 	const pdfCacheKey = (sheetId: string, variant: string) => `${sheetId}::${variant}`;
 
-	// 2. EFFETTO PER SELEZIONARE LA SCHEDA QUANDO SI ARRIVA DALLA WIKI
+	// Ref per il rAF-throttling dello zoom e per l'aggiustamento dello scroll "verso il cursore"
+	const rafIdRef = useRef<number | null>(null);
+	const pendingScaleRef = useRef<number | null>(null);
+	const pendingAnchorRef = useRef<{ clientX: number; clientY: number } | null>(null);
+
+	// Reset dello zoom quando cambio scheda
+	useEffect(() => {
+		setScale(1);
+	}, [selectedSheet?.id]);
+
 	useEffect(() => {
 		if (initialSheetId && sheets.length > 0) {
 			if (selectedSheet?.id !== initialSheetId) {
@@ -74,7 +89,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		}
 	}, [initialSheetId, sheets]);
 
-	// Wrapper per aggiornare sia lo stato interno sia lo stato in App.tsx
 	const onSelectSheetWrapper = (id: string) => {
 		handleSelectSheet(id);
 		if (onSelectSheet) {
@@ -82,7 +96,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		}
 	};
 
-	// 1. Carica articoli Wiki (categoria Personaggio)
 	useEffect(() => {
 		const fetchWikiArticles = async () => {
 			try {
@@ -101,7 +114,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		fetchWikiArticles();
 	}, []);
 
-	// 2. Sistema di gioco selezionato e nome del file PDF (in base alla variante PG/PNG attiva)
 	const selectedSystem = useMemo(() => {
 		if (!selectedSheet) return null;
 		return systems.find((s) => s.id === selectedSheet.system_id) || null;
@@ -135,7 +147,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		}
 	}, [selectedSystem, activeVariant]);
 
-	// 3. Carica i byte del PDF tramite Rust
 	useEffect(() => {
 		const loadPdfBytes = async () => {
 			if (!selectedSheet) {
@@ -279,7 +290,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 				},
 			});
 
-			// Cast esplicito su sheet_variant
 			setSelectedSheet({ ...selectedSheet, sheet_variant: variant });
 		} catch (err) {
 			console.error("Errore cambio variante scheda:", err);
@@ -335,6 +345,85 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		}
 	};
 
+	// ---- ZOOM: pinch trackpad (wheel + ctrlKey) e Ctrl/Cmd + rotellina ----
+	// Applica lo scale mantenendo il punto sotto il cursore fisso (zoom-to-cursor),
+	// throttlato via requestAnimationFrame per restare fluido durante il pinch continuo.
+	const applyPendingZoom = useCallback(() => {
+		rafIdRef.current = null;
+
+		const container = pdfContainerRef.current;
+		const nextScale = pendingScaleRef.current;
+		const anchor = pendingAnchorRef.current;
+		if (!container || nextScale == null) return;
+
+		setScale((prevScale) => {
+			if (Math.abs(nextScale - prevScale) < 0.001) return prevScale;
+
+			if (anchor) {
+				const rect = container.getBoundingClientRect();
+				// Posizione del cursore relativa al contenuto scrollabile (prima dello zoom)
+				const offsetX = anchor.clientX - rect.left + container.scrollLeft;
+				const offsetY = anchor.clientY - rect.top + container.scrollTop;
+				const ratio = nextScale / prevScale;
+
+				// Applichiamo il nuovo scroll DOPO che React ha ri-renderizzato con la nuova scala
+				requestAnimationFrame(() => {
+					if (!container) return;
+					container.scrollLeft = offsetX * ratio - (anchor.clientX - rect.left);
+					container.scrollTop = offsetY * ratio - (anchor.clientY - rect.top);
+				});
+			}
+
+			return nextScale;
+		});
+	}, []);
+
+	const scheduleZoom = useCallback(
+		(nextScale: number, clientX: number, clientY: number) => {
+			pendingScaleRef.current = Math.min(MAX_SCALE, Math.max(MIN_SCALE, nextScale));
+			pendingAnchorRef.current = { clientX, clientY };
+
+			if (rafIdRef.current == null) {
+				rafIdRef.current = requestAnimationFrame(applyPendingZoom);
+			}
+		},
+		[applyPendingZoom]
+	);
+
+	useEffect(() => {
+		const container = pdfContainerRef.current;
+		if (!container) return;
+
+		const handleWheel = (e: WheelEvent) => {
+			// Il pinch a due dita sul trackpad viene esposto dal browser come
+			// evento "wheel" con ctrlKey=true (così come Ctrl/Cmd + rotellina del mouse).
+			// Senza questo intercetto, il browser farebbe lo zoom dell'intera pagina.
+			if (!e.ctrlKey) return; // lascia passare lo scroll normale a due dita
+
+			e.preventDefault();
+
+			setScale((current) => {
+				const factor = Math.exp(-e.deltaY * ZOOM_SENSITIVITY);
+				const next = current * factor;
+				scheduleZoom(next, e.clientX, e.clientY);
+				return current; // lo stato reale viene aggiornato dentro scheduleZoom/applyPendingZoom
+			});
+		};
+
+		container.addEventListener("wheel", handleWheel, { passive: false });
+		return () => {
+			container.removeEventListener("wheel", handleWheel);
+			if (rafIdRef.current != null) {
+				cancelAnimationFrame(rafIdRef.current);
+				rafIdRef.current = null;
+			}
+		};
+	}, [scheduleZoom]);
+
+	const zoomIn = () => setScale((s) => Math.min(MAX_SCALE, +(s + 0.15).toFixed(3)));
+	const zoomOut = () => setScale((s) => Math.max(MIN_SCALE, +(s - 0.15).toFixed(3)));
+	const zoomReset = () => setScale(1);
+
 	const btnBase: React.CSSProperties = {
 		padding: "0.5rem 1rem",
 		borderRadius: radii.md,
@@ -343,6 +432,20 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		fontWeight: 600,
 		fontSize: "0.85rem",
 		transition: "all 0.15s ease",
+	};
+
+	const zoomBtnBase: React.CSSProperties = {
+		width: "1.8rem",
+		height: "1.8rem",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		border: "none",
+		background: "transparent",
+		color: colors.textFaint,
+		cursor: "pointer",
+		fontSize: "1rem",
+		fontWeight: 700,
 	};
 
 	return (
@@ -497,7 +600,40 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 								</div>
 							</div>
 
-							<div style={{ display: "flex", gap: "0.5rem" }}>
+							<div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+								{/* Controlli zoom */}
+								<div
+									style={{
+										display: "flex",
+										alignItems: "center",
+										border: `1px solid ${colors.border}`,
+										borderRadius: radii.sm,
+										overflow: "hidden",
+										marginRight: "0.3rem",
+									}}
+								>
+									<button onClick={zoomOut} title="Riduci zoom" style={zoomBtnBase}>
+										−
+									</button>
+									<button
+										onClick={zoomReset}
+										title="Ripristina zoom (100%)"
+										style={{
+											...zoomBtnBase,
+											width: "3.2rem",
+											fontSize: "0.72rem",
+											fontWeight: 600,
+											borderLeft: `1px solid ${colors.border}`,
+											borderRight: `1px solid ${colors.border}`,
+										}}
+									>
+										{Math.round(scale * 100)}%
+									</button>
+									<button onClick={zoomIn} title="Aumenta zoom" style={zoomBtnBase}>
+										+
+									</button>
+								</div>
+
 								<button
 									onClick={handleSavePdf}
 									style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}
@@ -532,34 +668,46 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 								height: "100%",
 								minHeight: 0,
 								borderRadius: radii.md,
-								overflowY: "auto",
+								overflow: "auto", // scroll sia verticale che orizzontale (necessario quando si fa zoom)
 								border: `1px solid ${colors.border}`,
 								backgroundColor: "#525659",
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								padding: "1rem 0",
+								// overscrollBehavior evita che lo scroll "sfondi" verso la pagina quando si arriva ai bordi
+								overscrollBehavior: "contain",
 							}}
 						>
 							{pdfArrayBuffer ? (
-								<Document
-									file={pdfArrayBuffer}
-									onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-									loading={<div style={{ color: "#fff" }}>Caricamento PDF...</div>}
+								<div
+									ref={pdfContentRef}
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										alignItems: "center",
+										padding: "1rem 0",
+										// margine extra per poter scrollare oltre i bordi quando si è zoomati
+										minWidth: "100%",
+										width: "fit-content",
+										margin: "0 auto",
+									}}
 								>
-									{Array.from(new Array(numPages), (_, index) => (
-										<div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
-											<Page
-												pageNumber={index + 1}
-												renderAnnotationLayer={true}
-												renderTextLayer={true}
-												renderForms={true}
-												width={800}
-												onRenderSuccess={populatePageAnnotations}
-											/>
-										</div>
-									))}
-								</Document>
+									<Document
+										file={pdfArrayBuffer}
+										onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+										loading={<div style={{ color: "#fff" }}>Caricamento PDF...</div>}
+									>
+										{Array.from(new Array(numPages), (_, index) => (
+											<div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
+												<Page
+													pageNumber={index + 1}
+													renderAnnotationLayer={true}
+													renderTextLayer={true}
+													renderForms={true}
+													scale={scale}
+													onRenderSuccess={populatePageAnnotations}
+												/>
+											</div>
+										))}
+									</Document>
+								</div>
 							) : (
 								<div style={{ padding: "2rem", color: colors.textFaint }}>
 									Caricamento PDF del sistema in corso...

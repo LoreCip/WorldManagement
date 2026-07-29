@@ -26,6 +26,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
         setSelectedTargetMapId,
         navigateToMap,
         navigateBack,
+        jumpToMap,
         handleAddPortal,
         handleDeletePortal,
         handleDeleteMap,
@@ -34,33 +35,23 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
 
     const [portalLabel, setPortalLabel] = useState<string>("");
 
-    // Stati locali per Modal e Drag & Drop
     const [isAddMapOpen, setIsAddMapOpen] = useState(false);
     const [isEditMapOpen, setIsEditMapOpen] = useState(false);
     const [droppedFilePath, setDroppedFilePath] = useState<string | null>(null);
     const [isHoveringDrop, setIsHoveringDrop] = useState(false);
 
-    // Ref per tracciare l'ultima mappa richiesta esternamente
-    const lastNavigatedMapIdRef = useRef<string | null>(null);
+    const lastHandledInitialMapIdRef = useRef<string | null>(null);
 
-    // Navigazione alla mappa richiesta (sottolivello o radice) quando si arriva da fuori
     useEffect(() => {
-        if (initialMapId && maps.length > 0) {
-            const targetExists = maps.some((m) => m.id === initialMapId);
+        if (!initialMapId || maps.length === 0) return;
+        if (lastHandledInitialMapIdRef.current === initialMapId) return;
 
-            if (targetExists && lastNavigatedMapIdRef.current !== initialMapId) {
-                lastNavigatedMapIdRef.current = initialMapId;
-                navigateToMap(initialMapId);
-            }
-        }
-    }, [initialMapId, maps, navigateToMap]);
+        const targetExists = maps.some((m) => m.id === initialMapId);
+        if (!targetExists) return;
 
-    // Sincronizza la ref se la mappa cambia internamente
-    useEffect(() => {
-        if (currentMapData?.map.id) {
-            lastNavigatedMapIdRef.current = currentMapData.map.id;
-        }
-    }, [currentMapData?.map.id]);
+        lastHandledInitialMapIdRef.current = initialMapId;
+        jumpToMap(initialMapId);
+    }, [initialMapId, maps, jumpToMap]);
 
     // Gestione Drag & Drop nativa di Tauri
     useEffect(() => {
@@ -110,7 +101,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
 
     return (
         <div style={{ flex: 1, display: "flex", backgroundColor: colors.bgVoid, position: "relative", overflow: "hidden" }}>
-            {/* Animazioni e regole di transizione per il Canvas */}
             <style>{`
                     .map-transition-overlay {
                         transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease-out;
@@ -138,7 +128,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                 `}
             </style>
 
-            {/* Overlay Drag & Drop */}
             {isHoveringDrop && (
                 <div
                     style={{
@@ -165,7 +154,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                 </div>
             )}
 
-            {/* Sidebar della Sezione Cartografia */}
             <MapSidebar
                 maps={maps}
                 currentMapId={currentMapData?.map.id}
@@ -173,9 +161,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                 onNewMap={() => setIsAddMapOpen(true)}
             />
 
-            {/* Area Principale del Contenuto */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
-                {/* Header della Mappa */}
                 {currentMapData && (
                     <div
                         style={{
@@ -198,7 +184,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                             onEdit={() => setIsEditMapOpen(true)}
                         />
 
-                        {/* Strumenti Portale */}
                         <PortalControls
                             isAddingPortal={isAddingPortal}
                             maps={maps}
@@ -213,7 +198,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                     </div>
                 )}
 
-                {/* Canvas Mappa */}
                 {currentMapData ? (
                     <MapCanvas
                         map={currentMapData.map}
@@ -264,7 +248,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                 )}
             </div>
 
-            {/* Modali */}
             <AddMapModal
                 isOpen={isAddMapOpen}
                 existingMaps={maps}

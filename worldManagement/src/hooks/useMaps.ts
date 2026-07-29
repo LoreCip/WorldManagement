@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { MapItem, MapWithPortals } from "../types/map";
 import { getTopLevelMap } from "../utils/mapHierarchy";
@@ -12,7 +12,27 @@ export const useMaps = () => {
     const [selectedTargetMapId, setSelectedTargetMapId] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
 
+    // Riferimenti per evitare che transizioni sovrapposte si "scavalchino" a vicenda,
+    // e per sapere se abbiamo già caricato la mappa iniziale senza mettere
+    // currentMapData nelle dipendenze di fetchMaps (che altrimenti si ricrea
+    // ad ogni navigazione, causando un re-fetch continuo).
+    const transitionTimeouts = useRef<number[]>([]);
+    const hasLoadedInitialMap = useRef(false);
+    const currentMapDataRef = useRef<MapWithPortals | null>(null);
+    currentMapDataRef.current = currentMapData;
+
     const clearError = useCallback(() => setError(null), []);
+
+    const clearPendingTransitions = useCallback(() => {
+        transitionTimeouts.current.forEach((id) => clearTimeout(id));
+        transitionTimeouts.current = [];
+    }, []);
+
+    // Ripulisce eventuali timeout pendenti se l'hook viene smontato
+    // (es. l'utente cambia tab mentre un'animazione è in corso).
+    useEffect(() => {
+        return () => clearPendingTransitions();
+    }, [clearPendingTransitions]);
 
     const loadMapDetails = useCallback(async (mapId: string) => {
         try {
@@ -29,7 +49,8 @@ export const useMaps = () => {
             const res = await invoke<MapItem[]>("get_all_maps");
             setMaps(res);
 
-            if (res.length > 0 && !currentMapData) {
+            if (res.length > 0 && !hasLoadedInitialMap.current) {
+                hasLoadedInitialMap.current = true;
                 const topMap = getTopLevelMap(res);
                 if (topMap) {
                     loadMapDetails(topMap.id);
@@ -39,37 +60,67 @@ export const useMaps = () => {
             console.error("Errore nel recupero delle mappe:", err);
             setError("Impossibile caricare l'elenco delle mappe.");
         }
-    }, [currentMapData, loadMapDetails]);
+    }, [loadMapDetails]);
 
-    const navigateToMap = useCallback(async (targetMapId: string) => {
+    // Navigazione "interna" (click su sidebar/portali): mantiene l'animazione
+    // a due tempi e la cronologia per il tasto "indietro".
+    const navigateToMap = useCallback((targetMapId: string) => {
         if (!currentMapData || targetMapId === currentMapData.map.id || isTransitioning) return;
 
+        clearPendingTransitions();
         setIsTransitioning(true);
         const previousId = currentMapData.map.id;
 
-        setTimeout(async () => {
+        const t1 = window.setTimeout(async () => {
             await loadMapDetails(targetMapId);
             setHistory((prev) => {
-                // Evita di spingere in history la stessa mappa consecutivamente
                 if (prev[prev.length - 1] === previousId) return prev;
                 return [...prev, previousId];
             });
-            setTimeout(() => setIsTransitioning(false), 100);
+            const t2 = window.setTimeout(() => setIsTransitioning(false), 100);
+            transitionTimeouts.current.push(t2);
         }, 300);
-    }, [currentMapData, isTransitioning, loadMapDetails]);
+        transitionTimeouts.current.push(t1);
+    }, [currentMapData, isTransitioning, loadMapDetails, clearPendingTransitions]);
 
-    const navigateBack = useCallback(async () => {
+    const navigateBack = useCallback(() => {
         if (history.length === 0 || isTransitioning) return;
 
+        clearPendingTransitions();
         const previousMapId = history[history.length - 1];
         setIsTransitioning(true);
 
-        setTimeout(async () => {
+        const t1 = window.setTimeout(async () => {
             await loadMapDetails(previousMapId);
             setHistory((prev) => prev.slice(0, -1));
-            setTimeout(() => setIsTransitioning(false), 100);
+            const t2 = window.setTimeout(() => setIsTransitioning(false), 100);
+            transitionTimeouts.current.push(t2);
         }, 300);
-    }, [history, isTransitioning, loadMapDetails]);
+        transitionTimeouts.current.push(t1);
+    }, [history, isTransitioning, loadMapDetails, clearPendingTransitions]);
+
+    // Navigazione "esterna" (link da un articolo Wiki o da un evento Timeline):
+    // niente animazione a due tempi, niente dipendenza da isTransitioning.
+    // Non può MAI lasciare isTransitioning bloccato, perché non lo tocca.
+    // Interrompe qualsiasi transizione interna in corso e salta subito alla
+    // mappa richiesta, aggiungendo comunque la mappa di provenienza alla
+    // cronologia se ce n'era una.
+    const jumpToMap = useCallback(async (targetMapId: string) => {
+        if (currentMapDataRef.current?.map.id === targetMapId) return;
+
+        clearPendingTransitions();
+        setIsTransitioning(false); // sblocca forzatamente qualunque stato precedente
+
+        const previousId = currentMapDataRef.current?.map.id;
+        await loadMapDetails(targetMapId);
+
+        if (previousId) {
+            setHistory((prev) => {
+                if (prev[prev.length - 1] === previousId) return prev;
+                return [...prev, previousId];
+            });
+        }
+    }, [loadMapDetails, clearPendingTransitions]);
 
     const handleAddPortal = async (x: number, y: number, label?: string) => {
         if (!currentMapData || !selectedTargetMapId) return;
@@ -106,6 +157,7 @@ export const useMaps = () => {
             await invoke("delete_map", { id: mapId });
             if (currentMapData?.map.id === mapId) {
                 setCurrentMapData(null);
+                hasLoadedInitialMap.current = false;
             }
             await fetchMaps();
         } catch (err) {
@@ -132,6 +184,7 @@ export const useMaps = () => {
         loadMapDetails,
         navigateToMap,
         navigateBack,
+        jumpToMap,
         handleAddPortal,
         handleDeletePortal,
         handleDeleteMap,

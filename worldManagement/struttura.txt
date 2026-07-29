@@ -1,27 +1,27 @@
-[01;34m..[0m
+..
 ├── README.md
-└── [01;34mworldManagement[0m
+└── worldManagement
     ├── index.html
     ├── package.json
     ├── pnpm-lock.yaml
     ├── pnpm-workspace.yaml
-    ├── [01;34mpublic[0m
-    │   ├── [01;35mtauri.svg[0m
-    │   └── [01;35mvite.svg[0m
+    ├── public
+    │   ├── tauri.svg
+    │   └── vite.svg
     ├── README.md
-    ├── [01;34msheetTemplates[0m
+    ├── sheetTemplates
     │   └── DnD_5E_pg.pdf
-    ├── [01;34msrc[0m
+    ├── src
     │   ├── App.css
     │   ├── App.tsx
-    │   ├── [01;34massets[0m
-    │   │   └── [01;35mreact.svg[0m
-    │   ├── [01;34mcomponents[0m
-    │   │   ├── [01;34mcharacters[0m
+    │   ├── assets
+    │   │   └── react.svg
+    │   ├── components
+    │   │   ├── characters
     │   │   │   ├── CharacterSidebar.tsx
     │   │   │   ├── NewSheetModal.tsx
     │   │   │   └── SystemModal.tsx
-    │   │   ├── [01;34mmaps[0m
+    │   │   ├── maps
     │   │   │   ├── AddMapModal.tsx
     │   │   │   ├── EditMapModal.tsx
     │   │   │   ├── MapCanvas.tsx
@@ -29,79 +29,103 @@
     │   │   │   ├── MapSelector.tsx
     │   │   │   ├── MapSidebar.tsx
     │   │   │   └── PortalControls.tsx
-    │   │   ├── [01;34mtheme[0m
+    │   │   ├── settings
+    │   │   │   └── SettingsField.tsx
+    │   │   ├── theme
     │   │   │   └── theme.ts
-    │   │   └── [01;34mwiki[0m
+    │   │   ├── timeline
+    │   │   │   ├── TimelineCanvas.tsx
+    │   │   │   ├── TimelineCategoryManager.tsx
+    │   │   │   ├── TimelineEraManager.tsx
+    │   │   │   ├── TimelineEventBalloon.tsx
+    │   │   │   ├── TimelineHeader.tsx
+    │   │   │   └── TimelineMinimap.tsx
+    │   │   └── wiki
     │   │       ├── ArticleEditor.tsx
     │   │       ├── Sidebar.tsx
     │   │       └── TagInput.tsx
-    │   ├── [01;34mcontext[0m
-    │   │   └── MapsContext.tsx
-    │   ├── [01;34mhooks[0m
+    │   ├── context
+    │   │   ├── MapsContext.tsx
+    │   │   └── SettingsContext.tsx
+    │   ├── hooks
     │   │   ├── useCharacters.ts
     │   │   ├── useMaps.ts
+    │   │   ├── useTimeline.ts
     │   │   └── useWiki.ts
     │   ├── main.tsx
-    │   ├── [01;34mtypes[0m
+    │   ├── types
     │   │   ├── character.ts
     │   │   ├── map.ts
+    │   │   ├── settingsRegistry.ts
+    │   │   ├── timeline.ts
     │   │   └── wiki.ts
-    │   ├── [01;34mutils[0m
-    │   │   └── mapHierarchy.ts
-    │   ├── [01;34mviews[0m
+    │   ├── utils
+    │   │   ├── mapHierarchy.ts
+    │   │   └── timeConversion.ts
+    │   ├── views
     │   │   ├── CharacterView.tsx
     │   │   ├── MapView.tsx
+    │   │   ├── SettingsView.tsx
+    │   │   ├── TimelineView.tsx
     │   │   └── WikiView.tsx
     │   └── vite-env.d.ts
-    ├── [01;34msrc-tauri[0m
+    ├── src-tauri
     │   ├── build.rs
-    │   ├── [01;34mcapabilities[0m
+    │   ├── capabilities
     │   │   └── default.json
     │   ├── Cargo.lock
     │   ├── Cargo.toml
-    │   ├── [01;34mgen[0m
-    │   │   └── [01;34mschemas[0m
+    │   ├── gen
+    │   │   └── schemas
     │   │       ├── acl-manifests.json
     │   │       ├── capabilities.json
     │   │       ├── desktop-schema.json
     │   │       └── linux-schema.json
-    │   ├── [01;34micons[0m
-    │   │   ├── [01;35m128x128@2x.png[0m
-    │   │   ├── [01;35m128x128.png[0m
-    │   │   ├── [01;35m32x32.png[0m
+    │   ├── icons
+    │   │   ├── 128x128@2x.png
+    │   │   ├── 128x128.png
+    │   │   ├── 32x32.png
     │   │   ├── icon.icns
     │   │   ├── icon.ico
-    │   │   ├── [01;35micon.png[0m
-    │   │   ├── [01;35mSquare107x107Logo.png[0m
-    │   │   ├── [01;35mSquare142x142Logo.png[0m
-    │   │   ├── [01;35mSquare150x150Logo.png[0m
-    │   │   ├── [01;35mSquare284x284Logo.png[0m
-    │   │   ├── [01;35mSquare30x30Logo.png[0m
-    │   │   ├── [01;35mSquare310x310Logo.png[0m
-    │   │   ├── [01;35mSquare44x44Logo.png[0m
-    │   │   ├── [01;35mSquare71x71Logo.png[0m
-    │   │   ├── [01;35mSquare89x89Logo.png[0m
-    │   │   └── [01;35mStoreLogo.png[0m
-    │   ├── [01;34msrc[0m
-    │   │   ├── [01;34mdb[0m
+    │   │   ├── icon.png
+    │   │   ├── Square107x107Logo.png
+    │   │   ├── Square142x142Logo.png
+    │   │   ├── Square150x150Logo.png
+    │   │   ├── Square284x284Logo.png
+    │   │   ├── Square30x30Logo.png
+    │   │   ├── Square310x310Logo.png
+    │   │   ├── Square44x44Logo.png
+    │   │   ├── Square71x71Logo.png
+    │   │   ├── Square89x89Logo.png
+    │   │   └── StoreLogo.png
+    │   ├── src
+    │   │   ├── db
     │   │   │   └── mod.rs
     │   │   ├── lib.rs
     │   │   ├── main.rs
-    │   │   ├── [01;34mmodules[0m
-    │   │   │   ├── [01;34mcharacters[0m
+    │   │   ├── modules
+    │   │   │   ├── characters
     │   │   │   │   ├── commands.rs
     │   │   │   │   ├── models.rs
     │   │   │   │   └── mod.rs
-    │   │   │   ├── [01;34mmaps[0m
+    │   │   │   ├── maps
     │   │   │   │   ├── commands.rs
     │   │   │   │   ├── models.rs
     │   │   │   │   └── mod.rs
     │   │   │   ├── mod.rs
-    │   │   │   └── [01;34mwiki[0m
+    │   │   │   ├── settings
+    │   │   │   │   ├── commands.rs
+    │   │   │   │   ├── models.rs
+    │   │   │   │   └── mod.rs
+    │   │   │   ├── timeline
+    │   │   │   │   ├── commands.rs
+    │   │   │   │   ├── models.rs
+    │   │   │   │   └── mod.rs
+    │   │   │   └── wiki
     │   │   │       ├── commands.rs
     │   │   │       ├── models.rs
     │   │   │       └── mod.rs
-    │   │   ├── [01;34mservices[0m
+    │   │   ├── services
     │   │   │   ├── media.rs
     │   │   │   ├── mod.rs
     │   │   │   └── state.rs
@@ -112,4 +136,4 @@
     ├── tsconfig.node.json
     └── vite.config.ts
 
-28 directories, 85 files
+32 directories, 106 files

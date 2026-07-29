@@ -2,9 +2,11 @@ import { useState } from "react";
 import { WikiView } from "./views/WikiView";
 import { MapView } from "./views/MapView";
 import { CharacterView } from "./views/CharacterView";
+import { TimelineView } from "./views/TimelineView";
 import { colors, radii } from "./components/theme/theme";
+import { SettingsView } from "./views/SettingsView";
 
-type ActiveTab = "wiki" | "maps" | "characters" | "relations";
+type ActiveTab = "wiki" | "maps" | "characters" | "timeline" | "relations" | "settings";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("wiki");
@@ -94,6 +96,24 @@ export default function App() {
           🎭
         </button>
 
+        {/* Pulsante Timeline */}
+        <button
+          onClick={() => setActiveTab("timeline")}
+          title="Linea del Tempo"
+          style={{
+            background: activeTab === "timeline" ? colors.bgPanelRaised : "none",
+            border: "none",
+            borderRadius: radii.md,
+            width: "40px",
+            height: "40px",
+            fontSize: "1.2rem",
+            cursor: "pointer",
+            opacity: activeTab === "timeline" ? 1 : 0.4,
+          }}
+        >
+          ⏳
+        </button>
+
         <button
           onClick={() => setActiveTab("relations")}
           title="Albero Genealogico / Relazioni"
@@ -109,6 +129,19 @@ export default function App() {
           }}
         >
           🌳
+        </button>
+
+        <button
+          onClick={() => setActiveTab("settings")}
+          title="Impostazioni"
+          style={{
+            background: activeTab === "settings" ? colors.bgPanelRaised : "none",
+            border: "none", borderRadius: radii.md, width: "40px", height: "40px",
+            fontSize: "1.2rem", cursor: "pointer", opacity: activeTab === "settings" ? 1 : 0.4,
+            marginTop: "auto", // spinge l'icona in fondo alla nav, separata dalle altre
+          }}
+        >
+          ⚙️
         </button>
       </nav>
 
@@ -137,11 +170,20 @@ export default function App() {
           />
         )}
 
+        {activeTab === "timeline" && (
+          <TimelineView
+            onNavigateToArticle={handleOpenArticle}
+            onNavigateToMap={handleOpenMap}
+          />
+        )}
+
         {activeTab === "relations" && (
           <div style={{ padding: "2rem", color: colors.textFaint, flex: 1, textAlign: "center" }}>
             Modulo Relazioni & Alberi Genealogici in arrivo…
           </div>
         )}
+        
+        {activeTab === "settings" && <SettingsView />}
       </div>
     </div>
   );
