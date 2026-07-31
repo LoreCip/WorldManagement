@@ -1,6 +1,7 @@
 import React from "react";
 import { MapItem } from "../../types/map";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface PortalControlsProps {
     isAddingPortal: boolean;
@@ -24,12 +25,14 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
     onCancel,
     onSelectTarget,
     onLabelChange,
-}) => {
+}) => {    
+    const { t } = useLocalization();
+
     if (!isAddingPortal) {
         return (
             <button
                 onClick={onStart}
-                title="Aggiungi portale di collegamento"
+                title={t("maps.portal.addPortal")}
                 style={{
                     padding: "0.4rem 0.8rem",
                     borderRadius: radii.md,
@@ -47,7 +50,7 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
                     flexShrink: 0,
                 }}
             >
-                🌀 <span className="hide-on-small">+ Portale</span>
+                🌀 <span className="hide-on-small">{t("maps.portal.newPortal")}</span>
             </button>
         );
     }
@@ -79,7 +82,7 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
                     maxWidth: "130px",
                 }}
             >
-                <option value="">Destinazione...</option>
+                <option value="">{t("maps.portal.destination")}</option>
                 {maps
                     .filter((m) => m.id !== currentMapId)
                     .map((m) => (
@@ -91,7 +94,7 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
 
             <input
                 type="text"
-                placeholder="Etichetta..."
+                placeholder={t("maps.portal.label")}
                 value={portalLabel}
                 onChange={(e) => onLabelChange(e.target.value)}
                 style={{
@@ -108,7 +111,7 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
 
             <button
                 onClick={onCancel}
-                title="Annulla"
+                title={t("common.cancel")}
                 style={{
                     padding: "0.3rem 0.5rem",
                     borderRadius: radii.sm,

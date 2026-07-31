@@ -7,7 +7,8 @@ import { useCharacters } from "../hooks/useCharacters";
 import { CharacterSidebar } from "../components/characters/CharacterSidebar";
 import { SystemModal } from "../components/characters/SystemModal";
 import { NewSheetModal } from "../components/characters/NewSheetModal";
-import { colors, fonts, radii, fontImportTag } from "../components/theme/theme";
+import { colors, fonts, radii } from "../components/theme/theme";
+import { useLocalization } from "../context/LocalizationContext";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -57,6 +58,8 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 		handleDeleteSheet,
 		handleSaveSystem,
 	} = useCharacters();
+
+    const { t } = useLocalization();
 
 	const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null);
 	const [numPages, setNumPages] = useState<number>(0);
@@ -450,7 +453,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 
 	return (
 		<div style={{ display: "flex", width: "100%", height: "100%" }}>
-			<style>{fontImportTag}</style>
 
 			<CharacterSidebar
 				systems={systems}
@@ -489,7 +491,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 							fontStyle: "italic",
 						}}
 					>
-						Seleziona una scheda dalla barra laterale o creane una nuova.
+						{t("characters.hook.hint")}
 					</div>
 				) : (
 					<>
@@ -547,7 +549,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 																color: isActive ? colors.bgVoid : colors.textFaint,
 															}}
 														>
-															{v === "pg" ? "PG" : "PNG"}
+															{v === "pg" ? t("characters.systemModal.pc") : t("characters.systemModal.npc")}
 														</button>
 													);
 												})}
@@ -557,7 +559,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 
 								<div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 									<label style={{ fontSize: "0.78rem", color: colors.gold, fontWeight: 500 }}>
-										Personaggio Wiki:
+										{t("characters.hook.characterWiki")}
 									</label>
 									<select
 										value={selectedSheet.article_id || ""}
@@ -573,7 +575,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 											colorScheme: "dark",
 										}}
 									>
-										<option value="">-- Nessun collegamento --</option>
+										<option value="">{t("characters.hook.noLink")}</option>
 										{characterArticles.map((art) => (
 											<option key={art.id} value={art.id}>
 												{art.title}
@@ -594,7 +596,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 												padding: 0,
 											}}
 										>
-											Vai alla voce →
+											{t("characters.hook.go")}
 										</button>
 									)}
 								</div>
@@ -638,21 +640,21 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 									onClick={handleSavePdf}
 									style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}
 								>
-									Salva Scheda
+									{t("common.save")}
 								</button>
 
 								<button
 									onClick={handleExportPdf}
 									style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}
 								>
-									Esporta PDF
+									{t("common.export")}
 								</button>
 
 								<button
 									onClick={() => handleDeleteSheet(selectedSheet.id)}
 									style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
 								>
-									Elimina
+									{t("common.save")}
 								</button>
 							</div>
 						</div>
@@ -692,7 +694,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 									<Document
 										file={pdfArrayBuffer}
 										onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-										loading={<div style={{ color: "#fff" }}>Caricamento PDF...</div>}
+										loading={<div style={{ color: "#fff" }}>{t("characters.hook.loadingShort")}</div>}
 									>
 										{Array.from(new Array(numPages), (_, index) => (
 											<div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
@@ -710,7 +712,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 								</div>
 							) : (
 								<div style={{ padding: "2rem", color: colors.textFaint }}>
-									Caricamento PDF del sistema in corso...
+									{t("characters.hook.loading")}
 								</div>
 							)}
 						</div>

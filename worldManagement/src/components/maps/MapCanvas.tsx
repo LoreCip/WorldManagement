@@ -7,6 +7,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 
 import { MapMeta, MapPortal } from "../../types/map";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
     const map = useMap();
@@ -86,9 +87,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     onMapClick,
     onEnterPortal,
     onDeletePortal,
-}) => {
+}) => {    
+    const { t } = useLocalization();
     const imageUrl = convertFileSrc(map.image_path);
-
     const bounds: L.LatLngBoundsExpression = [
         [0, 0],
         [map.height || 1080, map.width || 1920],
@@ -122,7 +123,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                         {/* Rimosso 'placement="top"' per risolvere l'errore di build TypeScript */}
                         <Popup>
                             <div style={{ fontFamily: fonts.body, color: colors.bgVoid, textAlign: "center" }}>
-                                <strong>{portal.label || "Portale"}</strong>
+                                <strong>{portal.label || t("maps.canvas.portalDefault")}</strong>
                                 <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.4rem", justifyContent: "center" }}>
                                     <button
                                         /* Aggiunto il controllo con && per garantire che target_map_id sia definito per TypeScript */
@@ -152,7 +153,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                                             fontSize: "0.75rem",
                                         }}
                                     >
-                                        Elimina
+                                        {t("common.delete")}
                                     </button>
                                 </div>
                             </div>

@@ -8,6 +8,7 @@ import { AddMapModal } from "../components/maps/AddMapModal";
 import { EditMapModal } from "../components/maps/EditMapModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
 import { colors, fonts, radii } from "../components/theme/theme";
+import { useLocalization } from "../context/LocalizationContext";
 
 interface MapViewProps {
     onOpenArticle?: (articleId: string) => void;
@@ -32,6 +33,8 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
         handleDeleteMap,
         refreshMaps,
     } = useMaps();
+
+    const { t } = useLocalization();
 
     const [portalLabel, setPortalLabel] = useState<string>("");
 
@@ -150,7 +153,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                         fontFamily: fonts.body,
                     }}
                 >
-                    📂 Rilascia qui l'immagine per aggiungere una nuova mappa
+                    {t("maps.dropImage")}
                 </div>
             )}
 
@@ -223,10 +226,10 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                     >
                         <span style={{ fontSize: "3rem", opacity: 0.3 }}>🗺️</span>
                         <p style={{ fontFamily: fonts.display, fontSize: "1.2rem", color: colors.textSecondary }}>
-                            Nessuna mappa selezionata
+                            {t("maps.noMapSelected")}
                         </p>
                         <p style={{ fontFamily: fonts.body, fontSize: "0.9rem", color: colors.textFaint, maxWidth: "400px", textAlign: "center" }}>
-                            Seleziona una mappa dalla barra laterale, trascina un'immagine nel canvas o crea una nuova mappa.
+                            {t("maps.selectMap")}
                         </p>
                         <button
                             onClick={() => setIsAddMapOpen(true)}
@@ -242,7 +245,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                                 fontSize: "0.9rem",
                             }}
                         >
-                            + Nuova Mappa
+                            {t("maps.newMap")}
                         </button>
                     </div>
                 )}

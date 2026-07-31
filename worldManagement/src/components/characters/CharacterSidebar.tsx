@@ -1,6 +1,7 @@
 import React from "react";
 import { CharacterSheet, GameSystem } from "../../types/character";
-import { colors, fonts, radii, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface CharacterSidebarProps {
   systems: GameSystem[];
@@ -27,6 +28,8 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
   onNewSheet,
   onOpenSystemModal,
 }) => {
+  const { t } = useLocalization();
+
   const filteredSheets = sheets.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -44,18 +47,17 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
         fontFamily: fonts.body,
       }}
     >
-      <style>{fontImportTag}</style>
 
       {/* Intestazione Modulo */}
       <div style={{ marginBottom: "1.2rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
           <span style={{ fontSize: "1.2rem" }}>🎭</span>
           <h1 style={{ fontFamily: fonts.display, fontSize: "1.4rem", fontWeight: 600, margin: 0 }}>
-            Personaggi
+            {t("characters.sidebar.title")}
           </h1>
         </div>
         <div style={{ fontSize: "0.66rem", letterSpacing: "0.13em", textTransform: "uppercase", color: colors.textFaint, marginTop: "0.3rem", marginLeft: "1.8rem" }}>
-          Schede & Sistemi di Gioco
+          {t("characters.sidebar.subtitle")}
         </div>
         <div style={{ height: "1px", marginTop: "1rem", background: `linear-gradient(90deg, ${colors.gold}77, transparent 75%)` }} />
       </div>
@@ -63,7 +65,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       {/* Sistema di Gioco Attivo (globale, valido per l'intero mondo) */}
       <div style={{ marginBottom: "1.2rem" }}>
         <label style={{ fontSize: "0.7rem", letterSpacing: "0.06em", textTransform: "uppercase", color: colors.gold, fontWeight: 600, display: "block", marginBottom: "0.4rem" }}>
-          ⚔️ Motore di Gioco Attivo
+          {t("characters.sidebar.activeSystem")}
         </label>
         <select
           value={activeSystemId || ""}
@@ -83,7 +85,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           }}
         >
           <option value="" disabled>
-            -- Seleziona un motore --
+            {t("characters.sidebar.selectSystem")}
           </option>
           {systems.map((sys) => (
             <option key={sys.id} value={sys.id}>
@@ -93,7 +95,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
         </select>
         {!activeSystemId && (
           <div style={{ fontSize: "0.7rem", color: colors.crimson, marginTop: "0.3rem" }}>
-            Seleziona un motore prima di creare personaggi.
+            {t("characters.sidebar.sysNotSelected")}
           </div>
         )}
       </div>
@@ -114,7 +116,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
             fontSize: "0.88rem",
           }}
         >
-          + Nuova Scheda
+          {t("characters.sidebar.newSheet")}
         </button>
 
         <button
@@ -130,7 +132,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
             fontWeight: 500,
           }}
         >
-          ⚙️ Nuovo Sistema / Template
+          {t("characters.sidebar.newSystem")}
         </button>
       </div>
 
@@ -138,7 +140,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       <div style={{ position: "relative", marginBottom: "1.3rem" }}>
         <input
           type="text"
-          placeholder="Cerca personaggio…"
+          placeholder={t("characters.sidebar.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           style={{
@@ -159,7 +161,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       <div style={{ flex: 1, overflowY: "auto" }}>
         {filteredSheets.length === 0 ? (
           <div style={{ color: colors.textFaint, fontStyle: "italic", textAlign: "center", marginTop: "2rem", fontSize: "0.9rem" }}>
-            Nessuna scheda trovata.
+            {t("characters.sidebar.noResults")}
           </div>
         ) : (
           filteredSheets.map((sheet) => {
@@ -183,7 +185,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                   {sheet.name}
                 </div>
                 <div style={{ fontSize: "0.68rem", color: colors.goldBright, textTransform: "uppercase", marginTop: "2px" }}>
-                  {system?.name || "Sistema Sconosciuto"}
+                  {system?.name || t("characters.sidebar.unkownSystem")}
                 </div>
               </div>
             );

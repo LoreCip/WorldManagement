@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback } from "react";
 import { TimelineEventListItem } from "../../types/timeline";
 import { colors, fonts, radii } from "../theme/theme";
 import { Viewport } from "./TimelineCanvas";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TimelineMinimapProps {
   events: TimelineEventListItem[];
@@ -24,7 +25,9 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
   onJumpTo,
   onPanBy,
   onShowAll,
-}) => {
+}) => {  
+  const { t } = useLocalization();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(800);
   const isDraggingViewport = useRef(false);
@@ -152,7 +155,7 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
           pointerEvents: "none",
         }}
       >
-        {isWindowed ? "vista localizzata" : "panoramica completa"}
+        {isWindowed ? t("timeline.minimap.localView") : t("timeline.minimap.fullView")}
       </div>
 
       {isWindowed && (
@@ -175,7 +178,7 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
             fontFamily: fonts.body,
           }}
         >
-          mostra tutto
+          {t("timeline.minimap.showAll")}
         </button>
       )}
     </div>

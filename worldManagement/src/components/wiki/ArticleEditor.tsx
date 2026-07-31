@@ -5,7 +5,8 @@ import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { Article } from "../../types/wiki";
 import { TagInput } from "./TagInput";
-import { colors, fonts, radii, categories, getCategoryColor, getCategoryLabel, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii, categories, getCategoryColor, getCategoryLabel } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface ArticleEditorProps {
 	article: Article;
@@ -18,6 +19,7 @@ interface ArticleEditorProps {
 	onNavigateToCharacterSheet?: (sheetId: string) => void;
 	onNavigateToMap?: (mapId: string) => void;
 }
+
 
 const getCaretIndexFromPoint = (textarea: HTMLTextAreaElement, clientX: number, clientY: number): number => {
 	const rect = textarea.getBoundingClientRect();
@@ -79,6 +81,8 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 	onNavigateToCharacterSheet,
 	onNavigateToMap,
 }) => {
+
+	const { t } = useLocalization();
 	const [isDragging, setIsDragging] = useState(false);
 	const [linkedSheetId, setLinkedSheetId] = useState<string | null>(null);
 	const [linkedMapId, setLinkedMapId] = useState<string | null>(null);
@@ -226,8 +230,8 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 					fontSize: "1.05rem",
 				}}
 			>
-				<style>{fontImportTag}</style>
-				Seleziona una voce dalla barra laterale, oppure crea una nuova voce per iniziare.
+
+				{t("wiki.editor.mainHint")}
 			</main>
 		);
 	}
@@ -259,8 +263,6 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 				colorScheme: "dark",
 			}}
 		>
-			<style>{fontImportTag}</style>
-
 			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.1rem" }}>
 				{isEditing ? (
 					<div style={{ display: "flex", gap: "1rem", flex: 1, marginRight: "1rem" }}>
@@ -268,7 +270,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 							type="text"
 							value={article.title || ""}
 							onChange={(e) => onChange({ ...article, title: e.target.value })}
-							placeholder="Titolo della voce…"
+							placeholder={t("wiki.editor.titlePlaceholder")}
 							style={{
 								fontFamily: fonts.display,
 								fontSize: "1.7rem",
@@ -388,7 +390,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 										e.currentTarget.style.borderColor = `${colors.gold}59`;
 									}}
 								>
-									🗺️ Apri Mappa →
+									{t("wiki.editor.openMapButton")}
 								</button>
 							)}
 						</div>
@@ -404,13 +406,13 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 								onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
 								onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
 							>
-								Salva
+								{t("common.save")}
 							</button>
 
 							{article.id && (
 								<button
 									onClick={onDelete}
-									title="Elimina definitivamente questa voce"
+									title={t("wiki.editor.confirmDelete")}
 									style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
 									onMouseEnter={(e) => {
 										e.currentTarget.style.backgroundColor = colors.crimsonWash;
@@ -421,7 +423,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 										e.currentTarget.style.borderColor = `${colors.crimson}77`;
 									}}
 								>
-									Elimina
+									{t("common.delete")}
 								</button>
 							)}
 						</>
@@ -438,7 +440,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 								e.currentTarget.style.borderColor = `${colors.gold}77`;
 							}}
 						>
-							Modifica
+							{t("common.edit")}
 						</button>
 					)}
 				</div>
@@ -485,7 +487,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 								pointerEvents: "none",
 							}}
 						>
-							Rilascia l'immagine qui…
+							{t("common.dropImage")}
 						</div>
 					)}
 				</div>
@@ -529,7 +531,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 						components={{
 							img: ({ src, alt, ...props }) =>
 								!src ? (
-									<span style={{ color: colors.crimsonBright, fontStyle: "italic" }}>[Immagine non disponibile: {alt || "sconosciuta"}]</span>
+									<span style={{ color: colors.crimsonBright, fontStyle: "italic" }}>[{t("common.missingImage")}: {alt || "sconosciuta"}]</span>
 								) : (
 									<img
 										{...props}

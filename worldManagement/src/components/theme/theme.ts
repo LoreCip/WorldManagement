@@ -1,3 +1,12 @@
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/cormorant-garamond/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+
 export const colors = {
 	bgVoid: "#12141c",          // app shell background
 	bgPanel: "#181b26",         // sidebar / chrome
@@ -53,4 +62,3 @@ export function getCategoryLabel(category?: string): string {
 	return categories[category as CategoryKey]?.label ?? category ?? "Lore / Storia";
 }
 
-export const fontImportTag = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');`;

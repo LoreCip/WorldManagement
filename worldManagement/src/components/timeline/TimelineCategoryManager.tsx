@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TimelineCategory } from "../../types/timeline";
-import { colors, fonts, radii, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TimelineCategoryManagerProps {
   categories: TimelineCategory[];
@@ -16,7 +17,8 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
   onSave,
   onDelete,
   onClose,
-}) => {
+}) => {		
+  const { t } = useLocalization();
   const [draft, setDraft] = useState<TimelineCategory>(emptyCategory());
 
   const inputStyle: React.CSSProperties = {
@@ -44,7 +46,6 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
         display: "flex", alignItems: "center", justifyContent: "center", zIndex: 210,
       }}
     >
-      <style>{fontImportTag}</style>
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -53,7 +54,7 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
         }}
       >
         <h3 style={{ fontFamily: fonts.display, color: colors.textPrimary, margin: "0 0 1rem" }}>
-          Categorie della Timeline
+          {t("timeline.category.title")}
         </h3>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}>
@@ -74,13 +75,13 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
                 onClick={() => onDelete(cat.id)}
                 style={{ background: "none", border: "none", color: colors.crimson, cursor: "pointer", fontSize: "0.9rem" }}
               >
-                ×
+               {t("wiki.tag.delete")}
               </button>
             </div>
           ))}
           {categories.length === 0 && (
             <div style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.85rem" }}>
-              Nessuna categoria ancora.
+              {t("timeline.category.noCategory")}
             </div>
           )}
         </div>
@@ -97,7 +98,7 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
             style={{ width: "36px", height: "30px", border: "none", borderRadius: radii.sm, cursor: "pointer", background: "none" }}
           />
           <input
-            type="text" placeholder="Nome categoria…" value={draft.name}
+            type="text" placeholder={t("timeline.category.catNamePlaceholder")} value={draft.name}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
             style={{ ...inputStyle, flex: 1 }}
           />
@@ -108,7 +109,7 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
               border: "none", borderRadius: radii.sm, cursor: "pointer", fontFamily: fonts.body, fontWeight: 600, fontSize: "0.82rem",
             }}
           >
-            + Aggiungi
+            + {t("common.add")}
           </button>
         </div>
 
@@ -120,7 +121,7 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
               border: `1px solid ${colors.borderSubtle}`, borderRadius: radii.md, cursor: "pointer", fontFamily: fonts.body, fontSize: "0.82rem",
             }}
           >
-            Chiudi
+            {t("common.close")}
           </button>
         </div>
       </div>

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { TimelineEvent, TimePrecision, TimelineCategory } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
-import { colors, fonts, radii, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii } from "../theme/theme";
 import { SelectedAnchor } from "./TimelineCanvas";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface ArticleOption { id: string; title: string; }
 interface MapOption { id: string; title: string; }
@@ -38,6 +39,8 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
     onNavigateToArticle,
     onNavigateToMap,
 }) => {
+    const { t } = useLocalization();
+
     const [articles, setArticles] = useState<ArticleOption[]>([]);
     const [maps, setMaps] = useState<MapOption[]>([]);
     const timeInput = valueToTimeInput(event.time_value);
@@ -128,7 +131,6 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 zIndex: 80,
             }}
         >
-            <style>{fontImportTag}</style>
 
             {/* Freccina che punta al marker */}
             <div
@@ -146,13 +148,14 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
 
             <button
                 onClick={onClose}
-                title="Chiudi"
+                title={t("common.close")}
                 style={{
                     position: "absolute", top: "0.5rem", right: "0.5rem",
                     background: "none", border: "none", color: colors.textFaint,
                     cursor: "pointer", fontSize: "1rem", lineHeight: 1, padding: "0.2rem",
                 }}
             >
+                {/* Simbolo, non testo: non serve passare da t() */}
                 ×
             </button>
 
@@ -160,7 +163,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 <input
                     value={event.title}
                     onChange={(e) => onChange({ ...event, title: e.target.value })}
-                    placeholder="Titolo…"
+                    placeholder={t("timeline.balloon.titlePlaceholder")}
                     style={{ ...inputStyle, fontFamily: fonts.display, fontSize: "1rem", fontWeight: 600, marginBottom: "0.7rem", paddingRight: "1.5rem" }}
                 />
             ) : (
@@ -184,7 +187,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                                     border: `1px solid ${colors.gold}77`,
                                 }}
                             >
-                                {p === "year" ? "Anno" : p === "month" ? "Mese" : "Giorno"}
+                                {p === "year" ? t("timeline.balloon.year") : p === "month" ? t("timeline.balloon.month") : t("timeline.balloon.day")}
                             </button>
                         ))}
                     </div>
@@ -195,26 +198,26 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                         <input
                             type="number" value={timeInput.year}
                             onChange={(e) => updateTime({ year: parseInt(e.target.value || "0", 10) })}
-                            placeholder="Anno" style={{ ...inputStyle, flex: 1 }}
+                            placeholder={t("timeline.balloon.year")} style={{ ...inputStyle, flex: 1 }}
                         />
                         {event.precision !== "year" && (
                             <input
                                 type="number" min={1} max={12} value={timeInput.month ?? 1}
                                 onChange={(e) => updateTime({ month: clampInt(e.target.value, 1, 12) })}
-                                placeholder="Mese" style={{ ...inputStyle, flex: 1 }}
+                                placeholder={t("timeline.balloon.month")} style={{ ...inputStyle, flex: 1 }}
                             />
                         )}
                         {event.precision === "day" && (
                             <input
                                 type="number" min={1} max={30} value={timeInput.day ?? 1}
                                 onChange={(e) => updateTime({ day: clampInt(e.target.value, 1, 30) })}
-                                placeholder="Giorno" style={{ ...inputStyle, flex: 1 }}
+                                placeholder={t("timeline.balloon.day")} style={{ ...inputStyle, flex: 1 }}
                             />
                         )}
                     </div>
                 ) : (
                     <div style={{ color: colors.gold, fontFamily: fonts.display, fontSize: "0.92rem" }}>
-                        {formatDisplayTime(event)}
+                        {formatDisplayTime(event, t)}
                     </div>
                 )}
             </div>
@@ -224,11 +227,11 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 {isEditing ? (
                     <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.76rem", color: colors.textSecondary, cursor: "pointer" }}>
                         <input type="checkbox" checked={hasDuration} onChange={toggleDuration} />
-                        Ha una durata
+                        {t("timeline.balloon.hasDuration")}
                     </label>
                 ) : hasDuration ? (
                     <div style={{ color: colors.textSecondary, fontSize: "0.78rem" }}>
-                        Fino a {formatDisplayTime({ ...event, time_value: event.end_time_value! })}
+                        {t("timeline.balloon.until", { date: formatDisplayTime({ ...event, time_value: event.end_time_value! }, t) })}
                     </div>
                 ) : null}
 
@@ -237,21 +240,21 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                         <input
                             type="number" value={endTimeInput.year}
                             onChange={(e) => updateEndTime({ year: parseInt(e.target.value || "0", 10) })}
-                            placeholder="Anno fine" style={{ ...inputStyle, flex: 1 }}
+                            placeholder={t("timeline.balloon.endYearPlaceholder")} style={{ ...inputStyle, flex: 1 }}
                         />
                         {event.precision !== "year" && (
                             <input
                                 type="number" min={1} max={12} value={endTimeInput.month ?? 1}
                                 onChange={(e) => updateEndTime({ month: clampInt(e.target.value, 1, 12) })}
-                                placeholder="Mese fine" style={{ ...inputStyle, flex: 1 }}
+                                placeholder={t("timeline.balloon.endMonthPlaceholder")} style={{ ...inputStyle, flex: 1 }}
                             />
                         )}
                         {event.precision === "day" && (
                             <input
                                 type="number" min={1} max={30} value={endTimeInput.day ?? 1}
                                 onChange={(e) => updateEndTime({ day: clampInt(e.target.value, 1, 30) })}
-                                placeholder="Giorno fine" style={{ ...inputStyle, flex: 1 }}
-                            />
+                                placeholder={t("timeline.balloon.endDayPlaceholder")} style={{ ...inputStyle, flex: 1 }}
+                            />  
                         )}
                     </div>
                 )}
@@ -259,14 +262,14 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
 
             {/* Categoria */}
             <div style={{ marginBottom: "0.7rem" }}>
-                <label style={labelStyle}>Categoria</label>
+                <label style={labelStyle}>{t("timeline.balloon.cat")}</label>
                 {isEditing ? (
                     <select
                         value={event.category_id ?? ""}
                         onChange={(e) => onChange({ ...event, category_id: e.target.value || null })}
                         style={inputStyle}
                     >
-                        <option value="">— Nessuna —</option>
+                        <option value="">{t("timeline.balloon.noCatF")}</option>
                         {categories.map((c) => (
                             <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                         ))}
@@ -278,13 +281,13 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                         {linkedCategory.name}
                     </span>
                 ) : (
-                    <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>Nessuna</span>
+                    <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>{t("timeline.balloon.noCatF")}</span>
                 )}
             </div>
 
             {/* Descrizione */}
             <div style={{ marginBottom: "0.7rem" }}>
-                <label style={labelStyle}>Descrizione</label>
+                <label style={labelStyle}>{t("common.description")}</label>
                 {isEditing ? (
                     <textarea
                         value={event.description}
@@ -294,7 +297,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                     />
                 ) : (
                     <div style={{ color: colors.textPrimary, lineHeight: 1.5, fontSize: "0.84rem", whiteSpace: "pre-wrap" }}>
-                        {event.description || <span style={{ color: colors.textFaint, fontStyle: "italic" }}>Nessuna descrizione.</span>}
+                        {event.description || <span style={{ color: colors.textFaint, fontStyle: "italic" }}>{t("timeline.balloon.noDescr")}</span>}
                     </div>
                 )}
             </div>
@@ -302,14 +305,14 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
             {/* Collegamenti */}
             <div style={{ marginBottom: "0.9rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div>
-                    <label style={labelStyle}>Articolo</label>
+                    <label style={labelStyle}>{t("timeline.balloon.article")}</label>
                     {isEditing ? (
                         <select
                             value={event.article_id ?? ""}
                             onChange={(e) => onChange({ ...event, article_id: e.target.value || null })}
                             style={inputStyle}
                         >
-                            <option value="">— Nessuno —</option>
+                            <option value="">{t("timeline.balloon.noCatM")}</option>
                             {articles.map((a) => <option key={a.id} value={a.id}>{a.title}</option>)}
                         </select>
                     ) : linkedArticle ? (
@@ -323,19 +326,19 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                             📜 {linkedArticle.title} →
                         </button>
                     ) : (
-                        <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>Nessuno</span>
+                        <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>{t("timeline.balloon.noCatM")}</span>
                     )}
                 </div>
 
                 <div>
-                    <label style={labelStyle}>Mappa</label>
+                    <label style={labelStyle}>{t("timeline.balloon.map")}</label>
                     {isEditing ? (
                         <select
                             value={event.map_id ?? ""}
                             onChange={(e) => onChange({ ...event, map_id: e.target.value || null })}
                             style={inputStyle}
                         >
-                            <option value="">— Nessuna —</option>
+                            <option value="">{t("timeline.balloon.noCatF")}</option>
                             {maps.map((m) => <option key={m.id} value={m.id}>{m.title}</option>)}
                         </select>
                     ) : linkedMap ? (
@@ -349,7 +352,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                             🗺️ {linkedMap.title} →
                         </button>
                     ) : (
-                        <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>Nessuna</span>
+                        <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>{t("timeline.balloon.noCatF")}</span>
                     )}
                 </div>
             </div>
@@ -358,20 +361,20 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 {isEditing ? (
                     <>
                         <button onClick={onSave} style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}>
-                            Salva
+                            {t("common.save")}
                         </button>
                         {event.id && (
                             <button
                                 onClick={onDelete}
                                 style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
                             >
-                                Elimina
+                                {t("common.delete")}
                             </button>
                         )}
                     </>
                 ) : (
                     <button onClick={onEdit} style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}>
-                        Modifica
+                        {t("common.edit")}
                     </button>
                 )}
             </div>
@@ -384,9 +387,9 @@ function clampInt(value: string, min: number, max: number): number {
     return Math.min(max, Math.max(min, n));
 }
 
-function formatDisplayTime(event: TimelineEvent): string {
+function formatDisplayTime(event: TimelineEvent, t: (key: string, vars?: Record<string, string | number>) => string): string {
     const { year, month, day } = valueToTimeInput(event.time_value);
-    if (event.precision === "year") return `Anno ${year}`;
-    if (event.precision === "month") return `Mese ${month}, Anno ${year}`;
-    return `Giorno ${day}, Mese ${month}, Anno ${year}`;
+    if (event.precision === "year") return t("timeline.balloon.yearDisplay", { year });
+    if (event.precision === "month") return t("timeline.balloon.monthDisplay", { month: month ?? 1, year });
+    return t("timeline.balloon.dayDisplay", { day: day ?? 1, month: month ?? 1, year });
 }

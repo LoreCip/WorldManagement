@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { TimelineCategory, TimelineSavedView } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TimelineHeaderProps {
   onFitAll: () => void;
@@ -44,6 +45,8 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   todayValue,
   onSetToday,
 }) => {
+  const { t } = useLocalization();
+
   const [showFilters, setShowFilters] = useState(false);
   const [showViews, setShowViews] = useState(false);
   const [showTodayPicker, setShowTodayPicker] = useState(false);
@@ -107,12 +110,12 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     >
       <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
         <h2 style={{ fontFamily: fonts.display, fontSize: "1.2rem", fontWeight: 600, color: colors.textPrimary, margin: 0 }}>
-          Linea del Tempo
+          {t("timeline.header.title")}
         </h2>
 
         <input
           type="text"
-          placeholder="Cerca eventi…"
+          placeholder={t("timeline.header.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           style={{
@@ -132,14 +135,14 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
       <div style={{ display: "flex", gap: "0.5rem", position: "relative", flexWrap: "wrap" }}>
         <button style={btn} onClick={onZoomOut}>−</button>
         <button style={btn} onClick={onZoomIn}>+</button>
-        <button style={btn} onClick={onFitAll}>Adatta tutto</button>
+        <button style={btn} onClick={onFitAll}>{t("timeline.header.autoFit")}</button>
 
         <div style={{ position: "relative" }}>
           <button
             style={{ ...btn, backgroundColor: activeCategoryIds ? `${colors.gold}22` : "transparent" }}
             onClick={() => { setShowFilters((s) => !s); setShowViews(false); setShowTodayPicker(false); }}
           >
-            Filtri {activeCategoryIds ? `(${activeCategoryIds.size})` : ""}
+            {t("timeline.header.filters")} + {activeCategoryIds ? ` (${activeCategoryIds.size})` : ""}
           </button>
           {showFilters && (
             <div style={dropdown}>
@@ -165,43 +168,43 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                   onClick={onClearCategoryFilters}
                   style={{ ...btn, padding: "0.25rem 0.5rem", fontSize: "0.72rem" }}
                 >
-                  Rimuovi filtri
+                  {t("timeline.header.clearFilters")}
                 </button>
                 <button
                   onClick={() => { onOpenCategoryManager(); setShowFilters(false); }}
                   style={{ ...btn, padding: "0.25rem 0.5rem", fontSize: "0.72rem" }}
                 >
-                  Gestisci…
+                  {t("timeline.header.manage")}
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        <button style={btn} onClick={onOpenEraManager}>Ere</button>
+        <button style={btn} onClick={onOpenEraManager}>{t("timeline.header.eras")}</button>
 
         <div style={{ position: "relative" }}>
           <button
             style={{ ...btn, backgroundColor: todayValue != null ? `${colors.crimsonBright}22` : "transparent" }}
             onClick={openTodayPicker}
           >
-            Oggi
+            {t("timeline.header.today")}
           </button>
           {showTodayPicker && (
             <div style={dropdown}>
               <div style={{ display: "flex", gap: "0.4rem" }}>
                 <input
-                  type="number" value={todayInput.year} placeholder="Anno"
+                  type="number" value={todayInput.year} placeholder={t("timeline.balloon.year")}
                   onChange={(e) => setTodayInput({ ...todayInput, year: parseInt(e.target.value || "0", 10) })}
                   style={{ ...smallInput, width: "70px" }}
                 />
                 <input
-                  type="number" value={todayInput.month} min={1} max={12} placeholder="Mese"
+                  type="number" value={todayInput.month} min={1} max={12} placeholder={t("timeline.balloon.month")}
                   onChange={(e) => setTodayInput({ ...todayInput, month: parseInt(e.target.value || "1", 10) })}
                   style={{ ...smallInput, width: "55px" }}
                 />
                 <input
-                  type="number" value={todayInput.day} min={1} max={30} placeholder="Giorno"
+                  type="number" value={todayInput.day} min={1} max={30} placeholder={t("timeline.balloon.day")}
                   onChange={(e) => setTodayInput({ ...todayInput, day: parseInt(e.target.value || "1", 10) })}
                   style={{ ...smallInput, width: "55px" }}
                 />
@@ -211,13 +214,13 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                   onClick={() => { onSetToday(null); setShowTodayPicker(false); }}
                   style={{ ...btn, padding: "0.25rem 0.5rem", fontSize: "0.72rem", color: colors.textFaint, borderColor: colors.borderSubtle }}
                 >
-                  Rimuovi
+                  {t("common.delete")}
                 </button>
                 <button
                   onClick={() => { onSetToday(timeInputToValue(todayInput)); setShowTodayPicker(false); }}
                   style={{ ...btn, padding: "0.25rem 0.5rem", fontSize: "0.72rem" }}
                 >
-                  Imposta
+                  {t("common.save")}
                 </button>
               </div>
             </div>
@@ -226,7 +229,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 
         <div style={{ position: "relative" }}>
           <button style={btn} onClick={() => { setShowViews((s) => !s); setShowFilters(false); setShowTodayPicker(false); }}>
-            Viste salvate
+            {t("timeline.header.savedViews")}
           </button>
           {showViews && (
             <div style={dropdown}>
@@ -257,7 +260,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 onClick={() => { handleSaveView(); setShowViews(false); }}
                 style={{ ...btn, marginTop: "0.4rem", padding: "0.3rem 0.5rem", fontSize: "0.75rem" }}
               >
-                + Salva vista corrente
+                {t("timeline.header.saveView")}
               </button>
             </div>
           )}
@@ -267,7 +270,7 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           style={{ ...btn, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}
           onClick={onNewEvent}
         >
-          + Nuovo evento
+          {t("timeline.header.newEvent")}
         </button>
       </div>
     </div>

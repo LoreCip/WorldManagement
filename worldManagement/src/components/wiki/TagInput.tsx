@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TagInputProps {
     tags: string[];
@@ -13,7 +14,8 @@ export const TagInput: React.FC<TagInputProps> = ({
     isEditing,
     onAddTag,
     onRemoveTag,
-}) => {
+}) => {    
+    const { t } = useLocalization();
     const [input, setInput] = useState("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -72,7 +74,7 @@ export const TagInput: React.FC<TagInputProps> = ({
                                 e.currentTarget.style.color = colors.goldBright;
                             }}
                         >
-                            ×
+                            {t("wiki.tag.delete")}
                         </button>
                     )}
                 </span>
@@ -81,7 +83,7 @@ export const TagInput: React.FC<TagInputProps> = ({
             {isEditing && (
                 <input
                     type="text"
-                    placeholder="Aggiungi tag e premi Invio…"
+                    placeholder={t("wiki.tag.placeholder")}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}

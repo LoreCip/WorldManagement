@@ -1,21 +1,26 @@
 import React, { useMemo } from "react";
 import { useSettings } from "../context/SettingsContext";
-import { settingsRegistry } from "../types/settingsRegistry";
+import { useSettingsRegistry, SettingDefinition } from "../types/settingsRegistry";
 import { SettingsField } from "../components/settings/SettingsField";
-import { colors, fonts, fontImportTag } from "../components/theme/theme";
+import { colors, fonts } from "../components/theme/theme";
+import { useLocalization } from "../context/LocalizationContext";
 
 export const SettingsView: React.FC = () => {
+  const { t } = useLocalization();
   const { isLoaded, getSetting, setSetting } = useSettings();
+  
+  // Otteniamo il registro localizzato in tempo reale
+  const settingsRegistry = useSettingsRegistry();
 
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof settingsRegistry>();
+    const map = new Map<string, SettingDefinition[]>();
     for (const def of settingsRegistry) {
       const list = map.get(def.category) ?? [];
       list.push(def);
       map.set(def.category, list);
     }
     return Array.from(map.entries());
-  }, []);
+  }, [settingsRegistry]); // Ricalcola il raggruppamento ad ogni cambio lingua
 
   if (!isLoaded) {
     return (
@@ -27,13 +32,12 @@ export const SettingsView: React.FC = () => {
 
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "2.5rem 3rem", backgroundColor: colors.bgVoid }}>
-      <style>{fontImportTag}</style>
 
       <h1 style={{ fontFamily: fonts.display, fontSize: "1.6rem", color: colors.textPrimary, margin: "0 0 0.3rem" }}>
-        Impostazioni
+        {t("settings.title")}
       </h1>
       <p style={{ color: colors.textFaint, fontSize: "0.85rem", margin: "0 0 2rem" }}>
-        Preferenze generali dell'applicazione, valide per tutta l'ambientazione.
+        {t("settings.subtitle")}
       </p>
 
       <div style={{ maxWidth: "680px" }}>

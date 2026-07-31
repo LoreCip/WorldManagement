@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { MapItem } from "../../types/map";
 import { buildMapHierarchy, flattenMapHierarchy } from "../../utils/mapHierarchy";
-import { colors, fonts, radii, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface MapSidebarProps {
     maps: MapItem[];
@@ -16,6 +17,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
     onSelectMap,
     onNewMap,
 }) => {
+    const { t } = useLocalization();
     const [searchQuery, setSearchQuery] = useState("");
 
     const flatHierarchy = useMemo(() => {
@@ -44,7 +46,6 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 height: "100%",
             }}
         >
-            <style>{fontImportTag}</style>
 
             {/* Header / Brand Mark */}
             <div style={{ marginBottom: "1.6rem" }}>
@@ -68,7 +69,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                             margin: 0,
                         }}
                     >
-                        Cartografia
+                        {t("maps.sidebar.title")}
                     </h1>
                 </div>
                 <div
@@ -81,7 +82,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                         marginLeft: "1.8rem",
                     }}
                 >
-                    Atlante dell'ambientazione
+                    {t("maps.sidebar.subtitle")}
                 </div>
                 <div
                     style={{
@@ -112,7 +113,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
             >
-                + Nuova mappa
+                + {t("maps.addMap.newMap")}
             </button>
 
             {/* Input di ricerca nello stesso stile della Wiki */}
@@ -132,7 +133,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 </svg>
                 <input
                     type="text"
-                    placeholder="Cerca un territorio o mappa…"
+                    placeholder={t("maps.sidebar.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
@@ -167,7 +168,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                             marginTop: "2rem",
                         }}
                     >
-                        Nessuna mappa corrisponde alla ricerca.
+                        {t("maps.sidebar.noResults")}
                     </div>
                 ) : (
                     filteredHierarchy.map(({ map, level }) => {
@@ -216,7 +217,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {level === 0 ? "Mappa Principale" : `Sotto-mappa liv. ${level}`}
+                                    {level === 0 ? t("maps.sidebar.mainMap") : t("maps.sidebar.subMap") + ` ${level}`}
                                 </div>
                             </div>
                         );

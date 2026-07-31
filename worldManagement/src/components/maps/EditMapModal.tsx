@@ -6,6 +6,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 
 import { colors, fonts, radii } from "../theme/theme";
 import { MapItem } from "../../types/map";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface EditMapModalProps {
     isOpen: boolean;
@@ -21,7 +22,9 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
     existingMaps,
     onClose,
     onMapUpdated,
-}) => {
+}) => {    
+    const { t } = useLocalization();
+
     const [title, setTitle] = useState(currentMap.title);
     const [newFilePath, setNewFilePath] = useState<string>("");
     const [parentMapId, setParentMapId] = useState<string>(currentMap.parent_map_id || "");
@@ -133,14 +136,14 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                 }}
             >
                 <h3 style={{ fontFamily: fonts.display, margin: "0 0 1.2rem", color: colors.gold, fontSize: "1.4rem" }}>
-                    ⚙️ Modifica Dettagli Mappa
+                    {t("maps.editMap.modDetails")}
                 </h3>
 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {/* Titolo Mappa */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            Titolo Mappa *
+                            {t("maps.addMap.mapTitle")}
                         </label>
                         <input
                             type="text"
@@ -163,13 +166,13 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* CAMBIO IMMAGINE */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            File Immagine Mappa
+                            {t("maps.addMap.mapChangeFile")}
                         </label>
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                             <input
                                 type="text"
                                 readOnly
-                                value={newImageName ? `Nuova: ${newImageName}` : `Attuale: ${currentImageName}`}
+                                value={newImageName ? `${t("common.newF")}: ${newImageName}` : `${t("common.current")}: ${currentImageName}`}
                                 style={{
                                     flex: 1,
                                     padding: "0.6rem",
@@ -202,7 +205,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* Articolo Wiki Correlato */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            Articolo Wiki Correlato
+                            {t("maps.editMap.linkedWiki")}
                         </label>
                         <select
                             value={associatedArticleId}
@@ -217,7 +220,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 fontSize: "0.9rem",
                             }}
                         >
-                            <option value="">-- Nessun articolo collegato --</option>
+                            <option value="">{t("maps.editMap.noLinkWiki")}</option>
                             {articles.map((art) => (
                                 <option key={art.id} value={art.id}>
                                     📖 {art.title}
@@ -229,7 +232,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* Mappa Padre */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            Mappa Padre
+                            {t("maps.editMap.parentMap")}
                         </label>
                         <select
                             value={parentMapId}
@@ -244,7 +247,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 fontSize: "0.9rem",
                             }}
                         >
-                            <option value="">-- Nessuna (Mappa di Livello Superiore) --</option>
+                            <option value="">{t("maps.editMap.noParent")}</option>
                             {existingMaps
                                 .filter((m) => m.id !== currentMap.id)
                                 .map((m) => (
@@ -269,7 +272,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 cursor: "pointer",
                             }}
                         >
-                            Annulla
+                            {t("common.cancel")}
                         </button>
                         <button
                             type="submit"
@@ -284,7 +287,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 cursor: isLoading ? "wait" : "pointer",
                             }}
                         >
-                            {isLoading ? "Salvataggio..." : "Salva Modifiche"}
+                            {isLoading ? t("common.saving") : t("common.save")}
                         </button>
                     </div>
                 </form>

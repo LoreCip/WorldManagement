@@ -1,6 +1,7 @@
 import React from "react";
 import { ArticleItem } from "../../types/wiki";
-import { colors, fonts, radii, getCategoryColor, getCategoryLabel, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii, getCategoryColor, getCategoryLabel } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface SidebarProps {
     articles: ArticleItem[];
@@ -18,7 +19,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     onSearch,
     onSelectArticle,
     onNewArticle,
-}) => {
+}) => {	
+    const { t } = useLocalization();
+
     return (
         <aside
             style={{
@@ -32,7 +35,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 fontFamily: fonts.body,
             }}
         >
-            <style>{fontImportTag}</style>
 
             {/* Mark */}
             <div style={{ marginBottom: "1.6rem" }}>
@@ -69,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         marginLeft: "1.8rem",
                     }}
                 >
-                    Cronache dell'ambientazione
+                    {t("wiki.sidebar.subtitle")}
                 </div>
                 <div
                     style={{
@@ -99,7 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
             >
-                + Nuova voce
+                {t("wiki.sidebar.newWiki")}
             </button>
 
             <div style={{ position: "relative", marginBottom: "1.3rem" }}>
@@ -118,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </svg>
                 <input
                     type="text"
-                    placeholder="Cerca nell'ambientazione…"
+                    placeholder={t("wiki.sidebar.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => onSearch(e.target.value)}
                     style={{
@@ -152,7 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             marginTop: "2rem",
                         }}
                     >
-                        Nessuna voce corrisponde alla ricerca.
+                        {t("wiki.sidebar.noResults")}
                     </div>
                 ) : (
                     articles.map((item) => {
@@ -210,7 +212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                         WebkitBoxOrient: "vertical",
                                         overflow: "hidden",
                                     }}
-                                    dangerouslySetInnerHTML={{ __html: item.snippet || "Nessun contenuto…" }}
+                                    dangerouslySetInnerHTML={{ __html: item.snippet || t("wiki.sidebar.noSnippet") }}
                                 />
                             </div>
                         );

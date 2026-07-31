@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { TimelineEra } from "../../types/timeline";
 import { timeInputToValue } from "../../utils/timeConversion";
-import { colors, fonts, radii, fontImportTag } from "../theme/theme";
+import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TimelineEraManagerProps {
   eras: TimelineEra[];
@@ -23,6 +24,7 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
   onDelete,
   onClose,
 }) => {
+  const { t } = useLocalization();
   const [draft, setDraft] = useState(emptyEra());
 
   const inputStyle: React.CSSProperties = {
@@ -56,7 +58,6 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
         display: "flex", alignItems: "center", justifyContent: "center", zIndex: 210,
       }}
     >
-      <style>{fontImportTag}</style>
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -65,10 +66,10 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
         }}
       >
         <h3 style={{ fontFamily: fonts.display, color: colors.textPrimary, margin: "0 0 0.4rem" }}>
-          Ere / Fasce Storiche
+          {t("timeline.eras.title")}
         </h3>
         <p style={{ color: colors.textFaint, fontSize: "0.78rem", margin: "0 0 1rem" }}>
-          Bande di sfondo colorate per dare contesto a periodi ampi della cronologia (es. "Epoca d'Oro", "Guerra dei Cento Anni").
+          {t("timeline.eras.subtitle")}
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}>
@@ -88,13 +89,13 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
                 onClick={() => onDelete(era.id)}
                 style={{ background: "none", border: "none", color: colors.crimson, cursor: "pointer", fontSize: "0.9rem" }}
               >
-                ×
+                {t("wiki.tag.delete")}
               </button>
             </div>
           ))}
           {eras.length === 0 && (
             <div style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.85rem" }}>
-              Nessuna era ancora.
+              {t("timeline.eras.noEra")}
             </div>
           )}
         </div>
@@ -106,19 +107,19 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
             style={{ width: "36px", height: "30px", border: "none", borderRadius: radii.sm, cursor: "pointer", background: "none" }}
           />
           <input
-            type="text" placeholder="Nome era…" value={draft.label}
+            type="text" placeholder={t("timeline.eras.namePlaceholder")} value={draft.label}
             onChange={(e) => setDraft({ ...draft, label: e.target.value })}
             style={{ ...inputStyle, flex: 1 }}
           />
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}>
           <input
-            type="number" placeholder="Anno inizio" value={draft.startYear}
+            type="number" placeholder={t("timeline.eras.startDatePlaceholder")} value={draft.startYear}
             onChange={(e) => setDraft({ ...draft, startYear: parseInt(e.target.value || "0", 10) })}
             style={{ ...inputStyle, flex: 1 }}
           />
           <input
-            type="number" placeholder="Anno fine" value={draft.endYear}
+            type="number" placeholder={t("timeline.eras.endDatePlaceholder")} value={draft.endYear}
             onChange={(e) => setDraft({ ...draft, endYear: parseInt(e.target.value || "0", 10) })}
             style={{ ...inputStyle, flex: 1 }}
           />
@@ -129,7 +130,7 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
               border: "none", borderRadius: radii.sm, cursor: "pointer", fontFamily: fonts.body, fontWeight: 600, fontSize: "0.82rem",
             }}
           >
-            + Aggiungi
+            + {t("common.add")}
           </button>
         </div>
 
@@ -141,7 +142,7 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
               border: `1px solid ${colors.borderSubtle}`, borderRadius: radii.md, cursor: "pointer", fontFamily: fonts.body, fontSize: "0.82rem",
             }}
           >
-            Chiudi
+            {t("common.close")}
           </button>
         </div>
       </div>

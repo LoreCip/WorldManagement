@@ -1,0 +1,316 @@
+{
+    "common": {
+        "confirm": "Confirm",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "description": "Description",
+        "save": "Save",
+        "saving": "Saving...",
+        "dropImage": "Drop image here…",
+        "missingImage": "Image unavailable",
+        "example": "e.g. ",
+        "browse": "Browse...",
+        "optional": "Optional",
+        "newF": "New",
+        "newM": "New",
+        "current": "Current",
+        "back": "Back",
+        "lore": "Lore",
+        "add": "Add",
+        "close": "Close",
+        "export": "Export PDF"
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "General application preferences, valid across the entire setting.",
+        "categories": {
+            "general": "General",
+            "wiki": "Wiki",
+            "timeline": "Timeline",
+            "maps": "Maps",
+            "characters": "Characters",
+            "localization": "Localization"
+        },
+        "registry": {
+            "confirm_before_delete": {
+                "label": "Confirm before deleting",
+                "description": "Always show a confirmation prompt before deleting articles, maps, events, or sheets."
+            },
+            "default_wiki_category": {
+                "label": "Default category for new Wiki entries",
+                "options": {
+                    "Lore": "Lore",
+                    "Personaggi": "Characters",
+                    "Luoghi": "Locations",
+                    "Generale": "General"
+                }
+            },
+            "general_search_case_sensitive": {
+                "label": "Case-sensitive search"
+            },
+            "general_search_fuzzy": {
+                "label": "Fuzzy search",
+                "description": "Find results with partial matches or minor typos instead of exact matches only."
+            },
+            "general_search_include_content": {
+                "label": "Include content in search",
+                "description": "If disabled, search will only check article titles."
+            },
+            "timeline_default_precision": {
+                "label": "Default precision for new events",
+                "description": "The temporal level of detail suggested when creating a new event on the timeline.",
+                "options": {
+                    "year": "Year",
+                    "month": "Month",
+                    "day": "Day"
+                }
+            },
+            "timeline_days_per_month": {
+                "label": "Days per month",
+                "description": "Conventional length of a month in your calendar, used to calculate timeline dates."
+            },
+            "timeline_days_per_year": {
+                "label": "Days per year",
+                "description": "Conventional length of a year in your calendar."
+            },
+            "timeline_start_year": {
+                "label": "Campaign start year",
+                "description": "The earliest representable year on the timeline."
+            },
+            "timeline_end_year": {
+                "label": "Campaign end year",
+                "description": "The latest representable year on the timeline."
+            },
+            "timeline_category_default_icon": {
+                "label": "Default icon for new categories"
+            },
+            "timeline_category_default_color": {
+                "label": "Default color for new categories"
+            },
+            "maps_default_width": {
+                "label": "Default width for new maps (px)"
+            },
+            "maps_default_height": {
+                "label": "Default height for new maps (px)"
+            },
+            "maps_portal_default_label": {
+                "label": "Default label for new portals"
+            },
+            "maps_portal_snap_to_grid": {
+                "label": "Snap portals to grid",
+                "description": "Automatically align portals to the grid when placing them on a map."
+            },
+            "maps_portal_grid_size": {
+                "label": "Portal grid size (px)"
+            },
+            "characters_default_sheet_variant": {
+                "label": "Default sheet variant",
+                "options": {
+                    "pg": "Player Character (PC)",
+                    "png": "Non-Player Character (NPC)"
+                }
+            },
+            "characters_default_markdown_template": {
+                "label": "Default Markdown template for new sheets"
+            },
+            "localization_language": {
+                "label": "Language",
+                "options": {
+                    "it": "Italian",
+                    "en": "English"
+                }
+            }
+        }
+    },
+    "hub": {
+        "eyebrow": "Your world setting",
+        "title": "Your World",
+        "subtitle": "choose a chapter to explore",
+        "settingsTooltip": "Settings",
+        "wikiTitle": "Wiki & Lore",
+        "wikiDescription": "Lore entries, locations, factions",
+        "wikiCount": "entries",
+        "mapsTitle": "World Maps",
+        "mapsDescription": "Geography, regions, portals",
+        "mapsCount": "maps",
+        "charactersTitle": "Characters",
+        "charactersDescription": "PC and NPC sheets",
+        "charactersCount": "sheets",
+        "timelineTitle": "Timeline",
+        "timelineDescription": "Events, eras, and epochs",
+        "timelineCount": "events",
+        "relationsTitle": "Relationships & Family Trees",
+        "relationsBadge": "coming soon"
+    },
+    "wiki": {
+        "editor": {
+            "newArticle": "New article",
+            "searchPlaceholder": "Search...",
+            "mainHint": "Select an entry from the sidebar, or create a new entry to get started.",
+            "titlePlaceholder": "Entry title...",
+            "openMapButton": "🗺️ Open Map →",
+            "confirmDelete": "Permanently delete this entry"
+        },
+        "sidebar": {
+            "subtitle": "World Chronicles",
+            "newWiki": "+ New entry",
+            "searchPlaceholder": "Search the world...",
+            "noResults": "No entries match your search.",
+            "noSnippet": "No content..."
+        },
+        "tag": {
+            "delete": "×",
+            "placeholder": "Add tag and press Enter…"
+        }
+    },
+    "characters": {
+        "hook": {
+            "hint": "Select a sheet from the sidebar or create a new one.",
+            "characterWiki": "Character Wiki:",
+            "noLink": "-- No link --",
+            "go": "Go to entry →",
+            "loadingShort": "Loading PDF...",
+            "loading": "Loading system PDF..."
+        },
+        "sidebar": {
+            "title": "Characters",
+            "subtitle": "Sheets & Game Systems",
+            "activeSystem": "⚔️ Active Game Engine",
+            "selectSystem": "-- Select an engine --",
+            "sysNotSelected": "Select an engine before creating characters.",
+            "newSheet": "+ New Sheet",
+            "newSystem": "⚙️ New System / Template",
+            "searchPlaceholder": "Search character…",
+            "noResults": "No sheets found.",
+            "unkownSystem": "Unknown system"
+        },
+        "sheetModal": {
+            "newCharacter": "New Character",
+            "activeGame": "Active game engine:",
+            "charName": "Character Name",
+            "createSheet": "Create Sheet"
+        },
+        "systemModal": {
+            "markdownTemplate": "# {{name}}\n\nCharacter sheet for ",
+            "pc": "PC",
+            "npc": "NPC",
+            "loadError": "Error loading PDF: ",
+            "nameError": "Please enter a valid name for the game system.",
+            "pgError": "You must upload at least one fillable PDF for the PC sheet.",
+            "modifySystem": "Edit Game System",
+            "newSystem": "New Game System",
+            "gameName": "Game Name",
+            "pdfPg": "PC Fillable PDF (Player Character)",
+            "pdfPng": "NPC Fillable PDF (Non-Player Character)",
+            "noLoadedPdf": "No PDF uploaded",
+            "saveSystem": "Save System"
+        }
+    },
+    "maps": {
+        "map": "MAP",
+        "dropImage": "📂 Drop image here to add a new map",
+        "noMapSelected": "No map selected",
+        "selectMap": "Select a map from the sidebar, drag an image onto the canvas, or create a new map.",
+        "newmap": "+ New Map",
+        "addMap": {
+            "newMap": "New Map",
+            "mapTitle": "Map Title",
+            "mapNamePlaceholder": "Continent of Eldoria, Dragon's Tavern...",
+            "imageFile": "Image File",
+            "imageFilePlaceholder": "No file selected",
+            "parentMap": "Parent Map (Optional)",
+            "parentMapPlaceholder": "-- None (Top-Level Map) --",
+            "associatedArticle": "Related Wiki Article (Optional)",
+            "associatedArticlePlaceholder": "-- No linked Wiki article --",
+            "saveMap": "Save Map"
+        },
+        "editMap": {
+            "modDetails": "⚙️ Edit Map Details",
+            "mapTitle": "Map Title",
+            "mapChangeFile": "Map Image File",
+            "linkedWiki": "Related Wiki Article",
+            "noLinkWiki": "-- No linked article --",
+            "parentMap": "Parent Map",
+            "noParent": "-- None (Top-Level Map) --"
+        },
+        "canvas": {
+            "portalDefault": "Portal"
+        },
+        "header": {
+            "changeMap": "Edit map"
+        },
+        "sidebar": {
+            "title": "Cartography",
+            "subtitle": "World Atlas",
+            "searchPlaceholder": "Search a territory or map…",
+            "noResults": "No maps match your search.",
+            "mainMap": "Main Map",
+            "subMap": "Sub-map lvl."
+        },
+        "portal": {
+            "addPortal": "Add connecting portal",
+            "newPortal": "+ Portal",
+            "destination": "Destination...",
+            "label": "Label..."
+        }
+    },
+    "timeline": {
+        "canvas": {
+            "today": "TODAY",
+            "closeEvents": "{{count}} close events",
+            "footnote": "Scroll wheel to zoom · drag to pan · click on the line to add an event"
+        },
+        "category": {
+            "title": "Timeline Categories",
+            "noCategory": "No categories yet.",
+            "catNamePlaceholder": "Category name..."
+        },
+        "eras": {
+            "title": "Eras / Historical Eras",
+            "subtitle": "Colored background bands to provide context for broad periods in chronology (e.g. Golden Age, Hundred Years' War)",
+            "noEra": "No eras yet.",
+            "namePlaceholder": "Era name...",
+            "startDatePlaceholder": "Start year",
+            "endDatePlaceholder": "End year"
+        },
+        "balloon": {
+            "titlePlaceholder": "Title…",
+            "year": "Year",
+            "month": "Month",
+            "day": "Day",
+            "hasDuration": "Has a duration",
+            "until": "Until {{date}}",
+            "endYearPlaceholder": "End year",
+            "endMonthPlaceholder": "End month",
+            "endDayPlaceholder": "End day",
+            "cat": "Category",
+            "noCatF": "— None —",
+            "noCatM": "— None —",
+            "noDescr": "No description.",
+            "article": "Article",
+            "map": "Map",
+            "yearDisplay": "Year {{year}}",
+            "monthDisplay": "Month {{month}}, Year {{year}}",
+            "dayDisplay": "Day {{day}}, Month {{month}}, Year {{year}}"
+        },
+        "header": {
+            "title": "Timeline",
+            "searchPlaceholder": "Search events…",
+            "autoFit": "Fit all",
+            "filters": "Filters",
+            "clearFilters": "Clear filters",
+            "manage": "Manage…",
+            "eras": "Eras",
+            "today": "Today",
+            "savedViews": "Saved views",
+            "saveView": "+ Save current view",
+            "newEvent": "+ New event"
+        },
+        "minimap": {
+            "localView": "local view",
+            "fullView": "full overview",
+            "showAll": "show all"
+        }
+    }
+}

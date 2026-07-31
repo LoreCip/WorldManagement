@@ -8,6 +8,7 @@ interface SettingsFieldProps {
   onChange: (value: any) => void;
 }
 
+
 export const SettingsField: React.FC<SettingsFieldProps> = ({ definition, value, onChange }) => {
   const inputStyle: React.CSSProperties = {
     padding: "0.45rem 0.6rem",
@@ -63,6 +64,24 @@ export const SettingsField: React.FC<SettingsFieldProps> = ({ definition, value,
             value={value}
             onChange={(e) => onChange(e.target.value)}
             style={inputStyle}
+          />
+        );
+
+      case "color":
+        return (
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            style={{
+              width: "48px",
+              height: "32px",
+              padding: "2px",
+              border: `1px solid ${colors.borderSubtle}`,
+              borderRadius: radii.sm,
+              cursor: "pointer",
+              backgroundColor: colors.bgManuscript,
+            }}
           />
         );
     }

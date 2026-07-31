@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface NewSheetModalProps {
 	isOpen: boolean;
@@ -9,6 +10,7 @@ interface NewSheetModalProps {
 }
 
 export const NewSheetModal: React.FC<NewSheetModalProps> = ({ isOpen, systemName, onClose, onCreate }) => {
+	const { t } = useLocalization();
 	const [name, setName] = useState("");
 
 	// Reset del campo ogni volta che il modal viene riaperto
@@ -44,17 +46,17 @@ export const NewSheetModal: React.FC<NewSheetModalProps> = ({ isOpen, systemName
 				}}
 			>
 				<h2 style={{ fontFamily: fonts.display, color: colors.gold, marginTop: 0 }}>
-					Nuovo Personaggio
+					{t("characters.sheetModal.newCharacter")}
 				</h2>
 
 				{systemName && (
 					<div style={{ fontSize: "0.8rem", color: colors.textFaint, marginBottom: "1.2rem" }}>
-						Motore di gioco attivo: <span style={{ color: colors.gold }}>{systemName}</span>
+						{t("characters.sheetModal.activeGame")} <span style={{ color: colors.gold }}>{systemName}</span>
 					</div>
 				)}
 
 				<label style={{ display: "block", marginBottom: "0.4rem", fontSize: "0.85rem", color: colors.textSecondary }}>
-					Nome del Personaggio
+					{t("characters.sheetModal.charName")}
 				</label>
 				<input
 					type="text"
@@ -62,7 +64,7 @@ export const NewSheetModal: React.FC<NewSheetModalProps> = ({ isOpen, systemName
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 					onKeyDown={handleKeyDown}
-					placeholder="es. Elyndra Nightshade"
+					placeholder={t("common.example") + "Elyndra Nightshade"}
 					style={{
 						width: "100%", padding: "0.6rem 0.7rem", backgroundColor: colors.bgVoid,
 						color: "#fff", border: `1px solid ${colors.border}`, borderRadius: radii.sm,
@@ -75,7 +77,7 @@ export const NewSheetModal: React.FC<NewSheetModalProps> = ({ isOpen, systemName
 						onClick={onClose}
 						style={{ padding: "0.5rem 1rem", background: "transparent", color: colors.textPrimary, border: `1px solid ${colors.border}`, borderRadius: radii.sm, cursor: "pointer" }}
 					>
-						Annulla
+						{t("common.cancel")}
 					</button>
 					<button
 						onClick={handleCreate}
@@ -87,7 +89,7 @@ export const NewSheetModal: React.FC<NewSheetModalProps> = ({ isOpen, systemName
 							opacity: name.trim() ? 1 : 0.5,
 						}}
 					>
-						Crea Scheda
+						{t("characters.sheetModal.createSheet")}
 					</button>
 				</div>
 			</div>

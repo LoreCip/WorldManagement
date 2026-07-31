@@ -10,6 +10,7 @@ import React, {
 import { TimelineEventListItem, TimelineEra } from "../../types/timeline";
 import { computeNiceTicks, formatTimeValue, formatDuration } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface TimelineCanvasProps {
 	events: TimelineEventListItem[];
@@ -144,6 +145,8 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 		},
 		ref
 	) => {
+		const { t } = useLocalization();
+
 		const containerRef = useRef<HTMLDivElement>(null);
 		const [width, setWidth] = useState(800);
 		const [height, setHeight] = useState(500);
@@ -480,7 +483,7 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 								<line x1={x} y1={0} x2={x} y2={height} stroke={colors.crimsonBright} strokeWidth={1.5} strokeDasharray="5 4" opacity={0.75} />
 								<rect x={x - 24} y={height - 22} width={48} height={18} rx={4} fill={colors.crimsonBright} opacity={0.9} />
 								<text x={x} y={height - 9} fill={colors.bgVoid} fontSize={10} fontWeight={700} fontFamily={fonts.body} textAnchor="middle">
-									OGGI
+									{t("timeline.canvas.today")}
 								</text>
 							</g>
 						);
@@ -627,7 +630,7 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 									</text>
 									<TextChip
 										x={cluster.x + 16} y={markerY + 4}
-										text={`${cluster.items.length} eventi ravvicinati`}
+										text={t("timeline.canvas.closeEvents", {count: cluster.items.length})}
 										color={colors.textSecondary} fontWeight={500} anchor="start"
 									/>
 								</g>
@@ -770,7 +773,7 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 						pointerEvents: "none",
 					}}
 				>
-					Rotella per zoomare · trascina per scorrere · clic sulla linea per aggiungere un evento
+					{t("timeline.canvas.footnote")}
 				</div>
 			</div>
 		);

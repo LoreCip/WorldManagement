@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { GameSystem, SaveGameSystemPayload } from "../../types/character";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface SystemModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export const SystemModal: React.FC<SystemModalProps> = ({
   onClose,
   onSave,
 }) => {
+  const { t } = useLocalization();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [pdfPgFile, setPdfPgFile] = useState<string>("");
@@ -44,7 +47,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
         setDescription("");
         setPdfPgFile("");
         setPdfPngFile("");
-        setMarkdownTemplate("# {{name}}\n\nScheda personaggio per " + name);
+        setMarkdownTemplate(t("characters.systemModal.markdownTemplate") + name);
       }
     }
   }, [isOpen, systemToEdit]);
@@ -71,7 +74,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
         if (variant === "pg") setPdfPgFile(uploadedFilename);
         else setPdfPngFile(uploadedFilename);
       } catch (err) {
-        alert(`Errore nel caricamento del PDF: ${err}`);
+        alert(`${t("characters.systemModal.loadError")} ${err}`);
       }
     };
 
@@ -80,11 +83,11 @@ export const SystemModal: React.FC<SystemModalProps> = ({
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      alert("Inserisci un nome valido per il sistema di gioco.");
+      alert(t("characters.systemModal.nameError"));
       return;
     }
     if (!pdfPgFile) {
-      alert("Devi caricare almeno un PDF compilabile per la scheda PG.");
+      alert(t("characters.systemModal.pgError"));
       return;
     }
 
@@ -126,23 +129,23 @@ export const SystemModal: React.FC<SystemModalProps> = ({
 
       <div style={{ backgroundColor: colors.bgPanel, padding: "1.8rem", borderRadius: radii.lg, border: `1px solid ${colors.border}`, width: "500px", color: colors.textPrimary, fontFamily: fonts.body }}>
         <h2 style={{ fontFamily: fonts.display, color: colors.gold, marginTop: 0 }}>
-          {systemToEdit ? "Modifica Sistema di Gioco" : "Nuovo Sistema di Gioco"}
+          {systemToEdit ? t("characters.systemModal.modifySystem") : t("characters.systemModal.newSystem")}
         </h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
           <div>
-            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>Nome del Gioco</label>
+            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.gameName")}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="es. Fabula Ultima, Cyberpunk RED..."
+              placeholder={t("common.example") + "Fabula Ultima, Cyberpunk RED..."}
               style={{ width: "100%", padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: "#fff", borderRadius: radii.sm }}
             />
           </div>
 
           <div>
-            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>Descrizione</label>
+            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("common.description")}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -152,21 +155,21 @@ export const SystemModal: React.FC<SystemModalProps> = ({
           </div>
 
           <div>
-            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>PDF Compilabile PG (Personaggio Giocante)</label>
+            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.pdfPg")}</label>
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              <input type="text" readOnly value={pdfPgFile} placeholder="Nessun PDF caricato" style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
+              <input type="text" readOnly value={pdfPgFile} placeholder={t("characters.systemModal.noLoadedPdf")} style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
               <button onClick={() => pgFileInputRef.current?.click()} style={{ padding: "0.5rem 0.8rem", backgroundColor: colors.gold, color: colors.bgVoid, border: "none", borderRadius: radii.sm, cursor: "pointer", fontWeight: 600 }}>
-                Sfoglia...
+                {t("common.browse")}
               </button>
             </div>
           </div>
 
           <div>
-            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>PDF Compilabile PNG (Opzionale)</label>
+            <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.pdfPng")}</label>
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              <input type="text" readOnly value={pdfPngFile} placeholder="Opzionale" style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
+              <input type="text" readOnly value={pdfPngFile} placeholder={t("common.optional")} style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
               <button onClick={() => pngFileInputRef.current?.click()} style={{ padding: "0.5rem 0.8rem", backgroundColor: "transparent", border: `1px solid ${colors.gold}`, color: colors.gold, borderRadius: radii.sm, cursor: "pointer" }}>
-                Sfoglia...
+                {t("common.browse")}
               </button>
             </div>
           </div>
@@ -174,10 +177,10 @@ export const SystemModal: React.FC<SystemModalProps> = ({
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
           <button onClick={onClose} style={{ padding: "0.5rem 1rem", background: "transparent", color: colors.textPrimary, border: `1px solid ${colors.border}`, borderRadius: radii.sm, cursor: "pointer" }}>
-            Annulla
+            {t("common.cancel")}
           </button>
           <button onClick={handleSubmit} style={{ padding: "0.5rem 1rem", backgroundColor: colors.gold, color: colors.bgVoid, border: "none", borderRadius: radii.sm, fontWeight: 600, cursor: "pointer" }}>
-            Salva Sistema
+            {t("characters.systemModal.saveSystem")}
           </button>
         </div>
       </div>

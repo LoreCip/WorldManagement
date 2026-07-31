@@ -1,6 +1,7 @@
 import React from "react";
 import { MapMeta } from "../../types/map";
 import { colors, fonts, radii } from "../theme/theme";
+import { useLocalization } from "../../context/LocalizationContext";
 
 interface MapHeaderProps {
     map: MapMeta;
@@ -20,7 +21,9 @@ export const MapHeader: React.FC<MapHeaderProps> = ({
     onDelete,
     onOpenArticle,
     onEdit,
-}) => {
+}) => {    
+    const { t } = useLocalization();
+
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", flexWrap: "wrap", minWidth: 0 }}>
             {hasHistory && (
@@ -43,7 +46,7 @@ export const MapHeader: React.FC<MapHeaderProps> = ({
                         flexShrink: 0,
                     }}
                 >
-                    ← <span className="hide-on-small">Indietro</span>
+                    ← <span className="hide-on-small">{t("common.back")}</span>
                 </button>
             )}
 
@@ -79,7 +82,7 @@ export const MapHeader: React.FC<MapHeaderProps> = ({
                         flexShrink: 0,
                     }}
                 >
-                    MAPPA
+                    {t("maps.map")}
                 </span>
             </div>
 
@@ -103,13 +106,13 @@ export const MapHeader: React.FC<MapHeaderProps> = ({
                             fontWeight: 500,
                         }}
                     >
-                        📖 <span className="hide-on-small">Lore</span>
+                        📖 <span className="hide-on-small">{t("common.lore")}</span>
                     </button>
                 )}
 
                 <button
                     onClick={onEdit}
-                    title="Modifica mappa"
+                    title={t("maps.header.changeMap")}
                     style={{
                         padding: "0.4rem 0.65rem",
                         borderRadius: radii.md,
@@ -121,7 +124,7 @@ export const MapHeader: React.FC<MapHeaderProps> = ({
                         fontFamily: fonts.body,
                     }}
                 >
-                    ✏️ <span className="hide-on-small">Modifica</span>
+                    ✏️ <span className="hide-on-small">{t("common.edit")}</span>
                 </button>
 
                 {/* Mostra il pulsante Elimina solo se ci sono più mappe attive nel sistema */}
