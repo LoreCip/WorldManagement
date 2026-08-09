@@ -3,7 +3,7 @@ name: "Release App"
 on:
   push:
     tags:
-      - 'v*' # Si attiva quando crei un tag tipo v1.0.0
+      - 'v*'
 
 jobs:
   publish-tauri:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          npm install # o pnpm install / yarn install
+          pnpm install
 
       # Azione ufficiale di Tauri che compila e crea la Release su GitHub
       - uses: tauri-apps/tauri-action@v0
