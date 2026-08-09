@@ -1,6 +1,6 @@
+use rusqlite::Connection;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use rusqlite::Connection;
 
 pub struct DbState(pub Mutex<Connection>);
 

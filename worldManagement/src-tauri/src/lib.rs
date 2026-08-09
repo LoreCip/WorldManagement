@@ -10,10 +10,10 @@ use services::{AppPaths, DbState};
 use std::sync::Mutex;
 use tauri::Manager;
 
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
@@ -32,7 +32,8 @@ pub fn run() {
             // Copia PDF di default se assente
             let target_pdf = templates_dir.join("DnD_5E_pg.pdf");
             if !target_pdf.exists() {
-                const DEFAULT_PDF_BYTES: &[u8] = include_bytes!("../../sheetTemplates/DnD_5E_pg.pdf");
+                const DEFAULT_PDF_BYTES: &[u8] =
+                    include_bytes!("../../sheetTemplates/DnD_5E_pg.pdf");
                 let _ = std::fs::write(&target_pdf, DEFAULT_PDF_BYTES);
             }
 
@@ -43,7 +44,11 @@ pub fn run() {
             init_database(&conn).expect("Errore inizializzazione DB");
             ensure_default_game_systems_exist(&conn).ok(); // <-- Corretto: 1 solo argomento!
 
-            app.manage(AppPaths { media_dir, templates_dir, sheets_dir }); // <-- Corretto: incluso sheets_dir!
+            app.manage(AppPaths {
+                media_dir,
+                templates_dir,
+                sheets_dir,
+            }); // <-- Corretto: incluso sheets_dir!
             app.manage(DbState(Mutex::new(conn)));
 
             Ok(())

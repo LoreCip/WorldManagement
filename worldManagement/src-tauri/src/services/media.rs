@@ -1,9 +1,9 @@
+use crate::services::state::AppPaths;
+use regex::Regex;
+use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
-use regex::Regex;
-use sha2::{Digest, Sha256};
-use crate::services::state::AppPaths;
 
 pub fn save_image(paths: &AppPaths, file_path: &str) -> Result<String, String> {
     let src_path = Path::new(file_path);
@@ -30,5 +30,7 @@ pub fn save_image(paths: &AppPaths, file_path: &str) -> Result<String, String> {
 
 pub fn extract_image_filenames(content: &str) -> HashSet<String> {
     let re = Regex::new(r"[0-9a-fA-F]{64}\.(?:png|jpg|jpeg|webp|gif)").unwrap();
-    re.find_iter(content).map(|m| m.as_str().to_string()).collect()
+    re.find_iter(content)
+        .map(|m| m.as_str().to_string())
+        .collect()
 }

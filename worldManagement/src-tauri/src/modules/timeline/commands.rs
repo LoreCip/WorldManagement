@@ -1,8 +1,8 @@
-use tauri::State;
-use uuid::Uuid;
+use crate::modules::timeline::models::*;
 use crate::services::DbState;
 use crate::utils::ResultExt;
-use crate::modules::timeline::models::*;
+use tauri::State;
+use uuid::Uuid;
 
 // ---------- Eventi ----------
 
@@ -49,7 +49,7 @@ pub fn get_all_timeline_events(
                     e.article_id, e.map_id, c.name, c.color, c.icon
              FROM timeline_events e
              LEFT JOIN timeline_categories c ON c.id = e.category_id
-             ORDER BY e.time_value ASC"
+             ORDER BY e.time_value ASC",
         )
         .map_str()?;
 
@@ -108,12 +108,10 @@ pub fn get_timeline_event_by_id(
 }
 
 #[tauri::command]
-pub fn delete_timeline_event(
-    state: State<'_, DbState>,
-    id: String,
-) -> Result<(), String> {
+pub fn delete_timeline_event(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM timeline_events WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM timeline_events WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
 
@@ -131,7 +129,7 @@ pub fn get_timeline_events_by_article(
              FROM timeline_events e
              LEFT JOIN timeline_categories c ON c.id = e.category_id
              WHERE e.article_id = ?1
-             ORDER BY e.time_value ASC"
+             ORDER BY e.time_value ASC",
         )
         .map_str()?;
 
@@ -174,7 +172,7 @@ pub fn get_timeline_events_by_map(
              FROM timeline_events e
              LEFT JOIN timeline_categories c ON c.id = e.category_id
              WHERE e.map_id = ?1
-             ORDER BY e.time_value ASC"
+             ORDER BY e.time_value ASC",
         )
         .map_str()?;
 
@@ -248,14 +246,16 @@ pub fn save_timeline_category(
 }
 
 #[tauri::command]
-pub fn delete_timeline_category(
-    state: State<'_, DbState>,
-    id: String,
-) -> Result<(), String> {
+pub fn delete_timeline_category(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
     // Sgancia gli eventi collegati invece di lasciarli orfani/rompere l'integrità
-    conn.execute("UPDATE timeline_events SET category_id = NULL WHERE category_id = ?1", [&id]).map_str()?;
-    conn.execute("DELETE FROM timeline_categories WHERE id = ?1", [&id]).map_str()?;
+    conn.execute(
+        "UPDATE timeline_events SET category_id = NULL WHERE category_id = ?1",
+        [&id],
+    )
+    .map_str()?;
+    conn.execute("DELETE FROM timeline_categories WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
 
@@ -304,15 +304,12 @@ pub fn save_timeline_view(
 }
 
 #[tauri::command]
-pub fn delete_timeline_view(
-    state: State<'_, DbState>,
-    id: String,
-) -> Result<(), String> {
+pub fn delete_timeline_view(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM timeline_views WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM timeline_views WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
-
 
 // ---------- Impostazioni campagna (marcatore "oggi") ----------
 
@@ -322,8 +319,13 @@ pub fn get_campaign_settings(state: State<'_, DbState>) -> Result<CampaignSettin
     conn.query_row(
         "SELECT current_date_value FROM campaign_settings WHERE id = 1",
         [],
-        |row| Ok(CampaignSettings { current_date_value: row.get(0)? }),
-    ).map_str()
+        |row| {
+            Ok(CampaignSettings {
+                current_date_value: row.get(0)?,
+            })
+        },
+    )
+    .map_str()
 }
 
 #[tauri::command]
@@ -335,7 +337,8 @@ pub fn save_campaign_settings(
     conn.execute(
         "UPDATE campaign_settings SET current_date_value = ?1 WHERE id = 1",
         [&current_date_value],
-    ).map_str()?;
+    )
+    .map_str()?;
     Ok(())
 }
 
@@ -387,6 +390,7 @@ pub fn save_timeline_era(
 #[tauri::command]
 pub fn delete_timeline_era(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM timeline_eras WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM timeline_eras WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }

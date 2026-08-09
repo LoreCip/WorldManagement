@@ -31,7 +31,10 @@ const NODE_COLUMNS: &str = "id, type, character_id, wiki_article_id, display_nam
 pub fn get_all_graph_nodes(state: State<'_, DbState>) -> Result<Vec<GraphNodeData>, String> {
     let conn = state.0.lock().map_str()?;
     let mut stmt = conn
-        .prepare(&format!("SELECT {} FROM graph_nodes ORDER BY display_name ASC", NODE_COLUMNS))
+        .prepare(&format!(
+            "SELECT {} FROM graph_nodes ORDER BY display_name ASC",
+            NODE_COLUMNS
+        ))
         .map_str()?;
 
     let list = stmt
@@ -44,7 +47,10 @@ pub fn get_all_graph_nodes(state: State<'_, DbState>) -> Result<Vec<GraphNodeDat
 }
 
 #[tauri::command]
-pub fn save_graph_node(state: State<'_, DbState>, mut node: GraphNodeData) -> Result<String, String> {
+pub fn save_graph_node(
+    state: State<'_, DbState>,
+    mut node: GraphNodeData,
+) -> Result<String, String> {
     let conn = state.0.lock().map_str()?;
 
     if node.id.trim().is_empty() {
@@ -88,7 +94,8 @@ pub fn save_graph_node(state: State<'_, DbState>, mut node: GraphNodeData) -> Re
 pub fn delete_graph_node(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
     // Gli archi collegati vengono rimossi automaticamente (ON DELETE CASCADE).
-    conn.execute("DELETE FROM graph_nodes WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM graph_nodes WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
 
@@ -104,14 +111,19 @@ pub fn promote_node_to_character(
     let tx = conn.transaction().map_str()?;
 
     let display_name: String = tx
-        .query_row("SELECT display_name FROM graph_nodes WHERE id = ?1", [&node_id], |r| r.get(0))
+        .query_row(
+            "SELECT display_name FROM graph_nodes WHERE id = ?1",
+            [&node_id],
+            |r| r.get(0),
+        )
         .map_str()?;
 
     let sheet_id = Uuid::new_v4().to_string();
     tx.execute(
         "INSERT INTO character_sheets (id, system_id, name, data_json) VALUES (?1, ?2, ?3, '{}')",
         (&sheet_id, &system_id, &display_name),
-    ).map_str()?;
+    )
+    .map_str()?;
 
     tx.execute(
         "UPDATE graph_nodes SET type = 'character', character_id = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2",
@@ -146,7 +158,9 @@ const EDGE_COLUMNS: &str = "id, source_node_id, target_node_id, type, label, is_
 #[tauri::command]
 pub fn get_all_graph_edges(state: State<'_, DbState>) -> Result<Vec<GraphEdgeData>, String> {
     let conn = state.0.lock().map_str()?;
-    let mut stmt = conn.prepare(&format!("SELECT {} FROM graph_edges", EDGE_COLUMNS)).map_str()?;
+    let mut stmt = conn
+        .prepare(&format!("SELECT {} FROM graph_edges", EDGE_COLUMNS))
+        .map_str()?;
 
     let list = stmt
         .query_map([], row_to_edge)
@@ -158,7 +172,10 @@ pub fn get_all_graph_edges(state: State<'_, DbState>) -> Result<Vec<GraphEdgeDat
 }
 
 #[tauri::command]
-pub fn save_graph_edge(state: State<'_, DbState>, mut edge: GraphEdgeData) -> Result<String, String> {
+pub fn save_graph_edge(
+    state: State<'_, DbState>,
+    mut edge: GraphEdgeData,
+) -> Result<String, String> {
     let conn = state.0.lock().map_str()?;
 
     if edge.id.trim().is_empty() {
@@ -196,7 +213,8 @@ pub fn save_graph_edge(state: State<'_, DbState>, mut edge: GraphEdgeData) -> Re
 #[tauri::command]
 pub fn delete_graph_edge(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM graph_edges WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM graph_edges WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
 
@@ -229,7 +247,10 @@ const VIEW_COLUMNS: &str =
 pub fn get_all_graph_views(state: State<'_, DbState>) -> Result<Vec<GraphView>, String> {
     let conn = state.0.lock().map_str()?;
     let mut stmt = conn
-        .prepare(&format!("SELECT {} FROM graph_views ORDER BY title ASC", VIEW_COLUMNS))
+        .prepare(&format!(
+            "SELECT {} FROM graph_views ORDER BY title ASC",
+            VIEW_COLUMNS
+        ))
         .map_str()?;
 
     let list = stmt
@@ -248,7 +269,8 @@ pub fn get_graph_view_by_id(state: State<'_, DbState>, id: String) -> Result<Gra
         &format!("SELECT {} FROM graph_views WHERE id = ?1", VIEW_COLUMNS),
         [&id],
         row_to_view,
-    ).map_str()
+    )
+    .map_str()
 }
 
 #[tauri::command]
@@ -295,7 +317,8 @@ pub fn save_graph_view(state: State<'_, DbState>, mut view: GraphView) -> Result
 #[tauri::command]
 pub fn delete_graph_view(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM graph_views WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM graph_views WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }
 
@@ -313,7 +336,8 @@ pub fn update_graph_view_positions(
     conn.execute(
         "UPDATE graph_views SET positions = ?1, updated_at = CURRENT_TIMESTAMP WHERE id = ?2",
         (&positions_json, &id),
-    ).map_str()?;
+    )
+    .map_str()?;
 
     Ok(())
 }

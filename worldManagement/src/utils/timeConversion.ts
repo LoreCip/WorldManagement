@@ -32,8 +32,8 @@ export function valueToTimeInput(value: number): TimeInput {
 export function formatTimeValue(value: number, precision: TimePrecision): string {
   const { year, month, day } = valueToTimeInput(value);
   if (precision === "year") return `Anno ${year}`;
-  if (precision === "month") return `${monthName(month)}, Anno ${year}`;
-  return `${day} ${monthName(month)}, Anno ${year}`;
+  if (precision === "month") return `${monthName(month ?? 1)}, Anno ${year}`;
+  return `${day} ${monthName(month ?? 1)}, Anno ${year}`;
 }
 
 // --- Nice ticks ---
@@ -78,8 +78,8 @@ export function computeNiceTicks(
 
 function tickLabel(value: number, step: number): string {
   const { year, month, day } = valueToTimeInput(value);
-  if (step < DAYS_PER_MONTH) return `${day} ${monthName(month)} ${year}`;
-  if (step < DAYS_PER_YEAR) return `${monthName(month)} ${year}`;
+  if (step < DAYS_PER_MONTH) return `${day} ${monthName(month ?? 1)} ${year}`;
+  if (step < DAYS_PER_YEAR) return `${monthName(month ?? 1)} ${year}`;
   if (step < DAYS_PER_YEAR * 1000) return `${year}`;
   return `${Math.round(year / 1000)} mila`;
 }

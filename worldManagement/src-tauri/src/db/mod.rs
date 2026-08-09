@@ -215,7 +215,9 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
     Ok(())
 }
 
-pub fn ensure_graph_nodes_linked_view_column_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
+pub fn ensure_graph_nodes_linked_view_column_exists(
+    conn: &Connection,
+) -> Result<(), rusqlite::Error> {
     let mut stmt = conn.prepare("PRAGMA table_info(graph_nodes)")?;
     let column_exists = stmt
         .query_map([], |row| row.get::<_, String>(1))?
@@ -283,7 +285,10 @@ pub fn ensure_timeline_category_column_exists(conn: &Connection) -> Result<(), r
         .any(|col_name| col_name == "category_id");
 
     if !column_exists {
-        conn.execute("ALTER TABLE timeline_events ADD COLUMN category_id TEXT", [])?;
+        conn.execute(
+            "ALTER TABLE timeline_events ADD COLUMN category_id TEXT",
+            [],
+        )?;
     }
 
     Ok(())
@@ -292,7 +297,9 @@ pub fn ensure_timeline_category_column_exists(conn: &Connection) -> Result<(), r
 /// Categorie predefinite alla prima creazione del DB (l'utente può rinominarle,
 /// cambiarne colore/icona o eliminarle liberamente).
 pub fn ensure_default_timeline_categories_exist(conn: &Connection) -> Result<(), rusqlite::Error> {
-    let count: i64 = conn.query_row("SELECT COUNT(*) FROM timeline_categories", [], |row| row.get(0))?;
+    let count: i64 = conn.query_row("SELECT COUNT(*) FROM timeline_categories", [], |row| {
+        row.get(0)
+    })?;
 
     if count == 0 {
         let defaults = [
@@ -328,12 +335,22 @@ pub fn is_image_referenced(conn: &Connection, filename: &str) -> bool {
     count > 0
 }
 
-pub fn delete_image_if_unused(conn: &Connection, media_dir: &std::path::Path, path_or_filename: &str) {
-    if let Some(filename) = std::path::Path::new(path_or_filename).file_name().map(|f| f.to_string_lossy()) {
+pub fn delete_image_if_unused(
+    conn: &Connection,
+    media_dir: &std::path::Path,
+    path_or_filename: &str,
+) {
+    if let Some(filename) = std::path::Path::new(path_or_filename)
+        .file_name()
+        .map(|f| f.to_string_lossy())
+    {
         if !is_image_referenced(conn, &filename) {
             let file_path = media_dir.join(filename.as_ref());
             if let Err(e) = std::fs::remove_file(&file_path) {
-                eprintln!("Attenzione: impossibile eliminare il file {}: {}", filename, e);
+                eprintln!(
+                    "Attenzione: impossibile eliminare il file {}: {}",
+                    filename, e
+                );
             }
         }
     }
@@ -363,7 +380,8 @@ pub fn ensure_default_game_systems_exist(conn: &Connection) -> Result<(), rusqli
         let schema_json = serde_json::json!({
             "pdf_template": "DnD_5E_pg.pdf",
             "fields": []
-        }).to_string();
+        })
+        .to_string();
 
         let markdown_template = "# {{name}}\n\nScheda Personaggio D&D 5e compilabile in PDF.";
 

@@ -1,9 +1,9 @@
-use uuid::Uuid;
-use tauri::State;
-use crate::services::{DbState, AppPaths, save_image};
+use super::models::{MapMeta, MapPortal, MapWithPortals};
 use crate::db::delete_image_if_unused;
+use crate::services::{save_image, AppPaths, DbState};
 use crate::utils::ResultExt;
-use super::models::{MapPortal, MapWithPortals, MapMeta};
+use tauri::State;
+use uuid::Uuid;
 
 #[tauri::command]
 pub fn delete_map(
@@ -24,10 +24,13 @@ pub fn delete_map(
 
     // 2. Recupera l'immagine ed elimina il record
     let image_path: Option<String> = conn
-        .query_row("SELECT image_path FROM maps WHERE id = ?1", [&id], |row| row.get(0))
+        .query_row("SELECT image_path FROM maps WHERE id = ?1", [&id], |row| {
+            row.get(0)
+        })
         .ok();
 
-    conn.execute("DELETE FROM maps WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM maps WHERE id = ?1", [&id])
+        .map_str()?;
 
     // 3. Cancella l'immagine se non è usata altrove
     if let Some(path) = image_path {
@@ -52,7 +55,9 @@ pub fn update_map(
     let conn = state.0.lock().map_str()?;
 
     let old_image_path: Option<String> = conn
-        .query_row("SELECT image_path FROM maps WHERE id = ?1", [&id], |row| row.get(0))
+        .query_row("SELECT image_path FROM maps WHERE id = ?1", [&id], |row| {
+            row.get(0)
+        })
         .ok();
 
     let stored_path = match &image_path {
@@ -69,8 +74,17 @@ pub fn update_map(
              width = COALESCE(?5, width), 
              height = COALESCE(?6, height) 
          WHERE id = ?7",
-        (&title, &stored_path, &parent_map_id, &article_id, &width, &height, &id),
-    ).map_str()?;
+        (
+            &title,
+            &stored_path,
+            &parent_map_id,
+            &article_id,
+            &width,
+            &height,
+            &id,
+        ),
+    )
+    .map_str()?;
 
     if let (Some(old_path), Some(new_path)) = (old_image_path, stored_path) {
         if old_path != new_path {
@@ -99,8 +113,17 @@ pub fn save_map(
     conn.execute(
         "INSERT INTO maps (id, title, image_path, parent_map_id, article_id, width, height)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        (&id, &title, &stored_path, &parent_map_id, &article_id, &width, &height),
-    ).map_str()?;
+        (
+            &id,
+            &title,
+            &stored_path,
+            &parent_map_id,
+            &article_id,
+            &width,
+            &height,
+        ),
+    )
+    .map_str()?;
 
     Ok(id)
 }
@@ -199,6 +222,7 @@ pub fn add_portal(
 #[tauri::command]
 pub fn delete_portal(state: State<'_, DbState>, id: String) -> Result<(), String> {
     let conn = state.0.lock().map_str()?;
-    conn.execute("DELETE FROM map_portals WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM map_portals WHERE id = ?1", [&id])
+        .map_str()?;
     Ok(())
 }

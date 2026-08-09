@@ -1,25 +1,17 @@
+use crate::db::delete_image_if_unused;
+use crate::modules::wiki::models::{Article, ArticleMeta, SearchResultItem};
+use crate::services::{extract_image_filenames, AppPaths, DbState};
+use crate::utils::ResultExt;
 use tauri::State;
 use uuid::Uuid;
-use crate::services::{DbState, AppPaths, extract_image_filenames};
-use crate::db::delete_image_if_unused;
-use crate::utils::ResultExt;
-use crate::modules::wiki::models::{Article, ArticleMeta, SearchResultItem};
-
 
 #[tauri::command]
-pub fn save_image(
-    paths: State<'_, AppPaths>,
-    file_path: String,
-) -> Result<String, String> {
+pub fn save_image(paths: State<'_, AppPaths>, file_path: String) -> Result<String, String> {
     crate::services::save_image(&paths, &file_path)
 }
 
-
 #[tauri::command]
-pub fn save_article(
-    state: State<'_, DbState>,
-    mut article: Article,
-) -> Result<String, String> {
+pub fn save_article(state: State<'_, DbState>, mut article: Article) -> Result<String, String> {
     let mut conn = state.0.lock().map_str()?;
 
     if article.meta.id.trim().is_empty() {
@@ -37,13 +29,20 @@ pub fn save_article(
             &article.content,
             &article.meta.category,
         ),
-    ).map_str()?;
+    )
+    .map_str()?;
 
-    tx.execute("DELETE FROM article_tags WHERE article_id = ?1", [&article.meta.id]).map_str()?;
+    tx.execute(
+        "DELETE FROM article_tags WHERE article_id = ?1",
+        [&article.meta.id],
+    )
+    .map_str()?;
 
     for tag_name in &article.tags {
         let tag_name_clean = tag_name.trim().to_lowercase();
-        if tag_name_clean.is_empty() { continue; }
+        if tag_name_clean.is_empty() {
+            continue;
+        }
 
         let tag_id = Uuid::new_v4().to_string();
 
@@ -56,7 +55,8 @@ pub fn save_article(
             "INSERT OR IGNORE INTO article_tags (article_id, tag_id) 
              SELECT ?1, id FROM tags WHERE name = ?2",
             (&article.meta.id, &tag_name_clean),
-        ).map_str()?;
+        )
+        .map_str()?;
     }
 
     tx.commit().map_str()?;
@@ -95,7 +95,7 @@ pub fn search_wiki(
     query: String,
 ) -> Result<Vec<SearchResultItem>, String> {
     let conn = state.0.lock().map_str()?;
-    
+
     let mut stmt = conn.prepare(
         "SELECT a.id, a.title, a.category, snippet(wiki_fts, 1, '<mark>', '</mark>', '...', 15) as snippet
          FROM wiki_fts f
@@ -128,20 +128,22 @@ pub fn search_wiki(
 pub fn get_article_by_id(state: State<'_, DbState>, id: String) -> Result<Article, String> {
     let conn = state.0.lock().map_str()?;
 
-    let meta_and_content = conn.query_row(
-        "SELECT id, title, content, category FROM wiki_articles WHERE id = ?1",
-        [&id],
-        |row| {
-            Ok((
-                ArticleMeta {
-                    id: row.get(0)?,
-                    title: row.get(1)?,
-                    category: row.get(3)?,
-                },
-                row.get::<_, String>(2)?,
-            ))
-        },
-    ).map_str()?;
+    let meta_and_content = conn
+        .query_row(
+            "SELECT id, title, content, category FROM wiki_articles WHERE id = ?1",
+            [&id],
+            |row| {
+                Ok((
+                    ArticleMeta {
+                        id: row.get(0)?,
+                        title: row.get(1)?,
+                        category: row.get(3)?,
+                    },
+                    row.get::<_, String>(2)?,
+                ))
+            },
+        )
+        .map_str()?;
 
     let mut tag_stmt = conn
         .prepare("SELECT t.name FROM tags t JOIN article_tags at ON t.id = at.tag_id WHERE at.article_id = ?1")
@@ -169,10 +171,15 @@ pub fn delete_article(
     let conn = state.0.lock().map_str()?;
 
     let content: Option<String> = conn
-        .query_row("SELECT content FROM wiki_articles WHERE id = ?1", [&id], |row| row.get(0))
+        .query_row(
+            "SELECT content FROM wiki_articles WHERE id = ?1",
+            [&id],
+            |row| row.get(0),
+        )
         .ok();
 
-    conn.execute("DELETE FROM wiki_articles WHERE id = ?1", [&id]).map_str()?;
+    conn.execute("DELETE FROM wiki_articles WHERE id = ?1", [&id])
+        .map_str()?;
 
     if let Some(content) = content {
         for filename in extract_image_filenames(&content) {

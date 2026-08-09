@@ -12,7 +12,9 @@ use uuid::Uuid;
 /// Risolve il path del PDF compilato salvato per una scheda+variante.
 /// Ordine di ricerca: "<id>_<variant>.pdf" -> (solo se variant == "pg") "<id>.pdf" legacy -> None.
 fn resolve_saved_pdf_path(paths: &AppPaths, sheet_id: &str, variant: &str) -> Option<PathBuf> {
-    let variant_path = paths.sheets_dir.join(format!("{}_{}.pdf", sheet_id, variant));
+    let variant_path = paths
+        .sheets_dir
+        .join(format!("{}_{}.pdf", sheet_id, variant));
     if variant_path.exists() {
         return Some(variant_path);
     }
@@ -72,7 +74,9 @@ pub fn save_character_pdf(
             .map_err(|e| format!("Impossibile creare la cartella savedSheets: {}", e))?;
     }
 
-    let file_path = paths.sheets_dir.join(format!("{}_{}.pdf", sheet_id, variant));
+    let file_path = paths
+        .sheets_dir
+        .join(format!("{}_{}.pdf", sheet_id, variant));
     fs::write(&file_path, pdf_bytes)
         .map_err(|e| format!("Impossibile salvare il PDF in locale: {}", e))?;
 
@@ -93,7 +97,10 @@ pub fn export_character_pdf(
     };
 
     if !source_path.exists() {
-        return Err(format!("File sorgente PDF non trovato in '{:?}'", source_path));
+        return Err(format!(
+            "File sorgente PDF non trovato in '{:?}'",
+            source_path
+        ));
     }
 
     fs::copy(&source_path, &output_path)
@@ -152,31 +159,40 @@ pub fn save_game_system(
 
     // 1. Controllo duplicati sul nome (case-insensitive)
     let duplicate_count: i64 = match &payload.id {
-        Some(existing_id) => conn.query_row(
-            "SELECT COUNT(*) FROM game_systems WHERE LOWER(name) = LOWER(?1) AND id != ?2",
-            [name_trimmed, existing_id],
-            |row| row.get(0),
-        ).unwrap_or(0),
-        None => conn.query_row(
-            "SELECT COUNT(*) FROM game_systems WHERE LOWER(name) = LOWER(?1)",
-            [name_trimmed],
-            |row| row.get(0),
-        ).unwrap_or(0),
+        Some(existing_id) => conn
+            .query_row(
+                "SELECT COUNT(*) FROM game_systems WHERE LOWER(name) = LOWER(?1) AND id != ?2",
+                [name_trimmed, existing_id],
+                |row| row.get(0),
+            )
+            .unwrap_or(0),
+        None => conn
+            .query_row(
+                "SELECT COUNT(*) FROM game_systems WHERE LOWER(name) = LOWER(?1)",
+                [name_trimmed],
+                |row| row.get(0),
+            )
+            .unwrap_or(0),
     };
 
     if duplicate_count > 0 {
-        return Err(format!("Un sistema di gioco chiamato '{}' esiste già.", name_trimmed));
+        return Err(format!(
+            "Un sistema di gioco chiamato '{}' esiste già.",
+            name_trimmed
+        ));
     }
 
     // 2. Inserimento o Modifica
     match payload.id {
         Some(id) => {
             // Controlla se si sta cercando di modificare un sistema predefinito protetto
-            let is_builtin: i32 = conn.query_row(
-                "SELECT is_builtin FROM game_systems WHERE id = ?1",
-                [&id],
-                |row| row.get(0),
-            ).map_err(|_| "Sistema non trovato.".to_string())?;
+            let is_builtin: i32 = conn
+                .query_row(
+                    "SELECT is_builtin FROM game_systems WHERE id = ?1",
+                    [&id],
+                    |row| row.get(0),
+                )
+                .map_err(|_| "Sistema non trovato.".to_string())?;
 
             if is_builtin == 1 {
                 return Err("Impossibile modificare un sistema di gioco predefinito.".into());
@@ -260,9 +276,15 @@ pub fn delete_game_system(
     // 4. Pulizia automatica file PDF template se non è più usato da altri sistemi
     if let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&schema_json) {
         let mut pdf_files = Vec::new();
-        if let Some(pg) = parsed.get("pdf_template_pg").and_then(|v| v.as_str()) { pdf_files.push(pg); }
-        if let Some(png) = parsed.get("pdf_template_png").and_then(|v| v.as_str()) { pdf_files.push(png); }
-        if let Some(def) = parsed.get("pdf_template").and_then(|v| v.as_str()) { pdf_files.push(def); }
+        if let Some(pg) = parsed.get("pdf_template_pg").and_then(|v| v.as_str()) {
+            pdf_files.push(pg);
+        }
+        if let Some(png) = parsed.get("pdf_template_png").and_then(|v| v.as_str()) {
+            pdf_files.push(png);
+        }
+        if let Some(def) = parsed.get("pdf_template").and_then(|v| v.as_str()) {
+            pdf_files.push(def);
+        }
 
         for pdf_name in pdf_files {
             let usage_count: i64 = conn
@@ -375,7 +397,10 @@ pub fn delete_character_sheet(
     for p in candidate_paths.iter() {
         if p.exists() {
             if let Err(e) = fs::remove_file(p) {
-                eprintln!("Attenzione: impossibile eliminare il PDF salvato {:?}: {}", p, e);
+                eprintln!(
+                    "Attenzione: impossibile eliminare il PDF salvato {:?}: {}",
+                    p, e
+                );
             }
         }
     }

@@ -1,9 +1,9 @@
-pub mod maps;
-pub mod wiki;
 pub mod characters;
-pub mod timeline;
-pub mod settings;
+pub mod maps;
 pub mod relations;
+pub mod settings;
+pub mod timeline;
+pub mod wiki;
 
 pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
     tauri::generate_handler![

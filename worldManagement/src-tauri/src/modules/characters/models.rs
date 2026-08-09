@@ -5,7 +5,7 @@ pub struct GameSystem {
     pub id: String,
     pub name: String,
     pub description: Option<String>,
-    pub schema_json: String,       // JSON formattato come stringa
+    pub schema_json: String, // JSON formattato come stringa
     pub markdown_template: String,
     pub is_builtin: bool,
     pub created_at: Option<String>,
@@ -18,8 +18,8 @@ pub struct CharacterSheet {
     pub system_id: String,
     pub article_id: Option<String>,
     pub name: String,
-    pub data_json: String,         // JSON con i valori compilati
-    pub sheet_variant: String,     // "pg" (Personaggio Giocante) o "png" (Non Giocante)
+    pub data_json: String,     // JSON con i valori compilati
+    pub sheet_variant: String, // "pg" (Personaggio Giocante) o "png" (Non Giocante)
     pub created_at: Option<String>,
     pub updated_at: Option<String>,
 }
@@ -50,13 +50,12 @@ fn default_sheet_variant() -> String {
     "pg".to_string()
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExtractedPdfField {
-    pub key: String,        // Nome interno (es. "character_name")
-    pub label: String,      // Etichetta formattata (es. "Character Name")
-    pub pdf_field: String,  // Nome originale nel PDF (es. "CharacterName")
-    pub r#type: String,     // "text", "number", o "checkbox"
+    pub key: String,       // Nome interno (es. "character_name")
+    pub label: String,     // Etichetta formattata (es. "Character Name")
+    pub pdf_field: String, // Nome originale nel PDF (es. "CharacterName")
+    pub r#type: String,    // "text", "number", o "checkbox"
 }
 
 #[derive(Debug, Serialize, Deserialize)]
