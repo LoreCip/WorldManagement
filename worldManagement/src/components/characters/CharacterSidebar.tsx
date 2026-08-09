@@ -185,7 +185,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                   {sheet.name}
                 </div>
                 <div style={{ fontSize: "0.68rem", color: colors.goldBright, textTransform: "uppercase", marginTop: "2px" }}>
-                  {system?.name || t("characters.sidebar.unkownSystem")}
+                  {system?.name || t("characters.sidebar.unknownSystem")}
                 </div>
               </div>
             );

@@ -25,7 +25,7 @@ export const SettingsView: React.FC = () => {
   if (!isLoaded) {
     return (
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: colors.textFaint }}>
-        Caricamento impostazioni…
+        {t("settings.loadMessage")}
       </div>
     );
   }

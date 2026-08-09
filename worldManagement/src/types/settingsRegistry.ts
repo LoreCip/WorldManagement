@@ -153,7 +153,7 @@ export const rawSettingsRegistry = [
     categoryKey: "settings.categories.localization",
     type: "select" as SettingType,
     defaultValue: "it",
-    optionKeys: ["it", "en", "fr", "de", "es", "pt"],
+    optionKeys: ["it", "en"],
   },
 ];
 

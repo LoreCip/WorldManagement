@@ -150,6 +150,57 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
             end_value INTEGER NOT NULL,
             color TEXT NOT NULL DEFAULT '#8a6fd1'
         );
+
+        -- TABELLE ALBERI GENEALOGICI & MAPPE RELAZIONALI
+        CREATE TABLE IF NOT EXISTS graph_nodes (
+            id TEXT PRIMARY KEY NOT NULL,
+            type TEXT NOT NULL DEFAULT 'placeholder',
+            character_id TEXT,
+            wiki_article_id TEXT,
+            display_name TEXT NOT NULL,
+            avatar_url TEXT,
+            subtitle TEXT,
+            notes TEXT,
+            birth_year INTEGER,
+            death_year INTEGER,
+            linked_view_id TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(character_id) REFERENCES character_sheets(id) ON DELETE SET NULL,
+            FOREIGN KEY(wiki_article_id) REFERENCES wiki_articles(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS graph_edges (
+            id TEXT PRIMARY KEY NOT NULL,
+            source_node_id TEXT NOT NULL,
+            target_node_id TEXT NOT NULL,
+            type TEXT NOT NULL DEFAULT 'custom',
+            label TEXT,
+            is_uncertain INTEGER NOT NULL DEFAULT 0,
+            generational_gap_count INTEGER,
+            source_handle TEXT,
+            target_handle TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(source_node_id) REFERENCES graph_nodes(id) ON DELETE CASCADE,
+            FOREIGN KEY(target_node_id) REFERENCES graph_nodes(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_graph_edges_source ON graph_edges(source_node_id);
+        CREATE INDEX IF NOT EXISTS idx_graph_edges_target ON graph_edges(target_node_id);
+
+        CREATE TABLE IF NOT EXISTS graph_views (
+            id TEXT PRIMARY KEY NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT,
+            type TEXT NOT NULL DEFAULT 'genealogy',
+            focus_node_id TEXT,
+            focus_depth INTEGER,
+            node_ids TEXT NOT NULL DEFAULT '[]',
+            edge_ids TEXT NOT NULL DEFAULT '[]',
+            positions TEXT NOT NULL DEFAULT '{}',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
         "
     )?;
 
@@ -159,6 +210,38 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
     ensure_timeline_category_column_exists(conn)?;
     ensure_default_timeline_categories_exist(conn)?;
     ensure_campaign_settings_row_exists(conn)?;
+    ensure_graph_nodes_linked_view_column_exists(conn)?;
+    ensure_graph_edges_handle_columns_exist(conn)?;
+    Ok(())
+}
+
+pub fn ensure_graph_nodes_linked_view_column_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
+    let mut stmt = conn.prepare("PRAGMA table_info(graph_nodes)")?;
+    let column_exists = stmt
+        .query_map([], |row| row.get::<_, String>(1))?
+        .filter_map(|r| r.ok())
+        .any(|col_name| col_name == "linked_view_id");
+
+    if !column_exists {
+        conn.execute("ALTER TABLE graph_nodes ADD COLUMN linked_view_id TEXT", [])?;
+    }
+
+    Ok(())
+}
+
+pub fn ensure_graph_edges_handle_columns_exist(conn: &Connection) -> Result<(), rusqlite::Error> {
+    let mut stmt = conn.prepare("PRAGMA table_info(graph_edges)")?;
+    let existing: Vec<String> = stmt
+        .query_map([], |row| row.get::<_, String>(1))?
+        .filter_map(|r| r.ok())
+        .collect();
+
+    if !existing.iter().any(|c| c == "source_handle") {
+        conn.execute("ALTER TABLE graph_edges ADD COLUMN source_handle TEXT", [])?;
+    }
+    if !existing.iter().any(|c| c == "target_handle") {
+        conn.execute("ALTER TABLE graph_edges ADD COLUMN target_handle TEXT", [])?;
+    }
 
     Ok(())
 }

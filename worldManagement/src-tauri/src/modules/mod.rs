@@ -3,6 +3,7 @@ pub mod wiki;
 pub mod characters;
 pub mod timeline;
 pub mod settings;
+pub mod relations;
 
 pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
     tauri::generate_handler![
@@ -56,5 +57,18 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         timeline::commands::get_timeline_eras,
         timeline::commands::save_timeline_era,
         timeline::commands::delete_timeline_era,
+        // Relations
+        relations::commands::get_all_graph_nodes,
+        relations::commands::save_graph_node,
+        relations::commands::delete_graph_node,
+        relations::commands::promote_node_to_character,
+        relations::commands::get_all_graph_edges,
+        relations::commands::save_graph_edge,
+        relations::commands::delete_graph_edge,
+        relations::commands::get_all_graph_views,
+        relations::commands::get_graph_view_by_id,
+        relations::commands::save_graph_view,
+        relations::commands::delete_graph_view,
+        relations::commands::update_graph_view_positions
     ]
 }

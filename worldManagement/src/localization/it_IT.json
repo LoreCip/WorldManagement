@@ -1,316 +1,371 @@
 {
-    "common": {
-        "confirm": "Conferma",
-        "edit": "Modifica",
-        "cancel": "Annulla",
-        "delete": "Elimina",
-        "description": "Descrizione",
-        "save": "Salva",
-        "saving": "Salvataggio...",
-        "dropImage": "Rilascia l'immagine qui…",
-        "missingImage": "Immagine non disponibile",
-        "example": "es. ",
-        "browse": "Sfoglia...",
-        "optional": "Opzionale",
-        "newF": "Nuova",
-        "newM": "Nuovo",
-        "current": "Attuale",
-        "back": "Indietro",
-        "lore": "Lore",
-        "add": "Aggiungi",
-        "close": "Chiudi",
-        "export": "Esporta PDF"
+  "common": {
+    "add": "Aggiungi",
+    "back": "Indietro",
+    "browse": "Sfoglia...",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "current": "Attuale",
+    "delete": "Elimina",
+    "description": "Descrizione",
+    "dropImage": "Rilascia l'immagine qui…",
+    "edit": "Modifica",
+    "example": "es. ",
+    "export": "Esporta PDF",
+    "lore": "Lore",
+    "missingImage": "Immagine non disponibile",
+    "newF": "Nuova",
+    "newM": "Nuovo",
+    "optional": "Opzionale",
+    "save": "Salva",
+    "saving": "Salvataggio..."
+  },
+  "hub": {
+    "eyebrow": "La tua ambientazione",
+    "title": "Il tuo Mondo",
+    "subtitle": "scegli un capitolo da esplorare",
+    "settingsTooltip": "Impostazioni",
+    "wikiTitle": "Wiki & Lore",
+    "wikiDescription": "Voci di lore, luoghi, fazioni",
+    "wikiCount": "voci",
+    "mapsTitle": "Mappe del Mondo",
+    "mapsDescription": "Geografia, regioni, portali",
+    "mapsCount": "mappe",
+    "charactersTitle": "Personaggi",
+    "charactersDescription": "Schede PG e PNG",
+    "charactersCount": "schede",
+    "timelineTitle": "Linea del Tempo",
+    "timelineDescription": "Eventi, ere ed epoche",
+    "timelineCount": "eventi",
+    "relationsTitle": "Alberi & Relazioni",
+    "relationsDescription": "Genealogie, intrighi e legami tra personaggi e fazioni.",
+    "relationsCount": "nodi"
+  },
+  "wiki": {
+    "categories": {
+      "Lore": "Lore / Storia",
+      "Personaggio": "Personaggio",
+      "Luogo": "Luogo",
+      "Fazione": "Fazione"
     },
-    "settings": {
-        "title": "Impostazioni",
-        "subtitle": "Preferenze generali dell'applicazione, valide per tutta l'ambientazione.",
-        "categories": {
-            "general": "Generale",
-            "wiki": "Wiki",
-            "timeline": "Timeline",
-            "maps": "Mappe",
-            "characters": "Personaggi",
-            "localization": "Localizzazione"
-        },
-        "registry": {
-            "confirm_before_delete": {
-                "label": "Conferma prima di eliminare",
-                "description": "Mostra sempre un avviso di conferma prima di eliminare articoli, mappe, eventi o schede."
-            },
-            "default_wiki_category": {
-                "label": "Categoria predefinita nuove voci Wiki",
-                "options": {
-                    "Lore": "Lore",
-                    "Personaggi": "Personaggi",
-                    "Luoghi": "Luoghi",
-                    "Generale": "Generale"
-                }
-            },
-            "general_search_case_sensitive": {
-                "label": "Ricerca sensibile a maiuscole/minuscole"
-            },
-            "general_search_fuzzy": {
-                "label": "Ricerca approssimata (fuzzy)",
-                "description": "Trova risultati anche con corrispondenza parziale o piccoli errori di battitura, invece della sola corrispondenza esatta."
-            },
-            "general_search_include_content": {
-                "label": "Includi il contenuto nella ricerca",
-                "description": "Se disattivato, la ricerca considera solo i titoli degli articoli."
-            },
-            "timeline_default_precision": {
-                "label": "Precisione predefinita nuovi eventi",
-                "description": "Il livello di dettaglio temporale proposto quando crei un nuovo evento in timeline.",
-                "options": {
-                    "year": "Anno",
-                    "month": "Mese",
-                    "day": "Giorno"
-                }
-            },
-            "timeline_days_per_month": {
-                "label": "Giorni per mese",
-                "description": "Lunghezza convenzionale di un mese nel tuo calendario, usata per calcolare le date sulla timeline."
-            },
-            "timeline_days_per_year": {
-                "label": "Giorni per anno",
-                "description": "Lunghezza convenzionale di un anno nel tuo calendario."
-            },
-            "timeline_start_year": {
-                "label": "Anno di inizio campagna",
-                "description": "Il primo anno rappresentabile sulla timeline."
-            },
-            "timeline_end_year": {
-                "label": "Anno di fine campagna",
-                "description": "L'ultimo anno rappresentabile sulla timeline."
-            },
-            "timeline_category_default_icon": {
-                "label": "Icona predefinita nuove categorie"
-            },
-            "timeline_category_default_color": {
-                "label": "Colore predefinito nuove categorie"
-            },
-            "maps_default_width": {
-                "label": "Larghezza predefinita nuove mappe (px)"
-            },
-            "maps_default_height": {
-                "label": "Altezza predefinita nuove mappe (px)"
-            },
-            "maps_portal_default_label": {
-                "label": "Etichetta predefinita nuovi portali"
-            },
-            "maps_portal_snap_to_grid": {
-                "label": "Aggancia i portali alla griglia",
-                "description": "Quando posizioni un portale su una mappa, allinealo automaticamente alla griglia."
-            },
-            "maps_portal_grid_size": {
-                "label": "Dimensione griglia portali (px)"
-            },
-            "characters_default_sheet_variant": {
-                "label": "Variante scheda predefinita",
-                "options": {
-                    "pg": "Personaggio Giocante (PG)",
-                    "png": "Personaggio Non Giocante (PNG)"
-                }
-            },
-            "characters_default_markdown_template": {
-                "label": "Template markdown predefinito nuove schede"
-            },
-            "localization_language": {
-                "label": "Lingua",
-                "options": {
-                    "it": "Italiano",
-                    "en": "English"
-                }
-            }
-        }
+    "editor": {
+      "newArticle": "Nuovo articolo",
+      "searchPlaceholder": "Cerca...",
+      "mainHint": "Seleziona una voce dalla barra laterale, oppure crea una nuova voce per iniziare.",
+      "titlePlaceholder": "Titolo della voce...",
+      "openMapButton": "🗺️ Apri Mappa →",
+      "confirmDelete": "Elimina definitivamente questa voce"
     },
-    "hub": {
-        "eyebrow": "La tua ambientazione",
-        "title": "Il tuo Mondo",
-        "subtitle": "scegli un capitolo da esplorare",
-        "settingsTooltip": "Impostazioni",
-        "wikiTitle": "Wiki & Lore",
-        "wikiDescription": "Voci di lore, luoghi, fazioni",
-        "wikiCount": "voci",
-        "mapsTitle": "Mappe del Mondo",
-        "mapsDescription": "Geografia, regioni, portali",
-        "mapsCount": "mappe",
-        "charactersTitle": "Personaggi",
-        "charactersDescription": "Schede PG e PNG",
-        "charactersCount": "schede",
-        "timelineTitle": "Linea del Tempo",
-        "timelineDescription": "Eventi, ere ed epoche",
-        "timelineCount": "eventi",
-        "relationsTitle": "Relazioni & Alberi Genealogici",
-        "relationsBadge": "presto"
+    "sidebar": {
+      "subtitle": "Cronache dell'ambientazione",
+      "newWiki": "+ Nuova voce",
+      "searchPlaceholder": "Cerca nell'ambientazione…",
+      "noResults": "Nessuna voce corrisponde alla ricerca.",
+      "noSnippet": "Nessun contenuto…"
     },
-    "wiki": {
-        "editor": {
-            "newArticle": "Nuovo articolo",
-            "searchPlaceholder": "Cerca...",
-            "mainHint": "Seleziona una voce dalla barra laterale, oppure crea una nuova voce per iniziare.",
-            "titlePlaceholder": "Titolo della voce...",
-            "openMapButton": "🗺️ Apri Mappa →",
-            "confirmDelete": "Elimina definitivamente questa voce"
-        },
-        "sidebar": {
-            "subtitle": "Cronache dell'ambientazione",
-            "newWiki": "+ Nuova voce",
-            "searchPlaceholder": "Cerca nell'ambientazione…",
-            "noResults": "Nessuna voce corrisponde alla ricerca.",
-            "noSnippet": "Nessun contenuto…"
-        },
-        "tag": {
-            "delete": "×",
-            "placeholder": "Aggiungi tag e premi Invio…"
-        }
-    },
-    "characters": {
-        "hook": {
-            "hint": "Seleziona una scheda dalla barra laterale o creane una nuova.",
-            "characterWiki": "Wiki Personaggio:",
-            "noLink": "-- Nessun collegamento --",
-            "go": "Vai alla voce →",
-            "loadingShort": "Caricamento PDF...",
-            "loading": "Caricamento PDF del sistema in corso..."
-        },
-        "sidebar": {
-            "title": "Personaggi",
-            "subtitle": "Schede & Sistemi di Gioco",
-            "activeSystem": "⚔️ Motore di Gioco Attivo",
-            "selectSystem": "-- Seleziona un motore --",
-            "sysNotSelected": "Seleziona un motore prima di creare personaggi.",
-            "newSheet": "+ Nuova Scheda",
-            "newSystem": "⚙️ Nuovo Sistema / Template",
-            "searchPlaceholder": "Cerca personaggio…",
-            "noResults": "Nessuna scheda trovata.",
-            "unkownSystem": "Sistema sconosciuto"
-        },
-        "sheetModal": {
-            "newCharacter": "Nuovo Personaggio",
-            "activeGame": "Motore di gioco attivo:",
-            "charName": "Nome del Personaggio",
-            "createSheet": "Crea Scheda"
-        },
-        "systemModal": {
-            "markdownTemplate": "# {{name}}\n\nScheda personaggio per ",
-            "pc": "PG",
-            "npc": "PNG",
-            "loadError": "Errore nel caricamento del PDF: ",
-            "nameError": "Inserisci un nome valido per il sistema di gioco.",
-            "pgError": "Devi caricare almeno un PDF compilabile per la scheda PG.",
-            "modifySystem": "Modifica Sistema di Gioco",
-            "newSystem": "Nuovo Sistema di Gioco",
-            "gameName": "Nome del Gioco",
-            "pdfPg": "PDF Compilabile PG (Personaggio Giocante)",
-            "pdfPng": "PDF Compilabile PNG (Personaggio Non Giocante)",
-            "noLoadedPdf": "Nessun PDF caricato",
-            "saveSystem": "Salva Sistema"
-        }
-    },
-    "maps": {
-        "map": "MAPPA",
-        "dropImage": "📂 Rilascia qui l'immagine per aggiungere una nuova mappa",
-        "noMapSelected": "Nessuna mappa selezionata",
-        "selectMap": "Seleziona una mappa dalla barra laterale, trascina un'immagine nel canvas o crea una nuova mappa.",
-        "newmap": "+ Nuova Mappa",
-        "addMap": {
-            "newMap": "Nuova Mappa",
-            "mapTitle": "Titolo Mappa",
-            "mapNamePlaceholder": "Continente di Eldoria, Taverna del Drago...",
-            "imageFile": "File Immagine",
-            "imageFilePlaceholder": "Nessun file selezionato",
-            "parentMap": "Mappa Padre (Opzionale)",
-            "parentMapPlaceholder": "-- Nessuna (Mappa di Livello Superiore) --",
-            "associatedArticle": "Articolo Wiki Correlato (Opzionale)",
-            "associatedArticlePlaceholder": "-- Nessun articolo Wiki collegato --",
-            "saveMap": "Salva Mappa"
-        },
-        "editMap": {
-            "modDetails": "⚙️ Modifica Dettagli Mappa",
-            "mapTitle": "Titolo Mappa",
-            "mapChangeFile": "File Immagine Mappa",
-            "linkedWiki": "Articolo Wiki Correlato",
-            "noLinkWiki": "-- Nessun articolo collegato --",
-            "parentMap": "Mappa Padre",
-            "noParent": "-- Nessuna (Mappa di Livello Superiore) --"
-        },
-        "canvas": {
-            "portalDefault": "Portale"
-        },
-        "header": {
-            "changeMap": "Modifica mappa"
-        },
-        "sidebar": {
-            "title": "Cartografia",
-            "subtitle": "Atlante dell'ambientazione",
-            "searchPlaceholder": "Cerca un territorio o mappa…",
-            "noResults": "Nessuna mappa corrisponde alla ricerca.",
-            "mainMap": "Mappa Principale",
-            "subMap": "Sotto-mappa liv."
-        },
-        "portal": {
-            "addPortal": "Aggiungi portale di collegamento",
-            "newPortal": "+ Portale",
-            "destination": "Destinazione...",
-            "label": "Etichetta..."
-        }
-    },
-    "timeline": {
-        "canvas": {
-            "today": "OGGI",
-            "closeEvents": "{{count}} eventi ravvicinati",
-            "footnote": "Rotella per zoomare · trascina per scorrere · clic sulla linea per aggiungere un evento"
-        },
-        "category": {
-            "title": "Categorie della Timeline",
-            "noCategory": "Nessuna categoria ancora.",
-            "catNamePlaceholder": "Nome categoria..."
-        },
-        "eras": {
-            "title": "Ere / Fasce Storiche",
-            "subtitle": "Bande di sfondo colorate per dare contesto a periodi ampi della cronologia (es. Epoca d'Oro, Guerra dei Cento Anni)",
-            "noEra": "Nessuna era ancora.",
-            "namePlaceholder": "Nome era...",
-            "startDatePlaceholder": "Anno inizio",
-            "endDatePlaceholder": "Anno fine"
-        },
-        "balloon": {
-            "titlePlaceholder": "Titolo…",
-            "year": "Anno",
-            "month": "Mese",
-            "day": "Giorno",
-            "hasDuration": "Ha una durata",
-            "until": "Fino a {{date}}",
-            "endYearPlaceholder": "Anno fine",
-            "endMonthPlaceholder": "Mese fine",
-            "endDayPlaceholder": "Giorno fine",
-            "cat": "Categoria",
-            "noCatF": "— Nessuna —",
-            "noCatM": "— Nessuno —",
-            "noDescr": "Nessuna descrizione.",
-            "article": "Articolo",
-            "map": "Mappa",
-            "yearDisplay": "Anno {{year}}",
-            "monthDisplay": "Mese {{month}}, Anno {{year}}",
-            "dayDisplay": "Giorno {{day}}, Mese {{month}}, Anno {{year}}"
-        },
-        "header": {
-            "title": "Linea del Tempo",
-            "searchPlaceholder": "Cerca eventi…",
-            "autoFit": "Adatta tutto",
-            "filters": "Filtri",
-            "clearFilters": "Rimuovi filtri",
-            "manage": "Gestisci…",
-            "eras": "Ere",
-            "today": "Oggi",
-            "savedViews": "Viste salvate",
-            "saveView": "+ Salva vista corrente",
-            "newEvent": "+ Nuovo evento"
-        },
-        "minimap": {
-            "localView": "vista localizzata",
-            "fullView": "panoramica completa",
-            "showAll": "mostra tutto"
-        }
+    "tag": {
+      "delete": "×",
+      "placeholder": "Aggiungi tag e premi Invio…"
     }
+  },
+  "characters": {
+    "hook": {
+      "hint": "Seleziona una scheda dalla barra laterale o creane una nuova.",
+      "characterWiki": "Wiki Personaggio:",
+      "noLink": "-- Nessun collegamento --",
+      "go": "Vai alla voce →",
+      "loadingShort": "Caricamento PDF...",
+      "loading": "Caricamento PDF del sistema in corso..."
+    },
+    "sidebar": {
+      "title": "Personaggi",
+      "subtitle": "Schede & Sistemi di Gioco",
+      "activeSystem": "⚔️ Motore di Gioco Attivo",
+      "selectSystem": "-- Seleziona un motore --",
+      "sysNotSelected": "Seleziona un motore prima di creare personaggi.",
+      "newSheet": "+ Nuova Scheda",
+      "newSystem": "⚙️ Nuovo Sistema / Template",
+      "searchPlaceholder": "Cerca personaggio…",
+      "noResults": "Nessuna scheda trovata.",
+      "unknownSystem": "Sistema sconosciuto"
+    },
+    "sheetModal": {
+      "newCharacter": "Nuovo Personaggio",
+      "activeGame": "Motore di gioco attivo:",
+      "charName": "Nome del Personaggio",
+      "createSheet": "Crea Scheda"
+    },
+    "systemModal": {
+      "markdownTemplate": "# {{name}}\n\nScheda personaggio per ",
+      "pc": "PG",
+      "npc": "PNG",
+      "loadError": "Errore nel caricamento del PDF: ",
+      "nameError": "Inserisci un nome valido per il sistema di gioco.",
+      "pgError": "Devi caricare almeno un PDF compilabile per la scheda PG.",
+      "modifySystem": "Modifica Sistema di Gioco",
+      "newSystem": "Nuovo Sistema di Gioco",
+      "gameName": "Nome del Gioco",
+      "pdfPg": "PDF Compilabile PG (Personaggio Giocante)",
+      "pdfPng": "PDF Compilabile PNG (Personaggio Non Giocante)",
+      "noLoadedPdf": "Nessun PDF caricato",
+      "saveSystem": "Salva Sistema"
+    }
+  },
+  "maps": {
+    "map": "MAPPA",
+    "dropImage": "📂 Rilascia qui l'immagine per aggiungere una nuova mappa",
+    "noMapSelected": "Nessuna mappa selezionata",
+    "selectMap": "Seleziona una mappa dalla barra laterale, trascina un'immagine nel canvas o crea una nuova mappa.",
+    "newMap": "+ Nuova Mappa",
+    "form": {
+      "newMap": "Nuova Mappa",
+      "modDetails": "⚙️ Modifica Dettagli Mappa",
+      "mapTitle": "Titolo Mappa",
+      "mapNamePlaceholder": "Continente di Eldoria, Taverna del Drago...",
+      "imageFile": "File Immagine",
+      "imageFilePlaceholder": "Nessun file selezionato",
+      "imageFileChange": "File Immagine Mappa",
+      "parentMap": "Mappa Padre",
+      "parentMapOptional": "Mappa Padre (Opzionale)",
+      "parentMapPlaceholder": "-- Nessuna (Mappa di Livello Superiore) --",
+      "associatedArticle": "Articolo Wiki Correlato",
+      "associatedArticleOptional": "Articolo Wiki Correlato (Opzionale)",
+      "associatedArticlePlaceholder": "-- Nessun articolo Wiki collegato --",
+      "noLinkWiki": "-- Nessun articolo collegato --",
+      "noParent": "-- Nessuna (Mappa di Livello Superiore) --",
+      "saveMap": "Salva Mappa"
+    },
+    "canvas": {
+      "portalDefault": "Portale"
+    },
+    "header": {
+      "changeMap": "Modifica mappa"
+    },
+    "sidebar": {
+      "title": "Cartografia",
+      "subtitle": "Atlante dell'ambientazione",
+      "searchPlaceholder": "Cerca un territorio o mappa…",
+      "noResults": "Nessuna mappa corrisponde alla ricerca.",
+      "mainMap": "Mappa Principale",
+      "subMap": "Sotto-mappa liv."
+    },
+    "portal": {
+      "addPortal": "Aggiungi portale di collegamento",
+      "newPortal": "+ Portale",
+      "destination": "Destinazione...",
+      "label": "Etichetta..."
+    }
+  },
+  "timeline": {
+    "canvas": {
+      "today": "OGGI",
+      "closeEvents": "{{count}} eventi ravvicinati",
+      "footnote": "Rotella per zoomare · trascina per scorrere · clic sulla linea per aggiungere un evento"
+    },
+    "category": {
+      "title": "Categorie della Timeline",
+      "noCategory": "Nessuna categoria ancora.",
+      "catNamePlaceholder": "Nome categoria..."
+    },
+    "eras": {
+      "title": "Ere / Fasce Storiche",
+      "subtitle": "Bande di sfondo colorate per dare contesto a periodi ampi della cronologia (es. Epoca d'Oro, Guerra dei Cento Anni)",
+      "noEra": "Nessuna era ancora.",
+      "namePlaceholder": "Nome era...",
+      "startDatePlaceholder": "Anno inizio",
+      "endDatePlaceholder": "Anno fine"
+    },
+    "balloon": {
+      "titlePlaceholder": "Titolo…",
+      "year": "Anno",
+      "month": "Mese",
+      "day": "Giorno",
+      "hasDuration": "Ha una durata",
+      "until": "Fino a {{date}}",
+      "endYearPlaceholder": "Anno fine",
+      "endMonthPlaceholder": "Mese fine",
+      "endDayPlaceholder": "Giorno fine",
+      "cat": "Categoria",
+      "noCatF": "— Nessuna —",
+      "noCatM": "— Nessuno —",
+      "noDescr": "Nessuna descrizione.",
+      "article": "Articolo",
+      "map": "Mappa",
+      "yearDisplay": "Anno {{year}}",
+      "monthDisplay": "Mese {{month}}, Anno {{year}}",
+      "dayDisplay": "Giorno {{day}}, Mese {{month}}, Anno {{year}}"
+    },
+    "header": {
+      "title": "Linea del Tempo",
+      "searchPlaceholder": "Cerca eventi…",
+      "autoFit": "Adatta tutto",
+      "filters": "Filtri",
+      "clearFilters": "Rimuovi filtri",
+      "manage": "Gestisci…",
+      "eras": "Ere",
+      "today": "Oggi",
+      "savedViews": "Viste salvate",
+      "saveView": "+ Salva vista corrente",
+      "newEvent": "+ Nuovo evento"
+    },
+    "minimap": {
+      "localView": "vista localizzata",
+      "fullView": "panoramica completa",
+      "showAll": "mostra tutto"
+    }
+  },
+  "relations": {
+    "header": {
+      "title": "Alberi & Mappe Relazionali",
+      "searchPlaceholder": "Cerca albero, persona o fazione…",
+      "newView": "+ Nuova Vista",
+      "addNode": "+ Aggiungi Nodo",
+      "addEdge": "+ Collega",
+      "focusMode": "Modalità Focus"
+    },
+    "views": {
+      "genealogy": "Albero Genealogico",
+      "network": "Mappa Relazionale",
+      "selectView": "Seleziona una vista...",
+      "noViews": "Nessuna vista ancora creata."
+    },
+    "nodeTypes": {
+      "character": "Scheda Personaggio",
+      "placeholder": "Nodo Rapido (Senza Scheda)",
+      "unknown": "Antenato Ignoto / Gap",
+      "entity": "Fazione / Evento"
+    },
+    "relationTypes": {
+      "parent_child": "Genitore / Figlio",
+      "descendant_gap": "Discendenza con Gap Generazionale",
+      "spouse": "Coniuge / Partner",
+      "sibling": "Fratello / Sorella",
+      "foster": "Adozione / Tutore",
+      "ally": "Alleato / Amico",
+      "rival": "Rivale / Nemico",
+      "vassal": "Vassallo / Servo",
+      "member_of": "Membro di Fazione",
+      "custom": "Personalizzato"
+    },
+    "gap": {
+      "label": "Gap Generazionale",
+      "unknownGenerations": "~{{count}} generazioni sconosciute",
+      "hint": "Connette due personaggi della stessa linea di sangue distanti nel tempo."
+    },
+    "uncertain": {
+      "label": "Relazione Incerta / Diceria",
+      "tooltip": "Visualizza questa connessione come non confermata o leggendaria."
+    },
+    "actions": {
+      "promoteToCharacter": "Converti in Scheda Personaggio",
+      "linkWiki": "Collega a Voce Wiki",
+      "editNode": "Modifica Dettagli",
+      "deleteNode": "Rimuovi dal Grafo",
+      "recenter": "Ricentra Vista"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Preferenze generali dell'applicazione, valide per tutta l'ambientazione.",
+    "loadMessage": "Caricamento impostazioni…",
+    "categories": {
+      "general": "Generale",
+      "wiki": "Wiki",
+      "timeline": "Timeline",
+      "maps": "Mappe",
+      "characters": "Personaggi",
+      "localization": "Localizzazione"
+    },
+    "registry": {
+      "confirm_before_delete": {
+        "label": "Conferma prima di eliminare",
+        "description": "Mostra sempre un avviso di conferma prima di eliminare articoli, mappe, eventi o schede."
+      },
+      "default_wiki_category": {
+        "label": "Categoria predefinita nuove voci Wiki",
+        "options": {
+          "Lore": "Lore",
+          "Personaggi": "Personaggi",
+          "Luoghi": "Luoghi",
+          "Generale": "Generale"
+        }
+      },
+      "general_search_case_sensitive": {
+        "label": "Ricerca sensibile a maiuscole/minuscole"
+      },
+      "general_search_fuzzy": {
+        "label": "Ricerca approssimata (fuzzy)",
+        "description": "Trova risultati anche con corrispondenza parziale o piccoli errori di battitura, invece della sola corrispondenza esatta."
+      },
+      "general_search_include_content": {
+        "label": "Includi il contenuto nella ricerca",
+        "description": "Se disattivato, la ricerca considera solo i titoli degli articoli."
+      },
+      "timeline_default_precision": {
+        "label": "Precisione predefinita nuovi eventi",
+        "description": "Il livello di dettaglio temporale proposto quando crei un nuovo evento in timeline.",
+        "options": {
+          "year": "Anno",
+          "month": "Mese",
+          "day": "Giorno"
+        }
+      },
+      "timeline_days_per_month": {
+        "label": "Giorni per mese",
+        "description": "Lunghezza convenzionale di un mese nel tuo calendario, usata per calcolare le date sulla timeline."
+      },
+      "timeline_days_per_year": {
+        "label": "Giorni per anno",
+        "description": "Lunghezza convenzionale di un anno nel tuo calendario."
+      },
+      "timeline_start_year": {
+        "label": "Anno di inizio campagna",
+        "description": "Il primo anno rappresentabile sulla timeline."
+      },
+      "timeline_end_year": {
+        "label": "Anno di fine campagna",
+        "description": "L'ultimo anno rappresentabile sulla timeline."
+      },
+      "timeline_category_default_icon": {
+        "label": "Icona predefinita nuove categorie"
+      },
+      "timeline_category_default_color": {
+        "label": "Colore predefinito nuove categorie"
+      },
+      "maps_default_width": {
+        "label": "Larghezza predefinita nuove mappe (px)"
+      },
+      "maps_default_height": {
+        "label": "Altezza predefinita nuove mappe (px)"
+      },
+      "maps_portal_default_label": {
+        "label": "Etichetta predefinita nuovi portali"
+      },
+      "maps_portal_snap_to_grid": {
+        "label": "Aggancia i portali alla griglia",
+        "description": "Quando posizioni un portale su una mappa, allinealo automaticamente alla griglia."
+      },
+      "maps_portal_grid_size": {
+        "label": "Dimensione griglia portali (px)"
+      },
+      "characters_default_sheet_variant": {
+        "label": "Variante scheda predefinita",
+        "options": {
+          "pg": "Personaggio Giocante (PG)",
+          "png": "Personaggio Non Giocante (PNG)"
+        }
+      },
+      "characters_default_markdown_template": {
+        "label": "Template markdown predefinito nuove schede"
+      },
+      "localization_language": {
+        "label": "Lingua",
+        "options": {
+          "it": "Italiano",
+          "en": "English"
+        }
+      }
+    }
+  }
 }

@@ -113,7 +113,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
             >
-                + {t("maps.addMap.newMap")}
+                + {t("maps.form.newMap")}
             </button>
 
             {/* Input di ricerca nello stesso stile della Wiki */}

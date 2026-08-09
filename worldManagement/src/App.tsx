@@ -7,11 +7,12 @@ import { colors, radii } from "./components/theme/theme";
 import { SettingsView } from "./views/SettingsView";
 import { HubView, HubModuleKey } from "./views/HubView";
 import { useSettings } from "./context/SettingsContext";
+import { RelationsView } from "./views/RelationsView";
 
 type ActiveTab = "hub" | "wiki" | "maps" | "characters" | "timeline" | "relations" | "settings";
 
 // Le uniche tab "di contenuto" la cui ultima visita viene ricordata dalla hub.
-const HUB_TRACKED_TABS: ActiveTab[] = ["wiki", "maps", "characters", "timeline"];
+const HUB_TRACKED_TABS: ActiveTab[] = ["wiki", "maps", "characters", "timeline", "relations"];
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("hub");
@@ -226,9 +227,10 @@ export default function App() {
         )}
 
         {activeTab === "relations" && (
-          <div style={{ padding: "2rem", color: colors.textFaint, flex: 1, textAlign: "center" }}>
-            Modulo Relazioni & Alberi Genealogici in arrivo…
-          </div>
+          <RelationsView
+            onNavigateToWiki={handleOpenArticle}
+            onNavigateToCharacterSheet={handleOpenCharacterSheet}
+          />
         )}
 
         {activeTab === "settings" && <SettingsView />}

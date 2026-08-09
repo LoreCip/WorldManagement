@@ -4,9 +4,8 @@ import { useSettings } from "../context/SettingsContext";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
 
-// Le uniche tab che hanno una "casella" nella hub. Relazioni resta fuori
-// finché non è implementata: non ha senso farla diventare "hero".
-export type HubModuleKey = "wiki" | "maps" | "characters" | "timeline";
+// Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
+export type HubModuleKey = "wiki" | "maps" | "characters" | "timeline" | "relations";
 
 interface HubViewProps {
   onNavigate: (tab: HubModuleKey) => void;
@@ -62,9 +61,21 @@ const MODULES: HubModuleDef[] = [
     countKey: "hub.timelineCount",
     accent: colors.indigo,
   },
+  {
+    key: "relations",
+    numeral: "V",
+    icon: "🌳",
+    titleKey: "hub.relationsTitle",
+    descriptionKey: "hub.relationsDescription",
+    countKey: "hub.relationsCount",
+    accent: colors.goldBright,
+  },
 ];
 
-const SLOTS = ["hero", "wide", "s1", "s2"] as const;
+// 5 slot: "hero" e "wide" grandi, "s1"/"s2" piccoli, "s3" striscia larga in
+// fondo (stesso ruolo visivo che prima occupava la striscia fissa di Relazioni,
+// ma ora partecipa alla rotazione come chiunque altro).
+const SLOTS = ["hero", "wide", "s1", "s2", "s3"] as const;
 type Slot = (typeof SLOTS)[number];
 
 const SLOT_GRID_AREA: Record<Slot, string> = {
@@ -72,6 +83,7 @@ const SLOT_GRID_AREA: Record<Slot, string> = {
   wide: "1 / 3 / 2 / 5",
   s1: "2 / 3 / 3 / 4",
   s2: "2 / 4 / 3 / 5",
+  s3: "3 / 1 / 4 / 5",
 };
 
 export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) => {
@@ -90,6 +102,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
     maps: null,
     characters: null,
     timeline: null,
+    relations: null,
   });
 
   useEffect(() => {
@@ -117,11 +130,12 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
         }
       };
 
-      const [articles, maps, sheets, events] = await Promise.all([
+      const [articles, maps, sheets, events, graphNodes] = await Promise.all([
         safeInvoke("get_all_articles"),
         safeInvoke("get_all_maps"),
         safeInvoke("get_character_sheets"),
         safeInvoke("get_all_timeline_events"),
+        safeInvoke("get_all_graph_nodes"),
       ]);
 
       setCounts({
@@ -129,6 +143,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
         maps: maps?.length ?? null,
         characters: sheets?.length ?? null,
         timeline: events?.length ?? null,
+        relations: graphNodes?.length ?? null,
       });
     };
 
@@ -137,7 +152,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
 
   const slotOf = (key: HubModuleKey): Slot => {
     const idx = order.indexOf(key);
-    return SLOTS[idx] ?? "s2";
+    return SLOTS[idx] ?? "s3";
   };
 
   return (
@@ -218,13 +233,15 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
-            gridTemplateRows: "190px 130px",
+            gridTemplateRows: "190px 130px 96px",
             gap: "1rem",
           }}
         >
           {MODULES.map((mod) => {
             const slot = slotOf(mod.key);
             const count = counts[mod.key];
+            const isStrip = slot === "s3";
+
             return (
               <div
                 key={mod.key}
@@ -234,113 +251,134 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                   border: `1px solid ${colors.border}`,
                   backgroundColor: colors.bgPanel,
                   borderRadius: radii.sm,
-                  padding: "1.3rem",
+                  padding: isStrip ? "0.85rem 1.3rem" : "1.3rem",
                   position: "relative",
                   overflow: "hidden",
                   cursor: "pointer",
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
+                  flexDirection: isStrip ? "row" : "column",
+                  alignItems: isStrip ? "center" : "stretch",
+                  justifyContent: isStrip ? "flex-start" : "flex-end",
+                  gap: isStrip ? "0.8rem" : undefined,
                 }}
                 onClick={() => onNavigate(mod.key)}
               >
                 <div
                   className="hub-tile-accent"
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", backgroundColor: mod.accent, zIndex: 2 }}
-                />
-                <span
-                  className="hub-tile-num"
                   style={{
                     position: "absolute",
-                    top: "1rem",
-                    left: "1.2rem",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "3px",
+                    backgroundColor: mod.accent,
                     zIndex: 2,
-                    fontFamily: fonts.display,
-                    fontStyle: "italic",
-                    fontSize: "1rem",
-                    color: colors.gold,
-                    opacity: 0.7,
                   }}
-                >
-                  {mod.numeral}
-                </span>
-                <span
-                  className="hub-tile-icon"
-                  style={{ position: "absolute", top: "0.95rem", right: "1.1rem", zIndex: 2, fontSize: "1.5rem" }}
-                >
-                  {mod.icon}
-                </span>
+                />
 
-                <span
-                  className="hub-tile-title"
-                  style={{
-                    position: "relative",
-                    zIndex: 2,
-                    fontFamily: fonts.display,
-                    fontWeight: 600,
-                    color: colors.textPrimary,
-                  }}
-                >
-                  {t(mod.titleKey)}
-                </span>
-                <span
-                  className="hub-tile-desc"
-                  style={{ position: "relative", zIndex: 2, fontSize: "0.76rem", color: colors.textFaint, marginTop: "0.3rem" }}
-                >
-                  {t(mod.descriptionKey)}
-                </span>
-                <span
-                  style={{
-                    position: "relative",
-                    zIndex: 2,
-                    fontFamily: fonts.mono,
-                    fontSize: "0.7rem",
-                    color: colors.textFaint,
-                    marginTop: "0.5rem",
-                  }}
-                >
-                  {count !== null ? `${count} ${t(mod.countKey)}` : "—"}
-                </span>
+                {isStrip ? (
+                  <>
+                    <span
+                      className="hub-tile-num"
+                      style={{
+                        zIndex: 2,
+                        fontFamily: fonts.display,
+                        fontStyle: "italic",
+                        fontSize: "1rem",
+                        color: colors.gold,
+                        opacity: 0.7,
+                      }}
+                    >
+                      {mod.numeral}
+                    </span>
+                    <span className="hub-tile-icon" style={{ zIndex: 2, fontSize: "1.5rem" }}>
+                      {mod.icon}
+                    </span>
+                    <span
+                      className="hub-tile-title"
+                      style={{ zIndex: 2, fontFamily: fonts.display, fontWeight: 600, color: colors.textPrimary }}
+                    >
+                      {t(mod.titleKey)}
+                    </span>
+                    <span
+                      className="hub-tile-desc"
+                      style={{ zIndex: 2, fontSize: "0.76rem", color: colors.textFaint }}
+                    >
+                      {t(mod.descriptionKey)}
+                    </span>
+                    <span
+                      style={{
+                        zIndex: 2,
+                        marginLeft: "auto",
+                        fontFamily: fonts.mono,
+                        fontSize: "0.7rem",
+                        color: colors.textFaint,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {count !== null ? `${count} ${t(mod.countKey)}` : "—"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span
+                      className="hub-tile-num"
+                      style={{
+                        position: "absolute",
+                        top: "1rem",
+                        left: "1.2rem",
+                        zIndex: 2,
+                        fontFamily: fonts.display,
+                        fontStyle: "italic",
+                        fontSize: "1rem",
+                        color: colors.gold,
+                        opacity: 0.7,
+                      }}
+                    >
+                      {mod.numeral}
+                    </span>
+                    <span
+                      className="hub-tile-icon"
+                      style={{ position: "absolute", top: "0.95rem", right: "1.1rem", zIndex: 2, fontSize: "1.5rem" }}
+                    >
+                      {mod.icon}
+                    </span>
+
+                    <span
+                      className="hub-tile-title"
+                      style={{
+                        position: "relative",
+                        zIndex: 2,
+                        fontFamily: fonts.display,
+                        fontWeight: 600,
+                        color: colors.textPrimary,
+                      }}
+                    >
+                      {t(mod.titleKey)}
+                    </span>
+                    <span
+                      className="hub-tile-desc"
+                      style={{ position: "relative", zIndex: 2, fontSize: "0.76rem", color: colors.textFaint, marginTop: "0.3rem" }}
+                    >
+                      {t(mod.descriptionKey)}
+                    </span>
+                    <span
+                      style={{
+                        position: "relative",
+                        zIndex: 2,
+                        fontFamily: fonts.mono,
+                        fontSize: "0.7rem",
+                        color: colors.textFaint,
+                        marginTop: "0.5rem",
+                      }}
+                    >
+                      {count !== null ? `${count} ${t(mod.countKey)}` : "—"}
+                    </span>
+                  </>
+                )}
               </div>
             );
           })}
-
-          {/* Relazioni: striscia fissa, mai coinvolta nella rotazione */}
-          <div
-            style={{
-              gridColumn: "1 / 5",
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: "0.8rem",
-              padding: "0.85rem 1.3rem",
-              border: `1px dashed ${colors.border}`,
-              borderRadius: radii.sm,
-              opacity: 0.5,
-              cursor: "default",
-            }}
-          >
-            <span style={{ fontFamily: fonts.display, fontStyle: "italic", fontSize: "1rem", color: colors.gold, opacity: 0.7 }}>V</span>
-            <span style={{ fontSize: "1.5rem" }}>🌳</span>
-            <span style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: "1rem", color: colors.textPrimary }}>
-              {t("hub.relationsTitle")}
-            </span>
-            <span
-              style={{
-                marginLeft: "auto",
-                fontFamily: fonts.mono,
-                fontSize: "0.6rem",
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: colors.crimson,
-                border: `1px solid ${colors.crimson}55`,
-                padding: "0.1rem 0.4rem",
-                borderRadius: "3px",
-              }}
-            >
-              {t("hub.relationsBadge")}
-            </span>
-          </div>
         </div>
       </div>
     </div>
@@ -362,6 +400,8 @@ const hubStyleTag = `
   .hub-slot-wide .hub-tile-title { font-size: 1.35rem; }
   .hub-slot-s1 .hub-tile-desc, .hub-slot-s2 .hub-tile-desc { display: none; }
   .hub-slot-s1 .hub-tile-title, .hub-slot-s2 .hub-tile-title { font-size: 1.05rem; }
+  .hub-slot-s3 .hub-tile-title { font-size: 1rem; }
+  .hub-slot-s3 .hub-tile-desc { display: none; }
 
   /* Texture di sfondo — identità propria di ogni modulo */
   .hub-tile-wiki::before {
@@ -380,6 +420,12 @@ const hubStyleTag = `
     content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
     background-image: repeating-linear-gradient(0deg, ${colors.indigo}1f 0px, ${colors.indigo}1f 1px, transparent 1px, transparent 22px);
   }
+  .hub-tile-relations::before {
+    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
+    background-image:
+      repeating-linear-gradient(60deg, ${colors.goldBright}1a 0px, ${colors.goldBright}1a 1px, transparent 1px, transparent 16px),
+      repeating-linear-gradient(-60deg, ${colors.goldBright}12 0px, ${colors.goldBright}12 1px, transparent 1px, transparent 16px);
+  }
   .hub-tile:hover::before { opacity: 0.85; }
 
   .hub-tile-wiki:hover { border-color: ${colors.gold}80 !important; }
@@ -390,9 +436,12 @@ const hubStyleTag = `
   .hub-tile-characters:hover .hub-tile-title { color: ${colors.crimson}; }
   .hub-tile-timeline:hover { border-color: ${colors.indigo}80 !important; }
   .hub-tile-timeline:hover .hub-tile-title { color: ${colors.indigo}; }
+  .hub-tile-relations:hover { border-color: ${colors.goldBright}80 !important; }
+  .hub-tile-relations:hover .hub-tile-title { color: ${colors.goldBright}; }
 
   @media (max-width: 640px) {
     .hub-bento { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto !important; }
-    .hub-tile { grid-area: auto !important; }
+    .hub-tile { grid-area: auto !important; flex-direction: column !important; align-items: stretch !important; }
+    .hub-slot-s3 .hub-tile-desc { display: block !important; margin-top: 0.3rem; }
   }
 `;

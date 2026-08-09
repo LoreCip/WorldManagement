@@ -301,9 +301,9 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 								colorScheme: "dark",
 							}}
 						>
-							{Object.entries(categories).map(([key, { label }]) => (
+							{Object.keys(categories).map((key) => (
 								<option key={key} value={key}>
-									{label}
+									{getCategoryLabel(t, key)}
 								</option>
 							))}
 						</select>
@@ -331,7 +331,7 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 								}}
 							>
 								<span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: categoryColor }} />
-								{getCategoryLabel(article.category)}
+								{getCategoryLabel(t, article.category)}
 							</span>
 
 							{linkedSheetId && onNavigateToCharacterSheet && (

@@ -124,30 +124,30 @@ export const AddMapModal: React.FC<AddMapModalProps> = ({
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, backdropFilter: "blur(4px)" }}>
             <div style={{ backgroundColor: colors.bgPanel, border: `1px solid ${colors.border}`, borderRadius: radii.lg, padding: "2rem", width: "450px", boxShadow: "0 10px 30px rgba(0,0,0,0.8)", color: colors.textPrimary, fontFamily: fonts.body }}>
                 <h3 style={{ fontFamily: fonts.display, margin: "0 0 1.2rem", color: colors.gold, fontSize: "1.4rem" }}>
-                    {t("maps.addMap.newMap")}
+                    {t("maps.form.newMap")}
                 </h3>
 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     <div>
-                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.addMap.mapTitle")} *</label>
+                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.form.mapTitle")} *</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder={t("common.example") + t("maps.addMap.mapNamePlaceholder")}
+                            placeholder={t("common.example") + t("maps.form.mapNamePlaceholder")}
                             required
                             style={{ width: "100%", padding: "0.6rem", borderRadius: radii.sm, backgroundColor: colors.bgPanelRaised, border: `1px solid ${colors.border}`, color: colors.textPrimary, outline: "none", fontSize: "0.9rem" }}
                         />
                     </div>
 
                     <div>
-                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.addMap.imageFile")} *</label>
+                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.form.imageFile")} *</label>
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                             <input
                                 type="text"
                                 readOnly
                                 value={selectedFilePath ? selectedFilePath.split(/[\\/]/).pop() : ""}
-                                placeholder={t("maps.addMap.imageFilePlaceholder")}
+                                placeholder={t("maps.form.imageFilePlaceholder")}
                                 style={{ flex: 1, padding: "0.6rem", borderRadius: radii.sm, backgroundColor: colors.bgPanelRaised, border: `1px solid ${colors.border}`, color: colors.textPrimary, fontSize: "0.85rem" }}
                             />
                             <button type="button" onClick={handleSelectFile} style={{ padding: "0.6rem 1rem", borderRadius: radii.sm, backgroundColor: colors.bgPanelRaised, color: colors.gold, border: `1px solid ${colors.border}`, cursor: "pointer", fontWeight: 600, fontSize: "0.85rem" }}>
@@ -157,13 +157,13 @@ export const AddMapModal: React.FC<AddMapModalProps> = ({
                     </div>
 
                     <div>
-                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.addMap.parentMap")}</label>
+                        <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>{t("maps.form.parentMapOptional")}</label>
                         <select
                             value={parentMapId}
                             onChange={(e) => setParentMapId(e.target.value)}
                             style={{ width: "100%", padding: "0.6rem", borderRadius: radii.sm, backgroundColor: colors.bgPanelRaised, color: colors.textPrimary, border: `1px solid ${colors.border}`, fontSize: "0.9rem" }}
                         >
-                            <option value="">{t("maps.addMap.parentMapPlaceholder")}</option>
+                            <option value="">{t("maps.form.parentMapPlaceholder")}</option>
                             {existingMaps.map((m) => (
                                 <option key={m.id} value={m.id}>{m.title}</option>
                             ))}
@@ -173,14 +173,14 @@ export const AddMapModal: React.FC<AddMapModalProps> = ({
                     {/* SELETTORE ARTICOLO WIKI */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            {t("maps.addMap.associatedArticle")}
+                            {t("maps.form.associatedArticleOptional")}
                         </label>
                         <select
                             value={associatedArticleId}
                             onChange={(e) => setAssociatedArticleId(e.target.value)}
                             style={{ width: "100%", padding: "0.6rem", borderRadius: radii.sm, backgroundColor: colors.bgPanelRaised, color: colors.textPrimary, border: `1px solid ${colors.border}`, fontSize: "0.9rem" }}
                         >
-                            <option value="">{t("maps.addMap.associatedArticlePlaceholder")}</option>
+                            <option value="">{t("maps.form.associatedArticlePlaceholder")}</option>
                             {articles.map((art) => (
                                 <option key={art.id} value={art.id}>📖 {art.title}</option>
                             ))}
@@ -196,7 +196,7 @@ export const AddMapModal: React.FC<AddMapModalProps> = ({
                             disabled={isLoading || !title.trim() || !selectedFilePath}
                             style={{ padding: "0.55rem 1.2rem", borderRadius: radii.md, backgroundColor: colors.gold, color: colors.bgVoid, border: "none", fontWeight: 600, cursor: isLoading ? "wait" : "pointer", opacity: !title.trim() || !selectedFilePath ? 0.5 : 1 }}
                         >
-                            {isLoading ? t("common.saving") : t("maps.addMap.saveMap")}
+                            {isLoading ? t("common.saving") : t("maps.form.saveMap")}
                         </button>
                     </div>
                 </form>

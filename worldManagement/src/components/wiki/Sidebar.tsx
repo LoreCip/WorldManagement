@@ -200,7 +200,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {getCategoryLabel(item.category)}
+                                    {getCategoryLabel(t, item.category)}
                                 </div>
                                 <div
                                     style={{

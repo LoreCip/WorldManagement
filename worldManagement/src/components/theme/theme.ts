@@ -47,18 +47,30 @@ export const radii = {
 
 export type CategoryKey = "Lore" | "Personaggio" | "Luogo" | "Fazione";
 
-export const categories: Record<CategoryKey, { label: string; color: string }> = {
-	Lore: { label: "Lore / Storia", color: colors.gold },
-	Personaggio: { label: "Personaggio", color: colors.crimson },
-	Luogo: { label: "Luogo", color: colors.verdigris },
-	Fazione: { label: "Fazione", color: colors.indigo },
+export const categories: Record<CategoryKey, { color: string }> = {
+	Lore: { color: colors.gold },
+	Personaggio: { color: colors.crimson },
+	Luogo: { color: colors.verdigris },
+	Fazione: { color: colors.indigo },
 };
 
 export function getCategoryColor(category?: string): string {
 	return categories[category as CategoryKey]?.color ?? colors.gold;
 }
 
-export function getCategoryLabel(category?: string): string {
-	return categories[category as CategoryKey]?.label ?? category ?? "Lore / Storia";
-}
+/**
+ * Ritorna l'etichetta localizzata per la categoria specificata.
+ * @param t La funzione di traduzione t ritornata da useLocalization()
+ * @param category La chiave di categoria (es. "Lore", "Personaggio")
+ */
+export function getCategoryLabel(t: (key: string) => string, category?: string): string {
+	if (!category) {
+		return t("wiki.categories.Lore");
+	}
 
+	// Se la chiave esiste nel file json la traduciamo, altrimenti usiamo la stringa passata come fallback
+	const translationKey = `wiki.categories.${category}`;
+	const translated = t(translationKey);
+
+	return translated !== translationKey ? translated : category;
+}

@@ -136,14 +136,14 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                 }}
             >
                 <h3 style={{ fontFamily: fonts.display, margin: "0 0 1.2rem", color: colors.gold, fontSize: "1.4rem" }}>
-                    {t("maps.editMap.modDetails")}
+                    {t("maps.form.modDetails")}
                 </h3>
 
                 <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {/* Titolo Mappa */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            {t("maps.addMap.mapTitle")}
+                            {t("maps.form.mapTitle")}
                         </label>
                         <input
                             type="text"
@@ -166,7 +166,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* CAMBIO IMMAGINE */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            {t("maps.addMap.mapChangeFile")}
+                            {t("maps.form.imageFileChange")}
                         </label>
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                             <input
@@ -205,7 +205,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* Articolo Wiki Correlato */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            {t("maps.editMap.linkedWiki")}
+                            {t("maps.form.associatedArticle")}
                         </label>
                         <select
                             value={associatedArticleId}
@@ -220,7 +220,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 fontSize: "0.9rem",
                             }}
                         >
-                            <option value="">{t("maps.editMap.noLinkWiki")}</option>
+                            <option value="">{t("maps.form.noLinkWiki")}</option>
                             {articles.map((art) => (
                                 <option key={art.id} value={art.id}>
                                     📖 {art.title}
@@ -232,7 +232,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                     {/* Mappa Padre */}
                     <div>
                         <label style={{ display: "block", fontSize: "0.85rem", marginBottom: "0.4rem", color: colors.textSecondary }}>
-                            {t("maps.editMap.parentMap")}
+                            {t("maps.form.parentMap")}
                         </label>
                         <select
                             value={parentMapId}
@@ -247,7 +247,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
                                 fontSize: "0.9rem",
                             }}
                         >
-                            <option value="">{t("maps.editMap.noParent")}</option>
+                            <option value="">{t("maps.form.noParent")}</option>
                             {existingMaps
                                 .filter((m) => m.id !== currentMap.id)
                                 .map((m) => (
