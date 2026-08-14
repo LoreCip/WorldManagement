@@ -70,7 +70,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 							fontWeight: 600,
 						}}
 					>
-						Nuovo nodo
+						{t("relations.quickNode.tabNew")}
 					</button>
 					<button
 						onClick={() => setMode("existing")}
@@ -86,7 +86,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 							fontWeight: 600,
 						}}
 					>
-						Nodo esistente
+						{t("relations.quickNode.tabExisting")}
 					</button>
 				</div>
 
@@ -97,7 +97,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							onKeyDown={(e) => e.key === "Enter" && submit()}
-							placeholder="es. Messaggero Anonimo"
+							placeholder={t("relations.quickNode.namePlaceholder")}
 							style={{
 								width: "100%",
 								backgroundColor: colors.bgPanelRaised,
@@ -172,7 +172,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 							autoFocus
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
-							placeholder="Cerca un nodo già esistente…"
+							placeholder={t("relations.quickNode.searchPlaceholder")}
 							style={{
 								width: "100%",
 								backgroundColor: colors.bgPanelRaised,
@@ -190,9 +190,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 						<div style={{ maxHeight: "220px", overflowY: "auto", marginBottom: "0.9rem" }}>
 							{filteredExisting.length === 0 ? (
 								<div style={{ fontSize: "0.8rem", color: colors.textFaint, textAlign: "center", padding: "1rem 0" }}>
-									{existingNodes.length === 0
-										? "Tutti i nodi del grafo sono già in questa vista."
-										: "Nessun risultato."}
+									{existingNodes.length === 0 ? t("relations.quickNode.noneLeft") : t("relations.quickNode.noResults")}
 								</div>
 							) : (
 								filteredExisting.map((n) => (
@@ -230,7 +228,7 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({ onClose, onCreat
 								cursor: "pointer",
 							}}
 						>
-							Chiudi
+							{t("relations.quickNode.close")}
 						</button>
 					</>
 				)}

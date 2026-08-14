@@ -1,5 +1,6 @@
 ..
 ├── README.md
+├── TODO.md
 └── worldManagement
     ├── index.html
     ├── package.json
@@ -29,6 +30,15 @@
     │   │   │   ├── MapSelector.tsx
     │   │   │   ├── MapSidebar.tsx
     │   │   │   └── PortalControls.tsx
+    │   │   ├── relations
+    │   │   │   ├── CharacterNode.tsx
+    │   │   │   ├── EdgeDrawer.tsx
+    │   │   │   ├── GapEdge.tsx
+    │   │   │   ├── NodeDrawer.tsx
+    │   │   │   ├── QuickNodeModal.tsx
+    │   │   │   ├── RelationEdge.tsx
+    │   │   │   ├── RelationsToolbar.tsx
+    │   │   │   └── UncertainEdge.tsx
     │   │   ├── settings
     │   │   │   └── SettingsField.tsx
     │   │   ├── theme
@@ -51,6 +61,7 @@
     │   ├── hooks
     │   │   ├── useCharacters.ts
     │   │   ├── useMaps.ts
+    │   │   ├── useRelations.ts
     │   │   ├── useTimeline.ts
     │   │   └── useWiki.ts
     │   ├── localization
@@ -60,16 +71,19 @@
     │   ├── types
     │   │   ├── character.ts
     │   │   ├── map.ts
+    │   │   ├── relations.ts
     │   │   ├── settingsRegistry.ts
     │   │   ├── timeline.ts
     │   │   └── wiki.ts
     │   ├── utils
+    │   │   ├── graphLayout.ts
     │   │   ├── mapHierarchy.ts
     │   │   └── timeConversion.ts
     │   ├── views
     │   │   ├── CharacterView.tsx
     │   │   ├── HubView.tsx
     │   │   ├── MapView.tsx
+    │   │   ├── RelationsView.tsx
     │   │   ├── SettingsView.tsx
     │   │   ├── TimelineView.tsx
     │   │   └── WikiView.tsx
@@ -77,7 +91,8 @@
     ├── src-tauri
     │   ├── build.rs
     │   ├── capabilities
-    │   │   └── default.json
+    │   │   ├── default.json
+    │   │   └── desktop.json
     │   ├── Cargo.lock
     │   ├── Cargo.toml
     │   ├── gen
@@ -118,6 +133,10 @@
     │   │   │   │   ├── models.rs
     │   │   │   │   └── mod.rs
     │   │   │   ├── mod.rs
+    │   │   │   ├── relations
+    │   │   │   │   ├── commands.rs
+    │   │   │   │   ├── models.rs
+    │   │   │   │   └── mod.rs
     │   │   │   ├── settings
     │   │   │   │   ├── commands.rs
     │   │   │   │   ├── models.rs
@@ -141,4 +160,4 @@
     ├── tsconfig.node.json
     └── vite.config.ts
 
-33 directories, 109 files
+35 directories, 126 files

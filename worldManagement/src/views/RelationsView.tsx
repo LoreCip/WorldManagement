@@ -30,7 +30,14 @@ import { NodeDrawer } from "../components/relations/NodeDrawer";
 import { EdgeDrawer } from "../components/relations/EdgeDrawer";
 import { RelationsToolbar } from "../components/relations/RelationsToolbar";
 import { QuickNodeModal } from "../components/relations/QuickNodeModal";
-import { GraphEdgeData, GraphNodeData, GENEALOGY_RELATION_TYPES, NETWORK_RELATION_TYPES, RelationType } from "../types/relations";
+import {
+	GraphEdgeData,
+	GraphNodeData,
+	GraphView,
+	GENEALOGY_RELATION_TYPES,
+	NETWORK_RELATION_TYPES,
+	RelationType,
+} from "../types/relations";
 import { layoutGenealogy, layoutNetwork } from "../utils/graphLayout";
 
 interface RelationsViewProps {
@@ -49,6 +56,10 @@ type PendingConnection = {
 	targetHandle?: string;
 };
 
+type DraftEdgePreview = { type: RelationType; label: string; isUncertain: boolean };
+
+const DEFAULT_FOCUS_DEPTH = 2;
+
 const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNavigateToCharacterSheet }) => {
 	const { t } = useLocalization();
 	const rf = useReactFlow();
@@ -63,6 +74,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 		visibleNodes,
 		visibleEdges,
 		createView,
+		deleteView,
 		updateViewPositionsLocal,
 		saveNode,
 		addQuickNode,
@@ -72,16 +84,17 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 		promoteNode,
 		saveEdge,
 		deleteEdge,
-		removeEdgeFromView,
 		findEdgeBetween,
 	} = useRelations();
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 	const [pendingEdge, setPendingEdge] = useState<PendingConnection | null>(null);
+	const [draftEdgePreview, setDraftEdgePreview] = useState<DraftEdgePreview | null>(null);
 	const [isQuickNodeOpen, setIsQuickNodeOpen] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [focusMode, setFocusMode] = useState(false);
+	const [focusDepth, setFocusDepth] = useState(DEFAULT_FOCUS_DEPTH);
 
 	const nodesById = useMemo(() => {
 		const map: Record<string, GraphNodeData> = {};
@@ -89,14 +102,14 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 		return map;
 	}, [allNodes]);
 
-	// Nodi/archi risultanti dalla "modalità focus" (BFS attorno al nodo selezionato).
+	// Nodi/archi risultanti dalla "modalità focus" (BFS attorno al nodo selezionato,
+	// per N passi dove N è regolabile dallo stepper in toolbar).
 	const { focusedNodes, focusedEdges } = useMemo(() => {
 		if (!focusMode || !selectedNodeId) return { focusedNodes: visibleNodes, focusedEdges: visibleEdges };
 
-		const depth = currentView?.focusDepth ?? 2;
 		const visited = new Set<string>([selectedNodeId]);
 		let frontier = [selectedNodeId];
-		for (let i = 0; i < depth; i++) {
+		for (let i = 0; i < focusDepth; i++) {
 			const next: string[] = [];
 			visibleEdges.forEach((e) => {
 				if (frontier.includes(e.sourceNodeId) && !visited.has(e.targetNodeId)) {
@@ -115,7 +128,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 			focusedNodes: visibleNodes.filter((n) => visited.has(n.id)),
 			focusedEdges: visibleEdges.filter((e) => visited.has(e.sourceNodeId) && visited.has(e.targetNodeId)),
 		};
-	}, [focusMode, selectedNodeId, visibleNodes, visibleEdges, currentView]);
+	}, [focusMode, selectedNodeId, focusDepth, visibleNodes, visibleEdges]);
 
 	const relationOptions: RelationType[] = currentView?.type === "network" ? NETWORK_RELATION_TYPES : GENEALOGY_RELATION_TYPES;
 
@@ -141,7 +154,11 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 	const flowEdges: Edge[] = useMemo(() => {
 		return focusedEdges.map((e) => {
 			const edgeType = e.type === "descendant_gap" ? "gap" : e.isUncertain ? "uncertain" : "relation";
-			const data: RelationEdgeFlowData = { edge: e, label: e.label ?? t(`relations.relationTypes.${e.type}`) };
+			const data: RelationEdgeFlowData = {
+				edge: e,
+				label: e.label ?? t(`relations.relationTypes.${e.type}`),
+				description: e.description,
+			};
 			return {
 				id: e.id,
 				source: e.sourceNodeId,
@@ -157,6 +174,40 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 			};
 		});
 	}, [focusedEdges, t]);
+
+	// Anteprima "live" dell'arco che si sta creando: senza questa, la linea
+	// tracciata trascinando sparisce non appena si rilascia il mouse (perché
+	// l'arco non esiste ancora nel grafo) e ricompare solo al salvataggio nel
+	// drawer. La mostriamo tratteggiata finché non viene confermata.
+	const previewEdge: Edge | null = useMemo(() => {
+		if (!pendingEdge || pendingEdge.edgeId) return null;
+		const relType = draftEdgePreview?.type ?? relationOptions[0] ?? "custom";
+		const label = draftEdgePreview?.label?.trim() || t(`relations.relationTypes.${relType}`);
+		const data: RelationEdgeFlowData = {
+			edge: {
+				id: "__draft__",
+				sourceNodeId: pendingEdge.sourceNodeId,
+				targetNodeId: pendingEdge.targetNodeId,
+				type: relType,
+				isUncertain: draftEdgePreview?.isUncertain,
+				label,
+			} as GraphEdgeData,
+			label,
+		};
+		return {
+			id: "__draft__",
+			source: pendingEdge.sourceNodeId,
+			target: pendingEdge.targetNodeId,
+			sourceHandle: pendingEdge.sourceHandle,
+			targetHandle: pendingEdge.targetHandle,
+			type: "relation",
+			data,
+			style: { strokeDasharray: "5 4", opacity: 0.75 },
+			markerEnd: { type: MarkerType.ArrowClosed, color: colors.textFaint, width: 16, height: 16 },
+		};
+	}, [pendingEdge, draftEdgePreview, relationOptions, t]);
+
+	const displayedEdges = previewEdge ? [...flowEdges, previewEdge] : flowEdges;
 
 	// --- Handlers ----------------------------------------------------------
 
@@ -178,6 +229,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 	}, []);
 
 	const onEdgeClick: EdgeMouseHandler = useCallback((_evt, edge) => {
+		if (edge.id === "__draft__") return;
 		const original = allEdges.find((e) => e.id === edge.id);
 		if (!original) return;
 		setPendingEdge({
@@ -213,6 +265,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 				targetHandle: connection.targetHandle ?? undefined,
 			});
 		}
+		setDraftEdgePreview(null);
 	}, [findEdgeBetween]);
 
 	const handleCreateQuickNode = useCallback(
@@ -243,6 +296,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 		async (edge: Omit<GraphEdgeData, "id"> & { id?: string }) => {
 			await saveEdge(edge);
 			setPendingEdge(null);
+			setDraftEdgePreview(null);
 			setIsConnecting(false);
 		},
 		[saveEdge]
@@ -252,8 +306,22 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 		async (id: string) => {
 			await deleteEdge(id);
 			setPendingEdge(null);
+			setDraftEdgePreview(null);
 		},
 		[deleteEdge]
+	);
+
+	const handleCloseEdgeDrawer = useCallback(() => {
+		setPendingEdge(null);
+		setDraftEdgePreview(null);
+	}, []);
+
+	const handleDeleteView = useCallback(
+		(view: GraphView) => {
+			const confirmed = window.confirm(t("relations.views.deleteConfirm", { title: view.title }));
+			if (confirmed) deleteView(view.id);
+		},
+		[deleteView, t]
 	);
 
 	const handleRecenter = useCallback(() => {
@@ -281,6 +349,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 				currentViewId={currentViewId}
 				onSelectView={setCurrentViewId}
 				onCreateView={(title, type) => createView(title, type)}
+				onDeleteView={handleDeleteView}
 				searchQuery={searchQuery}
 				onSearch={setSearchQuery}
 				onAddNode={() => setIsQuickNodeOpen(true)}
@@ -288,6 +357,8 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 				onToggleConnecting={() => setIsConnecting((v) => !v)}
 				focusMode={focusMode}
 				onToggleFocusMode={() => setFocusMode((v) => !v)}
+				focusDepth={focusDepth}
+				onFocusDepthChange={setFocusDepth}
 			/>
 
 			<div style={{ flex: 1, display: "flex", position: "relative", minHeight: 0 }}>
@@ -305,18 +376,48 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 						}}
 					>
 						<div style={{ fontSize: "2rem" }}>🌳</div>
-						<div style={{ fontFamily: fonts.display, fontSize: "1.15rem", color: colors.textPrimary }}>
-							{t("relations.views.noViews")}
-						</div>
-						<div style={{ fontSize: "0.85rem", color: colors.textFaint, maxWidth: "380px", lineHeight: 1.5 }}>
-							Una <strong>vista</strong> è uno spazio di lavoro separato: crea un{" "}
-							<em>{t("relations.views.genealogy")}</em> per un albero genealogico gerarchico (genitori/figli, coniugi),
-							oppure una <em>{t("relations.views.network")}</em> per una mappa libera di alleanze, rivalità e fazioni.
-							Gli stessi nodi possono comparire in più viste.
-						</div>
+
+						{views.length === 0 ? (
+							<>
+								<div style={{ fontFamily: fonts.display, fontSize: "1.15rem", color: colors.textPrimary }}>
+									{t("relations.empty.firstTimeTitle")}
+								</div>
+								<div style={{ fontSize: "0.85rem", color: colors.textFaint, maxWidth: "380px", lineHeight: 1.5 }}>
+									{t("relations.empty.firstTimeBodyPrefix")} <em>{t("relations.views.genealogy")}</em>{" "}
+									{t("relations.empty.firstTimeBodyMid")} <em>{t("relations.views.network")}</em>{" "}
+									{t("relations.empty.firstTimeBodySuffix")}
+								</div>
+							</>
+						) : (
+							<>
+								<div style={{ fontFamily: fonts.display, fontSize: "1.15rem", color: colors.textPrimary }}>
+									{t("relations.empty.pickTitle")}
+								</div>
+								<div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center", maxWidth: "420px" }}>
+									{views.map((v) => (
+										<button
+											key={v.id}
+											onClick={() => setCurrentViewId(v.id)}
+											style={{
+												padding: "0.4rem 0.8rem",
+												borderRadius: radii.pill,
+												border: `1px solid ${colors.border}`,
+												backgroundColor: colors.bgPanel,
+												color: colors.textPrimary,
+												fontSize: "0.8rem",
+												cursor: "pointer",
+											}}
+										>
+											{v.title} <span style={{ color: colors.textFaint }}>· {t(`relations.views.${v.type}`)}</span>
+										</button>
+									))}
+								</div>
+							</>
+						)}
+
 						<button
 							onClick={() => {
-								const title = window.prompt("Nome della nuova vista:");
+								const title = window.prompt(t("relations.views.newViewNamePrompt"));
 								if (title && title.trim()) createView(title.trim(), "genealogy");
 							}}
 							style={{
@@ -337,7 +438,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 					<div style={{ flex: 1, position: "relative", minHeight: 0 }}>
 						<ReactFlow
 							nodes={flowNodes}
-							edges={flowEdges}
+							edges={displayedEdges}
 							nodeTypes={nodeTypes}
 							edgeTypes={edgeTypes}
 							onNodesChange={onNodesChange}
@@ -397,7 +498,25 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 									fontSize: "0.75rem",
 								}}
 							>
-								Trascina da un lato qualsiasi di un nodo verso un altro per collegarli.
+								{t("relations.connectingHint")}
+							</div>
+						)}
+
+						{focusMode && !selectedNodeId && (
+							<div
+								style={{
+									position: "absolute",
+									top: "1.2rem",
+									left: "1.2rem",
+									padding: "0.4rem 0.8rem",
+									borderRadius: radii.pill,
+									backgroundColor: colors.bgPanel,
+									border: `1px solid ${colors.indigo}55`,
+									color: colors.indigo,
+									fontSize: "0.75rem",
+								}}
+							>
+								{t("relations.focus.needSelection")}
 							</div>
 						)}
 
@@ -413,17 +532,10 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 								}}
 								nodesById={nodesById}
 								relationOptions={relationOptions}
-								onClose={() => setPendingEdge(null)}
+								onClose={handleCloseEdgeDrawer}
 								onSave={handleSaveEdge}
 								onDelete={pendingEdge.edgeId ? handleDeleteEdge : undefined}
-								onRemoveFromView={
-									pendingEdge.edgeId
-										? async (id) => {
-												await removeEdgeFromView(id);
-												setPendingEdge(null);
-										  }
-										: undefined
-								}
+								onDraftChange={pendingEdge.edgeId ? undefined : setDraftEdgePreview}
 								conflictingEdge={
 									!pendingEdge.edgeId
 										? findEdgeBetween(pendingEdge.sourceNodeId, pendingEdge.targetNodeId)

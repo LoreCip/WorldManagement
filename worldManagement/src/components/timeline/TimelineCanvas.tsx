@@ -18,7 +18,7 @@ interface TimelineCanvasProps {
 	todayValue?: number | null;
 	selectedId?: string | null;
 	onSelectEvent: (id: string) => void;
-	onCreateEvent: (timeValue: number) => void;
+	onCreateEvent: (timeValue: number, screenX?: number, screenY?: number) => void;
 	onViewportChange?: (viewport: Viewport) => void;
 }
 
@@ -37,6 +37,14 @@ export interface TimelineCanvasHandle {
 	panBy: (deltaValue: number) => void;
 	applyView: (centerValue: number, pixelsPerDay: number) => void;
 	getViewport: () => Viewport;
+	// Calcola la posizione (e il lato sopra/sotto) del balloon a partire da un
+	// punto qualsiasi in coordinate di PAGINA, riusando lo stesso clamping
+	// applicato ai marker selezionati. Utile per il balloon di un evento
+	// appena creato, che non ha ancora un marker disegnato sulla timeline.
+	getAnchorForPoint: (pageX: number, pageY: number, preferredSide?: "above" | "below") => SelectedAnchor;
+	// Centro del canvas in coordinate di PAGINA — usato quando non abbiamo
+	// un punto di click (es. bottone "+ Nuovo evento" nell'header).
+	getCenterPoint: () => { x: number; y: number };
 }
 
 export interface SelectedAnchor {
@@ -51,9 +59,10 @@ interface TimelineCanvasProps {
 	todayValue?: number | null;
 	selectedId?: string | null;
 	onSelectEvent: (id: string) => void;
-	onCreateEvent: (timeValue: number) => void;
+	onCreateEvent: (timeValue: number, screenX?: number, screenY?: number) => void;
 	onViewportChange?: (viewport: Viewport) => void;
 	onSelectedAnchorChange?: (anchor: SelectedAnchor | null) => void; // nuovo
+	zoomDisabled?: boolean; // disattiva zoom (rotella + pulsanti) mentre si crea un nuovo evento
 }
 
 const BALLOON_WIDTH = 300;
@@ -142,6 +151,7 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 			onCreateEvent,
 			onViewportChange,
 			onSelectedAnchorChange,
+			zoomDisabled,
 		},
 		ref
 	) => {
@@ -174,6 +184,40 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 			return () => observer.disconnect();
 		}, []);
 
+		const computeAnchor = useCallback(
+			(pageX: number, pageY: number, preferredSide: "above" | "below"): SelectedAnchor => {
+				const rect = containerRef.current?.getBoundingClientRect();
+				if (!rect) return { x: pageX, y: pageY, side: preferredSide };
+
+				const safeTop = rect.top + SCREEN_MARGIN;
+				const safeBottom = rect.bottom - SCREEN_MARGIN;
+
+				const spaceAbove = pageY - safeTop;
+				const spaceBelow = safeBottom - pageY;
+
+				let side: "above" | "below" = preferredSide;
+				if (side === "above" && spaceAbove < BALLOON_MAX_HEIGHT && spaceBelow > spaceAbove) {
+					side = "below";
+				} else if (side === "below" && spaceBelow < BALLOON_MAX_HEIGHT && spaceAbove > spaceBelow) {
+					side = "above";
+				}
+
+				const clampedX = clamp(
+					pageX,
+					BALLOON_WIDTH / 2 + SCREEN_MARGIN,
+					window.innerWidth - BALLOON_WIDTH / 2 - SCREEN_MARGIN
+				);
+
+				const clampedY =
+					side === "above"
+						? clamp(pageY, safeTop + BALLOON_MAX_HEIGHT, safeBottom)
+						: clamp(pageY, safeTop, safeBottom - BALLOON_MAX_HEIGHT);
+
+				return { x: clampedX, y: clampedY, side };
+			},
+			[]
+		);
+
 		const fitToRange = useCallback(
 			(min: number, max: number) => {
 				const span = Math.max(1, max - min) * 1.3;
@@ -198,8 +242,14 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 
 		useImperativeHandle(ref, () => ({
 			fitAll,
-			zoomIn: () => setPixelsPerDay((p) => clamp(p * 1.4, MIN_PIXELS_PER_DAY, MAX_PIXELS_PER_DAY)),
-			zoomOut: () => setPixelsPerDay((p) => clamp(p / 1.4, MIN_PIXELS_PER_DAY, MAX_PIXELS_PER_DAY)),
+			zoomIn: () => {
+				if (zoomDisabled) return;
+				setPixelsPerDay((p) => clamp(p * 1.4, MIN_PIXELS_PER_DAY, MAX_PIXELS_PER_DAY));
+			},
+			zoomOut: () => {
+				if (zoomDisabled) return;
+				setPixelsPerDay((p) => clamp(p / 1.4, MIN_PIXELS_PER_DAY, MAX_PIXELS_PER_DAY));
+			},
 			jumpTo: (value: number) => setCenterValue(value),
 			panBy: (deltaValue: number) => setCenterValue((c) => c + deltaValue),
 			applyView: (c: number, p: number) => {
@@ -212,6 +262,13 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 				minValue: centerValue - width / 2 / pixelsPerDay,
 				maxValue: centerValue + width / 2 / pixelsPerDay,
 			}),
+			getAnchorForPoint: (pageX: number, pageY: number, preferredSide: "above" | "below" = "below") =>
+				computeAnchor(pageX, pageY, preferredSide),
+			getCenterPoint: () => {
+				const rect = containerRef.current?.getBoundingClientRect();
+				if (!rect) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+				return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+			},
 		}));
 
 		const valueToX = useCallback(
@@ -339,6 +396,10 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 		}, []);
 
 		useEffect(() => {
+			if (!selectedId) {
+				return;
+			}
+
 			if (!selectedLocalAnchor || !containerRef.current) {
 				onSelectedAnchorChange?.(null);
 				return;
@@ -348,36 +409,13 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 			const pageX = rect.left + selectedLocalAnchor.x;
 			const pageY = rect.top + selectedLocalAnchor.y;
 
-			const safeTop = rect.top + SCREEN_MARGIN;
-			const safeBottom = rect.bottom - SCREEN_MARGIN;
-
-			const spaceAbove = pageY - safeTop;
-			const spaceBelow = safeBottom - pageY;
-
-			let side: "above" | "below" = selectedLocalAnchor.preferredSide;
-			if (side === "above" && spaceAbove < BALLOON_MAX_HEIGHT && spaceBelow > spaceAbove) {
-				side = "below";
-			} else if (side === "below" && spaceBelow < BALLOON_MAX_HEIGHT && spaceAbove > spaceBelow) {
-				side = "above";
-			}
-
-			const clampedX = clamp(
-				pageX,
-				BALLOON_WIDTH / 2 + SCREEN_MARGIN,
-				window.innerWidth - BALLOON_WIDTH / 2 - SCREEN_MARGIN
-			);
-
-			const clampedY =
-				side === "above"
-					? clamp(pageY, safeTop + BALLOON_MAX_HEIGHT, safeBottom)
-					: clamp(pageY, safeTop, safeBottom - BALLOON_MAX_HEIGHT);
-
-			onSelectedAnchorChange?.({ x: clampedX, y: clampedY, side });
+			onSelectedAnchorChange?.(computeAnchor(pageX, pageY, selectedLocalAnchor.preferredSide));
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [selectedLocalAnchor, layoutTick, onSelectedAnchorChange]);
+		}, [selectedId, selectedLocalAnchor, layoutTick, onSelectedAnchorChange, computeAnchor]);
 
 		const handleWheel = (e: React.WheelEvent) => {
 			e.preventDefault();
+			if (zoomDisabled) return;
 			const zoomFactor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
 			const rect = containerRef.current?.getBoundingClientRect();
 			const mouseX = e.clientX - (rect?.left ?? 0);
@@ -412,7 +450,7 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
 			const rect = containerRef.current?.getBoundingClientRect();
 			if (!rect) return;
 			const value = xToValue(e.clientX - rect.left);
-			onCreateEvent(value);
+			onCreateEvent(value, e.clientX, e.clientY);
 		};
 
 		return (

@@ -180,6 +180,7 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
             generational_gap_count INTEGER,
             source_handle TEXT,
             target_handle TEXT,
+            description TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(source_node_id) REFERENCES graph_nodes(id) ON DELETE CASCADE,
             FOREIGN KEY(target_node_id) REFERENCES graph_nodes(id) ON DELETE CASCADE
@@ -243,6 +244,9 @@ pub fn ensure_graph_edges_handle_columns_exist(conn: &Connection) -> Result<(), 
     }
     if !existing.iter().any(|c| c == "target_handle") {
         conn.execute("ALTER TABLE graph_edges ADD COLUMN target_handle TEXT", [])?;
+    }
+    if !existing.iter().any(|c| c == "description") {
+        conn.execute("ALTER TABLE graph_edges ADD COLUMN description TEXT", [])?;
     }
 
     Ok(())

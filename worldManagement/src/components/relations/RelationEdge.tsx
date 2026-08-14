@@ -1,11 +1,12 @@
 import React from "react";
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath, getStraightPath } from "@xyflow/react";
+import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from "@xyflow/react";
 import { colors, fonts, radii } from "../theme/theme";
 import { GraphEdgeData } from "../../types/relations";
 
 export interface RelationEdgeFlowData extends Record<string, unknown> {
 	edge: GraphEdgeData;
 	label?: string;
+	description?: string;
 }
 
 /** Colore dell'arco in base alla categoria della relazione (genealogica vs. sociale). */
@@ -46,10 +47,10 @@ export const RelationEdge: React.FC<EdgeProps> = ({
 	const relEdge = flowData?.edge;
 	const stroke = relationColor(relEdge?.type ?? "custom");
 
-	const isGenealogyType = relEdge?.type === "parent_child" || relEdge?.type === "foster" || relEdge?.type === "sibling";
-	const [path, labelX, labelY] = isGenealogyType
-		? getSmoothStepPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, borderRadius: 8 })
-		: getStraightPath({ sourceX, sourceY, targetX, targetY });
+	// Bezier ovunque: uniforme su tutti i tipi di relazione, indipendentemente
+	// dal lato del nodo da cui parte/arriva (prima alcuni tipi usavano una
+	// spezzata "a gradino" e altri una retta, con un effetto incoerente).
+	const [path, labelX, labelY] = getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
 
 	return (
 		<>
@@ -73,6 +74,7 @@ export const RelationEdge: React.FC<EdgeProps> = ({
 							whiteSpace: "nowrap",
 						}}
 						className="nodrag nopan"
+						title={flowData.description}
 					>
 						{flowData.label}
 					</div>

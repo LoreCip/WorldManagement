@@ -65,13 +65,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 		[saveCurrentView]
 	);
 
+	const handleCreateEvent = useCallback(
+		(value: number, screenX?: number, screenY?: number) => {
+			handleNewEvent(value);
+			const canvas = canvasRef.current;
+			if (!canvas) return;
+
+			const point =
+				screenX != null && screenY != null ? { x: screenX, y: screenY } : canvas.getCenterPoint();
+
+			setAnchor(canvas.getAnchorForPoint(point.x, point.y, "below"));
+		},
+		[handleNewEvent]
+	);
+
 	return (
 		<div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
 			<TimelineHeader
 				onFitAll={() => canvasRef.current?.fitAll()}
 				onZoomIn={() => canvasRef.current?.zoomIn()}
 				onZoomOut={() => canvasRef.current?.zoomOut()}
-				onNewEvent={() => handleNewEvent(viewport?.centerValue ?? 0)}
+				onNewEvent={() => handleCreateEvent(viewport?.centerValue ?? 0)}
 				categories={categories}
 				activeCategoryIds={activeCategoryIds}
 				onToggleCategory={toggleCategoryFilter}
@@ -97,7 +111,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 					todayValue={campaignSettings.current_date_value}
 					selectedId={isModalOpen ? currentEvent.id || null : null}
 					onSelectEvent={handleSelectEvent}
-					onCreateEvent={handleNewEvent}
+					onCreateEvent={handleCreateEvent}
 					onViewportChange={setViewport}
 					onSelectedAnchorChange={setAnchor}
 				/>

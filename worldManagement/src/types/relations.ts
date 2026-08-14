@@ -49,6 +49,10 @@ export interface GraphEdgeData {
 	label?: string; // es. "Figlio illegittimo", "Patto Segreto"
 	isUncertain?: boolean; // Se è una diceria / incerto
 
+	// Nota più estesa sul legame (es. contesto, fonte della diceria, storia),
+	// mostrata come tooltip sull'etichetta invece che scritta per intero sul canvas.
+	description?: string;
+
 	// Specifico per i Gap Generazionali
 	generationalGapCount?: number; // es. 3 (generazioni stimate)
 

@@ -84,7 +84,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
 	useEffect(() => {
 		if (node.type !== "placeholder" && node.type !== "unknown") return;
-		invoke<GameSystemOption[]>("get_game_systems")
+		invoke<GameSystemOption[]>("get_all_game_systems")
 			.then((res) => {
 				setSystems(res);
 				if (res.length > 0) setSelectedSystemId(res[0].id);
@@ -154,7 +154,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 			</div>
 
 			<div>
-				<label style={fieldLabelStyle}>{t("relations.header.addNode")}</label>
+				<label style={fieldLabelStyle}>{t("relations.nodeDrawer.nameLabel")}</label>
 				<input
 					style={inputStyle}
 					value={draft.displayName}
@@ -164,11 +164,11 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
 			{draft.type !== "unknown" && (
 				<div>
-					<label style={fieldLabelStyle}>Sottotitolo</label>
+					<label style={fieldLabelStyle}>{t("relations.nodeDrawer.subtitleLabel")}</label>
 					<input
 						style={inputStyle}
 						value={draft.subtitle ?? ""}
-						placeholder="es. Duca di Ovestvia"
+						placeholder={t("relations.nodeDrawer.subtitlePlaceholder")}
 						onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })}
 					/>
 				</div>
@@ -176,7 +176,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
 			<div style={{ display: "flex", gap: "0.6rem" }}>
 				<div style={{ flex: 1 }}>
-					<label style={fieldLabelStyle}>Nascita</label>
+					<label style={fieldLabelStyle}>{t("relations.nodeDrawer.birthLabel")}</label>
 					<input
 						style={inputStyle}
 						type="number"
@@ -185,7 +185,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 					/>
 				</div>
 				<div style={{ flex: 1 }}>
-					<label style={fieldLabelStyle}>Morte</label>
+					<label style={fieldLabelStyle}>{t("relations.nodeDrawer.deathLabel")}</label>
 					<input
 						style={inputStyle}
 						type="number"
@@ -196,7 +196,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 			</div>
 
 			<div>
-				<label style={fieldLabelStyle}>Note</label>
+				<label style={fieldLabelStyle}>{t("relations.nodeDrawer.notesLabel")}</label>
 				<textarea
 					style={{ ...inputStyle, minHeight: "80px", resize: "vertical", fontFamily: fonts.body }}
 					value={draft.notes ?? ""}
@@ -214,7 +214,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 						</button>
 						<button
 							onClick={() => setDraft({ ...draft, wikiArticleId: undefined })}
-							title="Scollega"
+							title={t("relations.nodeDrawer.unlink")}
 							style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
 						>
 							✕
@@ -224,7 +224,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 					<div style={{ position: "relative" }}>
 						<input
 							style={inputStyle}
-							placeholder="Cerca articolo wiki…"
+							placeholder={t("relations.nodeDrawer.wikiSearchPlaceholder")}
 							value={articleQuery}
 							onChange={(e) => setArticleQuery(e.target.value)}
 						/>
@@ -241,7 +241,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 							>
 								{filteredArticles.length === 0 ? (
 									<div style={{ padding: "0.5rem 0.6rem", fontSize: "0.78rem", color: colors.textFaint }}>
-										Nessun risultato.
+										{t("relations.nodeDrawer.noResults")}
 									</div>
 								) : (
 									filteredArticles.map((a) => (
@@ -272,7 +272,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
 			{/* Collegamento a scheda personaggio esistente (alternativa alla promozione) */}
 			<div>
-				<label style={fieldLabelStyle}>Scheda Personaggio</label>
+				<label style={fieldLabelStyle}>{t("relations.nodeDrawer.sheetLabel")}</label>
 				{draft.characterId ? (
 					<div style={{ display: "flex", gap: "0.4rem" }}>
 						<button onClick={() => onOpenCharacterSheet?.(draft.characterId!)} style={{ ...linkButtonStyle, flex: 1 }}>
@@ -280,7 +280,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 						</button>
 						<button
 							onClick={() => setDraft({ ...draft, characterId: undefined })}
-							title="Scollega"
+							title={t("relations.nodeDrawer.unlink")}
 							style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
 						>
 							✕
@@ -290,7 +290,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 					<div style={{ position: "relative" }}>
 						<input
 							style={inputStyle}
-							placeholder="Cerca scheda esistente…"
+							placeholder={t("relations.nodeDrawer.sheetSearchPlaceholder")}
 							value={sheetQuery}
 							onChange={(e) => setSheetQuery(e.target.value)}
 						/>
@@ -307,7 +307,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 							>
 								{filteredSheets.length === 0 ? (
 									<div style={{ padding: "0.5rem 0.6rem", fontSize: "0.78rem", color: colors.textFaint }}>
-										Nessun risultato.
+										{t("relations.nodeDrawer.noResults")}
 									</div>
 								) : (
 									filteredSheets.map((s) => (
@@ -338,7 +338,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
 			{/* Vista collegata: trasforma il nodo in un "portale" verso un'altra vista */}
 			<div>
-				<label style={fieldLabelStyle}>Vista Collegata</label>
+				<label style={fieldLabelStyle}>{t("relations.nodeDrawer.linkedViewLabel")}</label>
 				{draft.linkedViewId ? (
 					<div style={{ display: "flex", gap: "0.4rem" }}>
 						<button
@@ -349,7 +349,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 						</button>
 						<button
 							onClick={() => setDraft({ ...draft, linkedViewId: undefined })}
-							title="Scollega"
+							title={t("relations.nodeDrawer.unlink")}
 							style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
 						>
 							✕
@@ -361,7 +361,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 						onChange={(e) => e.target.value && setDraft({ ...draft, linkedViewId: e.target.value })}
 						style={inputStyle}
 					>
-						<option value="">Nessuna — seleziona una vista…</option>
+						<option value="">{t("relations.nodeDrawer.linkedViewNone")}</option>
 						{otherViews.map((v) => (
 							<option key={v.id} value={v.id}>
 								{v.title}
@@ -369,10 +369,10 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 						))}
 					</select>
 				) : (
-					<div style={{ fontSize: "0.76rem", color: colors.textFaint }}>Nessun&apos;altra vista disponibile.</div>
+					<div style={{ fontSize: "0.76rem", color: colors.textFaint }}>{t("relations.nodeDrawer.linkedViewEmpty")}</div>
 				)}
 				<div style={{ fontSize: "0.7rem", color: colors.textFaint, marginTop: "0.3rem" }}>
-					Se impostata, un'icona 🔗 sul nodo permette di saltare direttamente a quella vista.
+					{t("relations.nodeDrawer.linkedViewHint")}
 				</div>
 			</div>
 
@@ -436,14 +436,14 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 							</button>
 						</>
 					) : (
-						<div style={{ fontSize: "0.75rem", color: colors.textFaint }}>Nessun sistema di gioco disponibile.</div>
+						<div style={{ fontSize: "0.75rem", color: colors.textFaint }}>{t("relations.nodeDrawer.promoteEmpty")}</div>
 					)}
 				</div>
 			)}
 
 			<div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "0.5rem", paddingTop: "0.8rem", borderTop: `1px solid ${colors.borderSubtle}` }}>
 				<button onClick={() => onRemoveFromView(node.id)} style={{ ...ghostButtonStyle, color: colors.textSecondary }}>
-					Rimuovi dalla vista
+					{t("relations.nodeDrawer.removeFromView")}
 				</button>
 				<button onClick={() => onDelete(node.id)} style={{ ...ghostButtonStyle, color: colors.crimson, borderColor: `${colors.crimson}77` }}>
 					{t("relations.actions.deleteNode")}

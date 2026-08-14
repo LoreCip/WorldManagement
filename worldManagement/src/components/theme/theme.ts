@@ -74,3 +74,18 @@ export function getCategoryLabel(t: (key: string) => string, category?: string):
 
 	return translated !== translationKey ? translated : category;
 }
+
+// --- Bridge verso le CSS custom properties -------------------------------
+function toCssVarName(key: string): string {
+	return `--${key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()}`;
+}
+
+function injectThemeCssVariables() {
+	if (typeof document === "undefined") return;
+	const root = document.documentElement.style;
+	Object.entries(colors).forEach(([key, value]) => {
+		root.setProperty(toCssVarName(key), value);
+	});
+}
+
+injectThemeCssVariables();

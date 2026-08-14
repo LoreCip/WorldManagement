@@ -1,5 +1,5 @@
 import React from "react";
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getStraightPath } from "@xyflow/react";
+import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from "@xyflow/react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { relationColor, RelationEdgeFlowData } from "./RelationEdge";
@@ -11,6 +11,8 @@ export const UncertainEdge: React.FC<EdgeProps> = ({
 	sourceY,
 	targetX,
 	targetY,
+	sourcePosition,
+	targetPosition,
 	markerEnd,
 	data,
 }) => {
@@ -18,7 +20,9 @@ export const UncertainEdge: React.FC<EdgeProps> = ({
 	const flowData = data as RelationEdgeFlowData | undefined;
 	const stroke = relationColor(flowData?.edge?.type ?? "custom");
 
-	const [path, labelX, labelY] = getStraightPath({ sourceX, sourceY, targetX, targetY });
+	// Bezier come tutti gli altri archi (prima era sempre una retta, mentre
+	// gli archi standard erano a volte curvi: risultava incoerente).
+	const [path, labelX, labelY] = getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
 
 	return (
 		<>
@@ -50,7 +54,7 @@ export const UncertainEdge: React.FC<EdgeProps> = ({
 						gap: "4px",
 					}}
 					className="nodrag nopan"
-					title={t("relations.uncertain.tooltip")}
+					title={flowData?.description || t("relations.uncertain.tooltip")}
 				>
 					<span>❓</span>
 					{flowData?.label || t("relations.uncertain.label")}

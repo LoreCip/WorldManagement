@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import "./App.css";
 
 import { MapsProvider } from "./context/MapsContext";
 import { SettingsProvider } from "./context/SettingsContext";

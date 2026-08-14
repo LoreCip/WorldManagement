@@ -115,6 +115,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
     return (
         <div
             onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
             style={{
                 position: "fixed",              // <-- era "absolute"
                 left: `${anchor.x}px`,
@@ -123,6 +124,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 width: `${BALLOON_WIDTH}px`,
                 maxHeight: "min(420px, 70vh)",
                 overflowY: "auto",
+                overscrollBehavior: "contain",
                 backgroundColor: colors.bgPanel,
                 border: `1px solid ${colors.borderSubtle}`,
                 borderRadius: radii.lg,
