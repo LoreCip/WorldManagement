@@ -8,6 +8,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { MapMeta, MapPortal } from "../../types/map";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { Z_INDEX } from "../common/zIndex";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
     const map = useMap();
@@ -87,7 +88,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     onMapClick,
     onEnterPortal,
     onDeletePortal,
-}) => {    
+}) => {
     const { t } = useLocalization();
     const imageUrl = convertFileSrc(map.image_path);
     const bounds: L.LatLngBoundsExpression = [
@@ -120,13 +121,12 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                 {/* Rendering dei Portali Cliccabili */}
                 {portals.map((portal) => (
                     <Marker key={portal.id} position={[portal.y, portal.x]} icon={portalIcon}>
-                        {/* Rimosso 'placement="top"' per risolvere l'errore di build TypeScript */}
                         <Popup>
                             <div style={{ fontFamily: fonts.body, color: colors.bgVoid, textAlign: "center" }}>
                                 <strong>{portal.label || t("maps.canvas.portalDefault")}</strong>
                                 <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.4rem", justifyContent: "center" }}>
                                     <button
-                                        /* Aggiunto il controllo con && per garantire che target_map_id sia definito per TypeScript */
+                                        /* Controllo con && per garantire che target_map_id sia definito per TypeScript */
                                         onClick={() => portal.target_map_id && onEnterPortal(portal.target_map_id)}
                                         style={{
                                             padding: "0.25rem 0.6rem",
@@ -139,7 +139,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                                             fontSize: "0.75rem",
                                         }}
                                     >
-                                        Entra ➔
+                                        {t("maps.canvas.enterPortal")}
                                     </button>
                                     <button
                                         onClick={() => onDeletePortal(portal.id)}
@@ -178,13 +178,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                         fontWeight: 600,
                         fontSize: "0.85rem",
                         boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
-                        zIndex: 1000,
+                        zIndex: Z_INDEX.drawer,
                         pointerEvents: "none",
                     }}
                 >
-                    {hasSelectedTarget
-                        ? "Clicca un punto sulla mappa per posizionare il portale"
-                        : "Seleziona prima la mappa di destinazione dal menu in alto"}
+                    {hasSelectedTarget ? t("maps.canvas.clickToPlacePortal") : t("maps.canvas.selectTargetFirst")}
                 </div>
             )}
         </div>

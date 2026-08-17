@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invokeSafe } from "../lib/ipc";
 import { GraphEdgeData, GraphNodeData, GraphView, GraphViewType, NodeType, RelationType } from "../types/relations";
 
 const EMPTY_VIEW = (type: GraphViewType): GraphView => ({
@@ -20,20 +20,15 @@ export function useRelations() {
 
 	const loadAll = useCallback(async () => {
 		setIsLoading(true);
-		try {
-			const [n, e, v] = await Promise.all([
-				invoke<GraphNodeData[]>("get_all_graph_nodes"),
-				invoke<GraphEdgeData[]>("get_all_graph_edges"),
-				invoke<GraphView[]>("get_all_graph_views"),
-			]);
-			setNodes(n);
-			setEdges(e);
-			setViews(v);
-		} catch (err) {
-			console.error("Errore durante il caricamento del grafo relazionale:", err);
-		} finally {
-			setIsLoading(false);
-		}
+		const [n, e, v] = await Promise.all([
+			invokeSafe<GraphNodeData[]>("get_all_graph_nodes"),
+			invokeSafe<GraphEdgeData[]>("get_all_graph_edges"),
+			invokeSafe<GraphView[]>("get_all_graph_views"),
+		]);
+		setNodes(n ?? []);
+		setEdges(e ?? []);
+		setViews(v ?? []);
+		setIsLoading(false);
 	}, []);
 
 	useEffect(() => {
@@ -66,20 +61,23 @@ export function useRelations() {
 
 	const createView = useCallback(async (title: string, type: GraphViewType) => {
 		const draft = { ...EMPTY_VIEW(type), title };
-		const id = await invoke<string>("save_graph_view", { view: draft });
+		const id = await invokeSafe<string>("save_graph_view", { view: draft });
+		if (id === null) return null;
 		await loadAll();
 		setCurrentViewId(id);
 		return id;
 	}, [loadAll]);
 
 	const deleteView = useCallback(async (id: string) => {
-		await invoke("delete_graph_view", { id });
+		const result = await invokeSafe<void>("delete_graph_view", { id });
+		if (result === null) return;
 		if (currentViewId === id) setCurrentViewId(null);
 		await loadAll();
 	}, [currentViewId, loadAll]);
 
 	const renameView = useCallback(async (view: GraphView, title: string, description?: string) => {
-		await invoke<string>("save_graph_view", { view: { ...view, title, description } });
+		const result = await invokeSafe<string>("save_graph_view", { view: { ...view, title, description } });
+		if (result === null) return;
 		await loadAll();
 	}, [loadAll]);
 
@@ -89,9 +87,7 @@ export function useRelations() {
 	const persistPositions = useCallback((viewId: string, positions: Record<string, { x: number; y: number }>) => {
 		if (positionsSaveTimer.current) clearTimeout(positionsSaveTimer.current);
 		positionsSaveTimer.current = setTimeout(() => {
-			invoke("update_graph_view_positions", { id: viewId, positions }).catch((err) =>
-				console.error("Errore salvataggio posizioni:", err)
-			);
+			invokeSafe("update_graph_view_positions", { id: viewId, positions });
 		}, 400);
 	}, []);
 
@@ -105,7 +101,8 @@ export function useRelations() {
 	// -------------------------------------------------------------------
 
 	const saveNode = useCallback(async (node: GraphNodeData) => {
-		const id = await invoke<string>("save_graph_node", { node });
+		const id = await invokeSafe<string>("save_graph_node", { node });
+		if (id === null) return null;
 		await loadAll();
 		return id;
 	}, [loadAll]);
@@ -116,9 +113,10 @@ export function useRelations() {
 		type: NodeType,
 		position: { x: number; y: number }
 	) => {
-		const id = await invoke<string>("save_graph_node", {
+		const id = await invokeSafe<string>("save_graph_node", {
 			node: { id: "", type, displayName },
 		});
+		if (id === null) return null;
 
 		if (currentView) {
 			const updated: GraphView = {
@@ -126,7 +124,7 @@ export function useRelations() {
 				nodeIds: [...currentView.nodeIds, id],
 				positions: { ...currentView.positions, [id]: position },
 			};
-			await invoke<string>("save_graph_view", { view: updated });
+			await invokeSafe<string>("save_graph_view", { view: updated });
 		}
 
 		await loadAll();
@@ -141,12 +139,13 @@ export function useRelations() {
 			nodeIds: currentView.nodeIds.includes(nodeId) ? currentView.nodeIds : [...currentView.nodeIds, nodeId],
 			positions: { ...currentView.positions, [nodeId]: position },
 		};
-		await invoke<string>("save_graph_view", { view: updated });
+		await invokeSafe<string>("save_graph_view", { view: updated });
 		await loadAll();
 	}, [currentView, loadAll]);
 
 	const deleteNode = useCallback(async (id: string) => {
-		await invoke("delete_graph_node", { id });
+		const result = await invokeSafe<void>("delete_graph_node", { id });
+		if (result === null) return;
 		await loadAll();
 	}, [loadAll]);
 
@@ -161,12 +160,15 @@ export function useRelations() {
 				return e && e.sourceNodeId !== id && e.targetNodeId !== id;
 			}),
 		};
-		await invoke<string>("save_graph_view", { view: updated });
+		await invokeSafe<string>("save_graph_view", { view: updated });
 		await loadAll();
 	}, [currentView, edges, loadAll]);
 
 	const promoteNode = useCallback(async (nodeId: string, systemId: string) => {
-		const sheetId = await invoke<string>("promote_node_to_character", { nodeId, systemId });
+		const sheetId = await invokeSafe<string>("promote_node_to_character", { nodeId, systemId });
+		if (sheetId === null) {
+			throw new Error("Impossibile promuovere il nodo a personaggio.");
+		}
 		await loadAll();
 		return sheetId;
 	}, [loadAll]);
@@ -176,11 +178,12 @@ export function useRelations() {
 	// -------------------------------------------------------------------
 
 	const saveEdge = useCallback(async (edge: Omit<GraphEdgeData, "id"> & { id?: string }) => {
-		const id = await invoke<string>("save_graph_edge", { edge: { ...edge, id: edge.id ?? "" } });
+		const id = await invokeSafe<string>("save_graph_edge", { edge: { ...edge, id: edge.id ?? "" } });
+		if (id === null) return null;
 
 		if (currentView && !currentView.edgeIds.includes(id)) {
 			const updated: GraphView = { ...currentView, edgeIds: [...currentView.edgeIds, id] };
-			await invoke<string>("save_graph_view", { view: updated });
+			await invokeSafe<string>("save_graph_view", { view: updated });
 		}
 
 		await loadAll();
@@ -188,7 +191,8 @@ export function useRelations() {
 	}, [currentView, loadAll]);
 
 	const deleteEdge = useCallback(async (id: string) => {
-		await invoke("delete_graph_edge", { id });
+		const result = await invokeSafe<void>("delete_graph_edge", { id });
+		if (result === null) return;
 		await loadAll();
 	}, [loadAll]);
 
@@ -197,14 +201,11 @@ export function useRelations() {
 	const removeEdgeFromView = useCallback(async (id: string) => {
 		if (!currentView) return;
 		const updated: GraphView = { ...currentView, edgeIds: currentView.edgeIds.filter((e) => e !== id) };
-		await invoke<string>("save_graph_view", { view: updated });
+		await invokeSafe<string>("save_graph_view", { view: updated });
 		await loadAll();
 	}, [currentView, loadAll]);
 
-	/** Trova un arco già esistente tra due nodi, indipendentemente dalla direzione
-	 *  (A→B e B→A contano come lo stesso collegamento). Usato per impedire di
-	 *  creare relazioni bidirezionali duplicate: se esiste già un arco tra i due
-	 *  nodi, l'utente deve modificarlo invece di crearne uno nuovo. */
+	
 	const findEdgeBetween = useCallback((nodeAId: string, nodeBId: string, excludeEdgeId?: string) => {
 		return edges.find((e) => {
 			if (excludeEdgeId && e.id === excludeEdgeId) return false;

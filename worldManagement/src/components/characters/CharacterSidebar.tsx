@@ -2,6 +2,7 @@ import React from "react";
 import { CharacterSheet, GameSystem } from "../../types/character";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { SidebarLayout } from "../common/SidebarLayout";
 
 interface CharacterSidebarProps {
   systems: GameSystem[];
@@ -30,38 +31,10 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 }) => {
   const { t } = useLocalization();
 
-  const filteredSheets = sheets.filter((s) =>
-    s.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSheets = sheets.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <aside
-      style={{
-        width: "290px",
-        borderRight: `1px solid ${colors.borderSubtle}`,
-        display: "flex",
-        flexDirection: "column",
-        padding: "1.5rem 1.1rem",
-        backgroundColor: colors.bgPanel,
-        color: colors.textPrimary,
-        fontFamily: fonts.body,
-      }}
-    >
-
-      {/* Intestazione Modulo */}
-      <div style={{ marginBottom: "1.2rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
-          <span style={{ fontSize: "1.2rem" }}>🎭</span>
-          <h1 style={{ fontFamily: fonts.display, fontSize: "1.4rem", fontWeight: 600, margin: 0 }}>
-            {t("characters.sidebar.title")}
-          </h1>
-        </div>
-        <div style={{ fontSize: "0.66rem", letterSpacing: "0.13em", textTransform: "uppercase", color: colors.textFaint, marginTop: "0.3rem", marginLeft: "1.8rem" }}>
-          {t("characters.sidebar.subtitle")}
-        </div>
-        <div style={{ height: "1px", marginTop: "1rem", background: `linear-gradient(90deg, ${colors.gold}77, transparent 75%)` }} />
-      </div>
-
+    <SidebarLayout icon="🎭" title={t("characters.sidebar.title")} subtitle={t("characters.sidebar.subtitle")}>
       {/* Sistema di Gioco Attivo (globale, valido per l'intero mondo) */}
       <div style={{ marginBottom: "1.2rem" }}>
         <label style={{ fontSize: "0.7rem", letterSpacing: "0.06em", textTransform: "uppercase", color: colors.gold, fontWeight: 600, display: "block", marginBottom: "0.4rem" }}>
@@ -181,9 +154,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                   marginBottom: "0.3rem",
                 }}
               >
-                <div style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: "1rem", color: colors.textPrimary }}>
-                  {sheet.name}
-                </div>
+                <div style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: "1rem", color: colors.textPrimary }}>{sheet.name}</div>
                 <div style={{ fontSize: "0.68rem", color: colors.goldBright, textTransform: "uppercase", marginTop: "2px" }}>
                   {system?.name || t("characters.sidebar.unknownSystem")}
                 </div>
@@ -192,6 +163,6 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
           })
         )}
       </div>
-    </aside>
+    </SidebarLayout>
   );
 };

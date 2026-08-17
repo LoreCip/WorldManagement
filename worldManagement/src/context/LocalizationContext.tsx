@@ -37,7 +37,7 @@ function interpolate(str: string, vars?: Record<string, string | number>): strin
 export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getSetting, isLoaded } = useSettings();
 
-  const language = isLoaded ? getSetting<string>("localization_language") || FALLBACK_LOCALE : FALLBACK_LOCALE;
+  const language = isLoaded ? getSetting("localization_language") || FALLBACK_LOCALE : FALLBACK_LOCALE;
 
   const dict = LOCALES[language] ?? LOCALES[FALLBACK_LOCALE];
 

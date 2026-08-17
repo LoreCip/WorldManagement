@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { invokeSafe } from "../lib/ipc";
 import {
   TimelineEvent,
   TimelineEventListItem,
@@ -34,30 +34,18 @@ export function useTimeline() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadEvents = useCallback(async () => {
-    try {
-      const res = await invoke<TimelineEventListItem[]>("get_all_timeline_events");
-      setEvents(res);
-    } catch (err) {
-      console.error("Errore durante il caricamento della timeline:", err);
-    }
+    const res = await invokeSafe<TimelineEventListItem[]>("get_all_timeline_events");
+    setEvents(res ?? []);
   }, []);
 
   const loadCategories = useCallback(async () => {
-    try {
-      const res = await invoke<TimelineCategory[]>("get_timeline_categories");
-      setCategories(res);
-    } catch (err) {
-      console.error("Errore durante il caricamento delle categorie:", err);
-    }
+    const res = await invokeSafe<TimelineCategory[]>("get_timeline_categories");
+    setCategories(res ?? []);
   }, []);
 
   const loadSavedViews = useCallback(async () => {
-    try {
-      const res = await invoke<TimelineSavedView[]>("get_timeline_views");
-      setSavedViews(res);
-    } catch (err) {
-      console.error("Errore durante il caricamento delle viste salvate:", err);
-    }
+    const res = await invokeSafe<TimelineSavedView[]>("get_timeline_views");
+    setSavedViews(res ?? []);
   }, []);
 
   useEffect(() => {
@@ -66,7 +54,7 @@ export function useTimeline() {
     loadSavedViews();
   }, [loadEvents, loadCategories, loadSavedViews]);
 
-  const toggleCategoryFilter = (categoryId: string) => {
+  const toggleCategoryFilter = useCallback((categoryId: string) => {
     setActiveCategoryIds((prev) => {
       const next = new Set(prev ?? []);
       if (prev?.has(categoryId)) {
@@ -76,122 +64,95 @@ export function useTimeline() {
       }
       return next.size === 0 ? null : next;
     });
-  };
+  }, []);
 
-  const clearCategoryFilters = () => setActiveCategoryIds(null);
+  const clearCategoryFilters = useCallback(() => setActiveCategoryIds(null), []);
 
-  const handleSelectEvent = async (id: string) => {
-    try {
-      const res = await invoke<TimelineEvent>("get_timeline_event_by_id", { id });
-      setCurrentEvent(res);
-      setIsEditing(false);
-      setIsModalOpen(true);
-    } catch (err) {
-      console.error("Errore durante il recupero dell'evento:", err);
-    }
-  };
+  const handleSelectEvent = useCallback(async (id: string) => {
+    const res = await invokeSafe<TimelineEvent>("get_timeline_event_by_id", { id });
+    if (res === null) return;
+    setCurrentEvent(res);
+    setIsEditing(false);
+    setIsModalOpen(true);
+  }, []);
 
-  const handleNewEvent = (timeValue: number) => {
+  const handleNewEvent = useCallback((timeValue: number) => {
     setCurrentEvent({ ...emptyEvent(), time_value: Math.round(timeValue) });
     setIsEditing(true);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!currentEvent.title.trim()) return;
-    try {
-      const savedId = await invoke<string>("save_timeline_event", { event: currentEvent });
-      setCurrentEvent((prev) => ({ ...prev, id: savedId }));
-      setIsEditing(false);
-      setIsModalOpen(false);
-      loadEvents();
-    } catch (err) {
-      console.error("Errore durante il salvataggio dell'evento:", err);
-    }
-  };
 
-  const handleDeleteEvent = async (id: string) => {
+    const savedId = await invokeSafe<string>("save_timeline_event", { event: currentEvent });
+    if (savedId === null) return;
+
+    setCurrentEvent((prev) => ({ ...prev, id: savedId }));
+    setIsEditing(false);
+    setIsModalOpen(false);
+    await loadEvents();
+  }, [currentEvent, loadEvents]);
+
+  const handleDeleteEvent = useCallback(async (id: string) => {
     if (!id) return;
-    const confirmDelete = window.confirm("Sei sicuro di voler eliminare questo evento dalla timeline?");
-    if (!confirmDelete) return;
-    try {
-      await invoke("delete_timeline_event", { id });
-      setCurrentEvent(emptyEvent());
-      setIsEditing(false);
-      setIsModalOpen(false);
-      loadEvents();
-    } catch (err) {
-      console.error("Errore durante l'eliminazione dell'evento:", err);
-    }
-  };
+    if (!window.confirm("Sei sicuro di voler eliminare questo evento dalla timeline?")) return;
 
-  const closeModal = () => {
+    const result = await invokeSafe<void>("delete_timeline_event", { id });
+    if (result === null) return;
+
+    setCurrentEvent(emptyEvent());
+    setIsEditing(false);
+    setIsModalOpen(false);
+    await loadEvents();
+  }, [loadEvents]);
+
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setIsEditing(false);
-  };
+  }, []);
 
   // --- Categorie ---
-  const saveCategory = async (category: TimelineCategory) => {
-    try {
-      await invoke<string>("save_timeline_category", { category });
-      loadCategories();
-      loadEvents(); // i marker già disegnati potrebbero cambiare colore/icona
-    } catch (err) {
-      console.error("Errore durante il salvataggio della categoria:", err);
-    }
-  };
+  const saveCategory = useCallback(async (category: TimelineCategory) => {
+    const result = await invokeSafe<string>("save_timeline_category", { category });
+    if (result === null) return;
+    await loadCategories();
+    await loadEvents(); // i marker già disegnati potrebbero cambiare colore/icona
+  }, [loadCategories, loadEvents]);
 
-  const deleteCategory = async (id: string) => {
-    const confirmDelete = window.confirm("Eliminare questa categoria? Gli eventi collegati resteranno, senza categoria.");
-    if (!confirmDelete) return;
-    try {
-      await invoke("delete_timeline_category", { id });
-      loadCategories();
-      loadEvents();
-    } catch (err) {
-      console.error("Errore durante l'eliminazione della categoria:", err);
-    }
-  };
+  const deleteCategory = useCallback(async (id: string) => {
+    if (!window.confirm("Eliminare questa categoria? Gli eventi collegati resteranno, senza categoria.")) return;
+
+    const result = await invokeSafe<void>("delete_timeline_category", { id });
+    if (result === null) return;
+    await loadCategories();
+    await loadEvents();
+  }, [loadCategories, loadEvents]);
 
   // --- Viste salvate ---
-  const saveCurrentView = async (name: string, centerValue: number, pixelsPerDay: number) => {
-    try {
-      await invoke<string>("save_timeline_view", {
-        view: { id: "", name, center_value: Math.round(centerValue), pixels_per_day: pixelsPerDay },
-      });
-      loadSavedViews();
-    } catch (err) {
-      console.error("Errore durante il salvataggio della vista:", err);
-    }
-  };
+  const saveCurrentView = useCallback(async (name: string, centerValue: number, pixelsPerDay: number) => {
+    const result = await invokeSafe<string>("save_timeline_view", {
+      view: { id: "", name, center_value: Math.round(centerValue), pixels_per_day: pixelsPerDay },
+    });
+    if (result === null) return;
+    await loadSavedViews();
+  }, [loadSavedViews]);
 
-  const deleteSavedView = async (id: string) => {
-    try {
-      await invoke("delete_timeline_view", { id });
-      loadSavedViews();
-    } catch (err) {
-      console.error("Errore durante l'eliminazione della vista:", err);
-    }
-  };
+  const deleteSavedView = useCallback(async (id: string) => {
+    const result = await invokeSafe<void>("delete_timeline_view", { id });
+    if (result === null) return;
+    await loadSavedViews();
+  }, [loadSavedViews]);
 
-  //Eras
-
+  // --- Ere / campagna ---
   const loadCampaignSettings = useCallback(async () => {
-    try {
-      const res = await invoke<CampaignSettings>("get_campaign_settings");
-      setCampaignSettings(res);
-    } catch (err) {
-      console.error("Errore caricamento impostazioni campagna:", err);
-    }
+    const res = await invokeSafe<CampaignSettings>("get_campaign_settings");
+    if (res) setCampaignSettings(res);
   }, []);
 
   const loadEras = useCallback(async () => {
-    try {
-      const res = await invoke<TimelineEra[]>("get_timeline_eras");
-      setEras(res);
-    } catch (err) {
-      console.error("Errore caricamento ere:", err);
-    }
+    const res = await invokeSafe<TimelineEra[]>("get_timeline_eras");
+    setEras(res ?? []);
   }, []);
 
   useEffect(() => {
@@ -199,43 +160,37 @@ export function useTimeline() {
     loadEras();
   }, [loadCampaignSettings, loadEras]);
 
-  // Sostituisce il precedente `visibleEvents`: ora combina filtro categoria + ricerca testuale
-  const visibleEvents = events
-    .filter((e) => !activeCategoryIds || (e.category_id && activeCategoryIds.has(e.category_id)))
-    .filter((e) => {
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.trim().toLowerCase();
-      return e.title.toLowerCase().includes(q);
-    });
+  // Combina filtro categoria + ricerca testuale. Prima ricalcolato inline
+  // ad ogni render senza memoizzazione.
+  const visibleEvents = useMemo(() => {
+    return events
+      .filter((e) => !activeCategoryIds || (e.category_id && activeCategoryIds.has(e.category_id)))
+      .filter((e) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.trim().toLowerCase();
+        return e.title.toLowerCase().includes(q);
+      });
+  }, [events, activeCategoryIds, searchQuery]);
 
-  const setCampaignToday = async (timeValue: number | null) => {
-    try {
-      await invoke("save_campaign_settings", { currentDateValue: timeValue });
-      setCampaignSettings({ current_date_value: timeValue });
-    } catch (err) {
-      console.error("Errore salvataggio data odierna campagna:", err);
-    }
-  };
+  const setCampaignToday = useCallback(async (timeValue: number | null) => {
+    const result = await invokeSafe<void>("save_campaign_settings", { currentDateValue: timeValue });
+    if (result === null) return;
+    setCampaignSettings({ current_date_value: timeValue });
+  }, []);
 
-  const saveEra = async (era: TimelineEra) => {
-    try {
-      await invoke<string>("save_timeline_era", { era });
-      loadEras();
-    } catch (err) {
-      console.error("Errore salvataggio era:", err);
-    }
-  };
+  const saveEra = useCallback(async (era: TimelineEra) => {
+    const result = await invokeSafe<string>("save_timeline_era", { era });
+    if (result === null) return;
+    await loadEras();
+  }, [loadEras]);
 
-  const deleteEra = async (id: string) => {
-    const confirmDelete = window.confirm("Eliminare questa fascia/era?");
-    if (!confirmDelete) return;
-    try {
-      await invoke("delete_timeline_era", { id });
-      loadEras();
-    } catch (err) {
-      console.error("Errore eliminazione era:", err);
-    }
-  };
+  const deleteEra = useCallback(async (id: string) => {
+    if (!window.confirm("Eliminare questa fascia/era?")) return;
+
+    const result = await invokeSafe<void>("delete_timeline_era", { id });
+    if (result === null) return;
+    await loadEras();
+  }, [loadEras]);
 
   return {
     events,

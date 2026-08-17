@@ -7,7 +7,7 @@ export interface SettingOption {
   label: string;
 }
 
-export interface SettingDefinition<T = any> {
+export interface SettingDefinition<T = unknown> {
   key: string;              // chiave univoca, usata anche come chiave nel DB
   label: string;
   description?: string;
@@ -19,50 +19,64 @@ export interface SettingDefinition<T = any> {
   max?: number;
 }
 
+// Forma "grezza" (pre-localizzazione) di una definizione: usata solo per
+// validare rawSettingsRegistry con `satisfies`, cosi le chiavi restano
+// letterali (necessario per AppSettingsValues) senza dover castare ogni
+// `type` con `as SettingType` come in versioni precedenti.
+interface RawSettingDefinition {
+  key: string;
+  categoryKey: string;
+  type: SettingType;
+  defaultValue: boolean | number | string;
+  optionKeys?: readonly string[];
+  min?: number;
+  max?: number;
+}
+
 // Struttura base delle impostazioni
 export const rawSettingsRegistry = [
   {
     key: "confirm_before_delete",
     categoryKey: "settings.categories.general",
-    type: "boolean" as SettingType,
+    type: "boolean",
     defaultValue: true,
   },
   {
     key: "default_wiki_category",
     categoryKey: "settings.categories.wiki",
-    type: "select" as SettingType,
+    type: "select",
     defaultValue: "Lore",
-    optionKeys: ["Lore", "Personaggi", "Luoghi", "Generale"],
+    optionKeys: ["Lore", "Personaggio", "Luogo", "Fazione"],
   },
   {
     key: "general_search_case_sensitive",
     categoryKey: "settings.categories.wiki",
-    type: "boolean" as SettingType,
+    type: "boolean",
     defaultValue: false,
   },
   {
     key: "general_search_fuzzy",
     categoryKey: "settings.categories.wiki",
-    type: "boolean" as SettingType,
+    type: "boolean",
     defaultValue: false,
   },
   {
     key: "general_search_include_content",
     categoryKey: "settings.categories.wiki",
-    type: "boolean" as SettingType,
+    type: "boolean",
     defaultValue: true,
   },
   {
     key: "timeline_default_precision",
     categoryKey: "settings.categories.timeline",
-    type: "select" as SettingType,
+    type: "select",
     defaultValue: "year",
     optionKeys: ["year", "month", "day"],
   },
   {
     key: "timeline_days_per_month",
     categoryKey: "settings.categories.timeline",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 30,
     min: 1,
     max: 100,
@@ -70,7 +84,7 @@ export const rawSettingsRegistry = [
   {
     key: "timeline_days_per_year",
     categoryKey: "settings.categories.timeline",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 360,
     min: 1,
     max: 40000,
@@ -78,31 +92,31 @@ export const rawSettingsRegistry = [
   {
     key: "timeline_start_year",
     categoryKey: "settings.categories.timeline",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 0,
   },
   {
     key: "timeline_end_year",
     categoryKey: "settings.categories.timeline",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 1000,
   },
   {
     key: "timeline_category_default_icon",
     categoryKey: "settings.categories.timeline",
-    type: "text" as SettingType,
+    type: "text",
     defaultValue: "📌",
   },
   {
     key: "timeline_category_default_color",
     categoryKey: "settings.categories.timeline",
-    type: "color" as SettingType,
+    type: "color",
     defaultValue: "#c9a15a",
   },
   {
     key: "maps_default_width",
     categoryKey: "settings.categories.maps",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 1920,
     min: 1,
     max: 8192,
@@ -110,7 +124,7 @@ export const rawSettingsRegistry = [
   {
     key: "maps_default_height",
     categoryKey: "settings.categories.maps",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 1080,
     min: 1,
     max: 4096,
@@ -118,19 +132,19 @@ export const rawSettingsRegistry = [
   {
     key: "maps_portal_default_label",
     categoryKey: "settings.categories.maps",
-    type: "text" as SettingType,
+    type: "text",
     defaultValue: "Portale",
   },
   {
     key: "maps_portal_snap_to_grid",
     categoryKey: "settings.categories.maps",
-    type: "boolean" as SettingType,
+    type: "boolean",
     defaultValue: false,
   },
   {
     key: "maps_portal_grid_size",
     categoryKey: "settings.categories.maps",
-    type: "number" as SettingType,
+    type: "number",
     defaultValue: 100,
     min: 10,
     max: 500,
@@ -138,24 +152,24 @@ export const rawSettingsRegistry = [
   {
     key: "characters_default_sheet_variant",
     categoryKey: "settings.categories.characters",
-    type: "select" as SettingType,
+    type: "select",
     defaultValue: "pg",
     optionKeys: ["pg", "png"],
   },
   {
     key: "characters_default_markdown_template",
     categoryKey: "settings.categories.characters",
-    type: "text" as SettingType,
+    type: "text",
     defaultValue: "# {{name}}\n\nScheda personaggio per {{name}}",
   },
   {
     key: "localization_language",
     categoryKey: "settings.categories.localization",
-    type: "select" as SettingType,
+    type: "select",
     defaultValue: "it",
     optionKeys: ["it", "en"],
   },
-];
+] as const satisfies readonly RawSettingDefinition[];
 
 // Funzione dinamica che traduce il registro
 export function getLocalizedSettingsRegistry(t: (key: string) => string): SettingDefinition[] {
@@ -164,7 +178,7 @@ export function getLocalizedSettingsRegistry(t: (key: string) => string): Settin
     const descriptionKey = `${baseKey}.description`;
     const description = t(descriptionKey);
 
-    const options = item.optionKeys
+    const options = "optionKeys" in item
       ? item.optionKeys.map((opt) => ({
           value: opt,
           label: t(`${baseKey}.options.${opt}`),
@@ -178,8 +192,8 @@ export function getLocalizedSettingsRegistry(t: (key: string) => string): Settin
       category: t(item.categoryKey),
       type: item.type,
       defaultValue: item.defaultValue,
-      min: item.min,
-      max: item.max,
+      min: "min" in item ? item.min : undefined,
+      max: "max" in item ? item.max : undefined,
       options,
     };
   });
@@ -193,7 +207,15 @@ export function useSettingsRegistry(): SettingDefinition[] {
 
 export const settingsRegistry: SettingDefinition[] = getLocalizedSettingsRegistry((key) => key);
 
-// Tipo per i valori delle impostazioni
+// Mappa il `type` di ogni setting al tipo TS del suo valore effettivo.
+type SettingValueOf<T extends SettingType> = T extends "boolean"
+  ? boolean
+  : T extends "number"
+    ? number
+    : T extends "select" | "text" | "color"
+      ? string
+      : never;
+
 export type AppSettingsValues = {
-  [K in typeof rawSettingsRegistry[number]["key"]]: any;
+  [D in typeof rawSettingsRegistry[number] as D["key"]]: SettingValueOf<D["type"]>;
 };

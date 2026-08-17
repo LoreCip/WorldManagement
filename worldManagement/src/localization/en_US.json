@@ -21,6 +21,17 @@
 		"save": "Save",
 		"saving": "Saving..."
 	},
+	"app": {
+		"nav": {
+			"hub": "Back to Hub",
+			"wiki": "Wiki & Lore",
+			"maps": "World Maps",
+			"characters": "Character Sheets",
+			"timeline": "Timeline",
+			"relations": "Family Tree / Relations",
+			"settings": "Settings"
+		}
+	},
 	"hub": {
 		"eyebrow": "Your World Building",
 		"title": "Your World",
@@ -58,6 +69,7 @@
 			"confirmDelete": "Permanently delete this entry"
 		},
 		"sidebar": {
+			"title": "Compendium",
 			"subtitle": "World Chronicles",
 			"newWiki": "+ New entry",
 			"searchPlaceholder": "Search the world…",
@@ -119,6 +131,7 @@
 		"selectMap": "Select a map from the sidebar, drag an image into the canvas, or create a new map.",
 		"newMap": "+ New Map",
 		"form": {
+			"changeFile": "Change...",
 			"newMap": "New Map",
 			"modDetails": "⚙️ Edit Map Details",
 			"mapTitle": "Map Title",
@@ -137,10 +150,14 @@
 			"saveMap": "Save Map"
 		},
 		"canvas": {
-			"portalDefault": "Portal"
+			"portalDefault": "Portal",
+			"enterPortal": "Enter ➔",
+			"clickToPlacePortal": "Click a point on the map to place the portal"
 		},
 		"header": {
-			"changeMap": "Edit map"
+			"changeMap": "Edit map",
+			"deleteMap": "Delete this map",
+			"openLinkedArticle": "Open linked Wiki article"
 		},
 		"sidebar": {
 			"title": "Cartography",
@@ -155,6 +172,9 @@
 			"newPortal": "+ Portal",
 			"destination": "Destination...",
 			"label": "Label..."
+		},
+		"selector": {
+			"placeholder": "Select map..."
 		}
 	},
 	"timeline": {
@@ -207,7 +227,9 @@
 			"today": "Today",
 			"savedViews": "Saved views",
 			"saveView": "+ Save current view",
-			"newEvent": "+ New event"
+			"newEvent": "+ New event",
+			"noSavedNews": "No saved views",
+			"newViewNamePlaceholder": "View name"
 		},
 		"minimap": {
 			"localView": "localized view",
@@ -281,7 +303,8 @@
 			"linkWiki": "Link to Wiki Entry",
 			"editNode": "Edit Details",
 			"deleteNode": "Remove from Graph",
-			"recenter": "Recenter View"
+			"recenter": "Recenter View",
+			"goToLinkedView": "Go to linked view"
 		},
 		"nodeDrawer": {
 			"nameLabel": "Name",
@@ -346,9 +369,9 @@
 				"label": "Default category for new Wiki entries",
 				"options": {
 					"Lore": "Lore",
-					"Personaggi": "Characters",
-					"Luoghi": "Locations",
-					"Generale": "General"
+					"Personaggio": "Characters",
+					"Luogo": "Locations",
+					"Fazione": "Factions"
 				}
 			},
 			"general_search_case_sensitive": {

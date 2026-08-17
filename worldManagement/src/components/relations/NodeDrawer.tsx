@@ -1,23 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphNodeData, GraphView } from "../../types/relations";
-
-interface GameSystemOption {
-	id: string;
-	name: string;
-}
-
-interface ArticleOption {
-	id: string;
-	title: string;
-}
-
-interface CharacterSheetOption {
-	id: string;
-	name: string;
-}
+import { useLinkableOptions } from "../../hooks/useLinkableOptions";
+import { Drawer } from "../common/Drawer";
 
 interface NodeDrawerProps {
 	node: GraphNodeData;
@@ -70,41 +56,25 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 }) => {
 	const { t } = useLocalization();
 	const [draft, setDraft] = useState<GraphNodeData>(node);
-	const [systems, setSystems] = useState<GameSystemOption[]>([]);
 	const [selectedSystemId, setSelectedSystemId] = useState<string>("");
 	const [isPromoting, setIsPromoting] = useState(false);
 
 	// Elenchi per i collegamenti manuali (wiki / scheda personaggio esistente).
-	const [articles, setArticles] = useState<ArticleOption[]>([]);
-	const [sheets, setSheets] = useState<CharacterSheetOption[]>([]);
 	const [articleQuery, setArticleQuery] = useState("");
 	const [sheetQuery, setSheetQuery] = useState("");
+
+	const needsGameSystems = node.type === "placeholder" || node.type === "unknown";
+	const { articles, characterSheets: sheets, gameSystems: systems } = useLinkableOptions({
+		articles: true,
+		characterSheets: true,
+		gameSystems: needsGameSystems,
+	});
 
 	useEffect(() => setDraft(node), [node]);
 
 	useEffect(() => {
-		if (node.type !== "placeholder" && node.type !== "unknown") return;
-		invoke<GameSystemOption[]>("get_all_game_systems")
-			.then((res) => {
-				setSystems(res);
-				if (res.length > 0) setSelectedSystemId(res[0].id);
-			})
-			.catch((err) => console.error("Errore caricamento sistemi di gioco:", err));
-	}, [node.type]);
-
-	// Elenco articoli wiki, per poter collegare una voce esistente al nodo.
-	useEffect(() => {
-		invoke<Array<{ id: string; title: string }>>("get_all_articles")
-			.then((res) => setArticles(res.map((a) => ({ id: a.id, title: a.title }))))
-			.catch((err) => console.error("Errore caricamento articoli wiki:", err));
-	}, []);
-
-	// Elenco schede personaggio esistenti, per collegarne una senza crearne una nuova.
-	useEffect(() => {
-		invoke<Array<{ id: string; name: string }>>("get_character_sheets")
-			.then((res) => setSheets(res.map((s) => ({ id: s.id, name: s.name }))))
-			.catch((err) => console.error("Errore caricamento schede personaggio:", err));
-	}, []);
+		if (systems.length > 0 && !selectedSystemId) setSelectedSystemId(systems[0].id);
+	}, [systems, selectedSystemId]);
 
 	const filteredArticles = articles.filter((a) => a.title.toLowerCase().includes(articleQuery.toLowerCase())).slice(0, 8);
 	const filteredSheets = sheets.filter((s) => s.name.toLowerCase().includes(sheetQuery.toLowerCase())).slice(0, 8);
@@ -124,35 +94,19 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 		}
 	};
 
-	return (
-		<aside
-			style={{
-				width: "320px",
-				flexShrink: 0,
-				height: "100%",
-				minHeight: 0,
-				borderLeft: `1px solid ${colors.borderSubtle}`,
-				backgroundColor: colors.bgPanel,
-				color: colors.textPrimary,
-				padding: "1.3rem 1.1rem",
-				display: "flex",
-				flexDirection: "column",
-				gap: "0.9rem",
-				overflowY: "auto",
-				boxSizing: "border-box",
-			}}
-		>
-			<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-				<h3 style={{ fontFamily: fonts.display, margin: 0, fontSize: "1.15rem" }}>{t("relations.actions.editNode")}</h3>
-				<button
-					onClick={onClose}
-					style={{ background: "none", border: "none", color: colors.textFaint, cursor: "pointer", fontSize: "1.1rem" }}
-					aria-label="Chiudi"
-				>
-					✕
-				</button>
-			</div>
+	const footer = (
+		<div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+			<button onClick={() => onRemoveFromView(node.id)} style={{ ...ghostButtonStyle, color: colors.textSecondary }}>
+				{t("relations.nodeDrawer.removeFromView")}
+			</button>
+			<button onClick={() => onDelete(node.id)} style={{ ...ghostButtonStyle, color: colors.crimson, borderColor: `${colors.crimson}77` }}>
+				{t("relations.actions.deleteNode")}
+			</button>
+		</div>
+	);
 
+	return (
+		<Drawer isOpen onClose={onClose} title={t("relations.actions.editNode")} width="320px" footer={footer}>
 			<div>
 				<label style={fieldLabelStyle}>{t("relations.nodeDrawer.nameLabel")}</label>
 				<input
@@ -440,16 +394,7 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 					)}
 				</div>
 			)}
-
-			<div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "0.5rem", paddingTop: "0.8rem", borderTop: `1px solid ${colors.borderSubtle}` }}>
-				<button onClick={() => onRemoveFromView(node.id)} style={{ ...ghostButtonStyle, color: colors.textSecondary }}>
-					{t("relations.nodeDrawer.removeFromView")}
-				</button>
-				<button onClick={() => onDelete(node.id)} style={{ ...ghostButtonStyle, color: colors.crimson, borderColor: `${colors.crimson}77` }}>
-					{t("relations.actions.deleteNode")}
-				</button>
-			</div>
-		</aside>
+		</Drawer>
 	);
 };
 

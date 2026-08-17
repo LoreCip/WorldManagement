@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphEdgeData, GraphNodeData, RelationType } from "../../types/relations";
+import { Z_INDEX } from "../common/zIndex";
 
 interface EdgeDrawerProps {
 	edge: Partial<GraphEdgeData> & { sourceNodeId: string; targetNodeId: string };
@@ -43,6 +44,12 @@ const inputStyle: React.CSSProperties = {
 	boxSizing: "border-box",
 };
 
+// Nota di design: a differenza di NodeDrawer, questo NON usa il componente
+// <Drawer> condiviso. <Drawer> e un pannello docked a tutta altezza; qui
+// serve una card flottante e compatta (position:absolute, top-right) che
+// appare accanto al punto dove si sta disegnando la connessione senza
+// coprire meta canvas. Aggiungo solo la chiusura via ESC per coerenza di
+// comportamento con gli altri overlay dell'app.
 export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
 	edge,
 	nodesById,
@@ -60,6 +67,14 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
 	const [description, setDescription] = useState(edge.description ?? "");
 	const [isUncertain, setIsUncertain] = useState(edge.isUncertain ?? false);
 	const [gapCount, setGapCount] = useState<number | undefined>(edge.generationalGapCount);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") onClose();
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [onClose]);
 
 	useEffect(() => {
 		setType(edge.type ?? relationOptions[0] ?? "custom");
@@ -112,7 +127,7 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
 				display: "flex",
 				flexDirection: "column",
 				gap: "0.75rem",
-				zIndex: 20,
+				zIndex: Z_INDEX.drawer,
 				boxSizing: "border-box",
 			}}
 		>

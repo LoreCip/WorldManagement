@@ -1,3 +1,5 @@
+import { CharacterId, GameSystemId, ArticleId } from "./core";
+
 export type FieldType = "text" | "number" | "textarea" | "checkbox";
 
 export interface FieldSchema {
@@ -7,8 +9,6 @@ export interface FieldSchema {
   default?: string | number | boolean;
 }
 
-// Unico punto di verità per lo schema_json di GameSystem.
-// Rispecchia esattamente ciò che SystemModal.tsx scrive e CharacterView.tsx legge.
 export interface SystemSchema {
   pdf_template_pg?: string;   // variante Personaggio Giocante
   pdf_template_png?: string;  // variante Personaggio Non Giocante (opzionale)
@@ -20,7 +20,7 @@ export interface SystemSchema {
 export type SheetVariant = "pg" | "png";
 
 export interface GameSystem {
-  id: string;
+  id: GameSystemId;
   name: string;
   description?: string;
   schema_json: string; // JSON serializzato di SystemSchema
@@ -30,28 +30,29 @@ export interface GameSystem {
   updated_at?: string;
 }
 
+// Modello di lettura: riga DB, colonna sempre presente ma nullable.
 export interface CharacterSheet {
-  id: string;
-  system_id: string;
-  article_id?: string | null;
+  id: CharacterId;
+  system_id: GameSystemId;
+  article_id: ArticleId | null;
   name: string;
-  data_json: string;         // Record<string, any> in formato stringa
-  sheet_variant: SheetVariant; // mancava: usato ovunque in CharacterView/useCharacters
+  data_json: string; // Record<string, any> in formato stringa
+  sheet_variant: SheetVariant;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface SaveCharacterSheetPayload {
-  id?: string | null;
-  system_id: string;
-  article_id?: string | null;
+  id?: CharacterId | null;
+  system_id: GameSystemId;
+  article_id?: ArticleId | null;
   name: string;
   data_json: string;
   sheet_variant: SheetVariant;
 }
 
 export interface SaveGameSystemPayload {
-  id?: string;
+  id?: GameSystemId;
   name: string;
   description?: string;
   schema_json: string;

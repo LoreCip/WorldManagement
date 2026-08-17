@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphView, GraphViewType } from "../../types/relations";
+import { ViewHeader } from "../common/ViewHeader";
+import { ToolbarButton } from "../common/Toolbar";
 
 interface RelationsToolbarProps {
 	views: GraphView[];
@@ -50,34 +52,8 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
 		setIsCreating(false);
 	};
 
-	const btnStyle = (active?: boolean): React.CSSProperties => ({
-		padding: "0.45rem 0.8rem",
-		borderRadius: radii.pill,
-		fontSize: "0.78rem",
-		fontWeight: 600,
-		cursor: "pointer",
-		border: `1px solid ${active ? colors.gold : colors.border}`,
-		backgroundColor: active ? colors.goldWash : "transparent",
-		color: active ? colors.goldBright : colors.textSecondary,
-		whiteSpace: "nowrap",
-	});
-
-	return (
-		<header
-			style={{
-				display: "flex",
-				alignItems: "center",
-				gap: "0.75rem",
-				padding: "0.85rem 1.2rem",
-				borderBottom: `1px solid ${colors.borderSubtle}`,
-				backgroundColor: colors.bgPanel,
-				flexWrap: "wrap",
-			}}
-		>
-			<h2 style={{ fontFamily: fonts.display, margin: 0, fontSize: "1.15rem", color: colors.textPrimary, marginRight: "0.5rem" }}>
-				🌳 {t("relations.header.title")}
-			</h2>
-
+	const viewControls = (
+		<div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
 			<div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
 				<select
 					value={currentViewId ?? ""}
@@ -153,16 +129,16 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
 						<option value="genealogy">{t("relations.views.genealogy")}</option>
 						<option value="network">{t("relations.views.network")}</option>
 					</select>
-					<button onClick={submitNewView} style={btnStyle(true)}>✓</button>
-					<button onClick={() => setIsCreating(false)} style={btnStyle(false)}>✕</button>
+					<ToolbarButton active onClick={submitNewView}>✓</ToolbarButton>
+					<ToolbarButton onClick={() => setIsCreating(false)}>✕</ToolbarButton>
 				</div>
 			) : (
-				<button onClick={() => setIsCreating(true)} style={btnStyle(false)}>
+				<ToolbarButton onClick={() => setIsCreating(true)}>
 					{t("relations.header.newView")}
-				</button>
+				</ToolbarButton>
 			)}
 
-			<div style={{ position: "relative", marginLeft: "0.4rem" }}>
+			<div style={{ position: "relative" }}>
 				<input
 					value={searchQuery}
 					onChange={(e) => onSearch(e.target.value)}
@@ -178,60 +154,54 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
 					}}
 				/>
 			</div>
+		</div>
+	);
 
-			<div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginLeft: "auto" }}>
-				<button onClick={onAddNode} style={btnStyle(false)}>{t("relations.header.addNode")}</button>
-				<button
-					onClick={onToggleConnecting}
-					style={btnStyle(isConnecting)}
-					title={t("relations.header.addEdgeTooltip")}
+	const actions = (
+		<>
+			<ToolbarButton onClick={onAddNode}>{t("relations.header.addNode")}</ToolbarButton>
+			<ToolbarButton active={isConnecting} onClick={onToggleConnecting} title={t("relations.header.addEdgeTooltip")}>
+				{t("relations.header.addEdge")}
+			</ToolbarButton>
+
+			<ToolbarButton active={focusMode} onClick={onToggleFocusMode} title={t("relations.header.focusModeTooltip")}>
+				{t("relations.header.focusMode")}
+			</ToolbarButton>
+
+			{focusMode && (
+				<div
+					style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "0.3rem",
+						padding: "0.2rem 0.4rem",
+						borderRadius: radii.pill,
+						border: `1px solid ${colors.border}`,
+						backgroundColor: colors.bgPanelRaised,
+					}}
+					title={t("relations.focus.depthTooltip")}
 				>
-					{t("relations.header.addEdge")}
-				</button>
+					<span style={{ fontSize: "0.68rem", color: colors.textFaint, paddingLeft: "0.3rem" }}>
+						{t("relations.focus.depthLabel")}
+					</span>
+					<button onClick={() => onFocusDepthChange(Math.max(1, focusDepth - 1))} style={stepperBtnStyle}>
+						−
+					</button>
+					<span style={{ fontSize: "0.8rem", color: colors.textPrimary, minWidth: "1rem", textAlign: "center" }}>
+						{focusDepth}
+					</span>
+					<button onClick={() => onFocusDepthChange(Math.min(6, focusDepth + 1))} style={stepperBtnStyle}>
+						+
+					</button>
+				</div>
+			)}
+		</>
+	);
 
-				<button
-					onClick={onToggleFocusMode}
-					style={btnStyle(focusMode)}
-					title={t("relations.header.focusModeTooltip")}
-				>
-					{t("relations.header.focusMode")}
-				</button>
-
-				{focusMode && (
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "0.3rem",
-							padding: "0.2rem 0.4rem",
-							borderRadius: radii.pill,
-							border: `1px solid ${colors.border}`,
-							backgroundColor: colors.bgPanelRaised,
-						}}
-						title={t("relations.focus.depthTooltip")}
-					>
-						<span style={{ fontSize: "0.68rem", color: colors.textFaint, paddingLeft: "0.3rem" }}>
-							{t("relations.focus.depthLabel")}
-						</span>
-						<button
-							onClick={() => onFocusDepthChange(Math.max(1, focusDepth - 1))}
-							style={stepperBtnStyle}
-						>
-							−
-						</button>
-						<span style={{ fontSize: "0.8rem", color: colors.textPrimary, minWidth: "1rem", textAlign: "center" }}>
-							{focusDepth}
-						</span>
-						<button
-							onClick={() => onFocusDepthChange(Math.min(6, focusDepth + 1))}
-							style={stepperBtnStyle}
-						>
-							+
-						</button>
-					</div>
-				)}
-			</div>
-		</header>
+	return (
+		<ViewHeader icon="🌳" title={t("relations.header.title")} actions={actions}>
+			{viewControls}
+		</ViewHeader>
 	);
 };
 

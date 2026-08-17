@@ -8,7 +8,7 @@ import { useLocalization } from "../context/LocalizationContext";
 export const SettingsView: React.FC = () => {
   const { t } = useLocalization();
   const { isLoaded, getSetting, setSetting } = useSettings();
-  
+
   // Otteniamo il registro localizzato in tempo reale
   const settingsRegistry = useSettingsRegistry();
 
@@ -59,7 +59,7 @@ export const SettingsView: React.FC = () => {
               <SettingsField
                 key={def.key}
                 definition={def}
-                value={getSetting(def.key)}
+                value={getSetting(def.key) ?? def.defaultValue}
                 onChange={(v) => setSetting(def.key, v)}
               />
             ))}

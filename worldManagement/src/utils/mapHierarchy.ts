@@ -69,3 +69,16 @@ export const flattenMapHierarchy = (
 
     return result;
 };
+
+export const getTreePrefix = (item: Pick<FlatMapItem, "level" | "isLast" | "ancestorsHasMore">): string => {
+    if (item.level === 0) return "🗺️\u00A0";
+
+    let prefix = "";
+    // Mette la stanghetta '│' per ogni livello antenato che ha altri elementi dopo
+    for (let i = 0; i < item.level - 1; i++) {
+        prefix += item.ancestorsHasMore[i] ? "│\u00A0\u00A0\u00A0" : "\u00A0\u00A0\u00A0\u00A0";
+    }
+    // Simbolo del nodo corrente
+    prefix += item.isLast ? "└─\u00A0" : "├─\u00A0";
+    return prefix;
+};

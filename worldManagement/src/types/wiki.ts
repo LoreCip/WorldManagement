@@ -1,15 +1,17 @@
-// Definizione base dei metadati
+import { ArticleId } from "./core";
+import { CategoryKey } from "../components/theme/theme";
+
 export interface ArticleMeta {
-    id: string;
-    title: string;
-    category: string;
+  id: ArticleId;
+  title: string;
+  category: CategoryKey;
 }
 
 export interface ArticleItem extends ArticleMeta {
-    snippet: string;
+  snippet: string;
 }
 
 export interface Article extends ArticleMeta {
-    content: string;
-    tags: string[];
+  content: string;
+  tags: string[];
 }

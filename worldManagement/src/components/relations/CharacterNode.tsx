@@ -33,6 +33,7 @@ const FourWayHandles: React.FC = () => (
 );
 
 const PortalBadge: React.FC<{ node: GraphNodeData; onNavigateToView?: (viewId: string) => void }> = ({ node, onNavigateToView }) => {
+	const { t } = useLocalization();
 	if (!node.linkedViewId) return null;
 	return (
 		<button
@@ -40,7 +41,7 @@ const PortalBadge: React.FC<{ node: GraphNodeData; onNavigateToView?: (viewId: s
 				e.stopPropagation();
 				onNavigateToView?.(node.linkedViewId!);
 			}}
-			title="Vai alla vista collegata"
+			title={t("relations.actions.goToLinkedView")}
 			className="nodrag"
 			style={{
 				position: "absolute",
@@ -224,4 +225,3 @@ export const CharacterNode: React.FC<NodeProps> = ({ data, selected }) => {
 		</div>
 	);
 };
-

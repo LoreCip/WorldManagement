@@ -38,7 +38,7 @@ import {
 	NETWORK_RELATION_TYPES,
 	RelationType,
 } from "../types/relations";
-import { layoutGenealogy, layoutNetwork } from "../utils/graphLayout";
+import { layoutGenealogy, layoutNetwork, getFallbackPosition } from "../utils/graphLayout";
 
 interface RelationsViewProps {
 	onNavigateToWiki?: (articleId: string) => void;
@@ -95,6 +95,15 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 	const [isConnecting, setIsConnecting] = useState(false);
 	const [focusMode, setFocusMode] = useState(false);
 	const [focusDepth, setFocusDepth] = useState(DEFAULT_FOCUS_DEPTH);
+	const [isCreatingFromEmpty, setIsCreatingFromEmpty] = useState(false);
+	const [emptyViewTitle, setEmptyViewTitle] = useState("");
+
+	const submitEmptyView = () => {
+		if (!emptyViewTitle.trim()) return;
+		createView(emptyViewTitle.trim(), "genealogy");
+		setEmptyViewTitle("");
+		setIsCreatingFromEmpty(false);
+	};
 
 	const nodesById = useMemo(() => {
 		const map: Record<string, GraphNodeData> = {};
@@ -137,7 +146,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 	const flowNodes: Node[] = useMemo(() => {
 		const q = searchQuery.trim().toLowerCase();
 		return focusedNodes.map((n) => {
-			const pos = currentView?.positions[n.id] ?? { x: Math.random() * 500, y: Math.random() * 400 };
+			const pos = currentView?.positions[n.id] ?? getFallbackPosition();
 			const matchesSearch = !q || n.displayName.toLowerCase().includes(q);
 			const data: CharacterNodeFlowData = { node: n, onOpenDrawer: setSelectedNodeId, onNavigateToView: setCurrentViewId };
 			return {
@@ -415,24 +424,68 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({ onNavigateToWiki, onNav
 							</>
 						)}
 
-						<button
-							onClick={() => {
-								const title = window.prompt(t("relations.views.newViewNamePrompt"));
-								if (title && title.trim()) createView(title.trim(), "genealogy");
-							}}
-							style={{
-								marginTop: "0.4rem",
-								padding: "0.55rem 1.1rem",
-								backgroundColor: colors.gold,
-								color: colors.bgVoid,
-								border: "none",
-								borderRadius: radii.pill,
-								fontWeight: 600,
-								cursor: "pointer",
-							}}
-						>
-							{t("relations.header.newView")}
-						</button>
+						{isCreatingFromEmpty ? (
+							<div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginTop: "0.4rem" }}>
+								<input
+									autoFocus
+									value={emptyViewTitle}
+									onChange={(e) => setEmptyViewTitle(e.target.value)}
+									onKeyDown={(e) => e.key === "Enter" && submitEmptyView()}
+									placeholder={t("relations.views.newViewNamePlaceholder")}
+									style={{
+										backgroundColor: colors.bgPanel,
+										color: colors.textPrimary,
+										border: `1px solid ${colors.gold}77`,
+										borderRadius: radii.sm,
+										padding: "0.5rem 0.7rem",
+										fontSize: "0.85rem",
+									}}
+								/>
+								<button
+									onClick={submitEmptyView}
+									style={{
+										padding: "0.55rem 0.9rem",
+										backgroundColor: colors.gold,
+										color: colors.bgVoid,
+										border: "none",
+										borderRadius: radii.pill,
+										fontWeight: 600,
+										cursor: "pointer",
+									}}
+								>
+									✓
+								</button>
+								<button
+									onClick={() => setIsCreatingFromEmpty(false)}
+									style={{
+										padding: "0.55rem 0.9rem",
+										backgroundColor: "transparent",
+										color: colors.textSecondary,
+										border: `1px solid ${colors.border}`,
+										borderRadius: radii.pill,
+										cursor: "pointer",
+									}}
+								>
+									✕
+								</button>
+							</div>
+						) : (
+							<button
+								onClick={() => setIsCreatingFromEmpty(true)}
+								style={{
+									marginTop: "0.4rem",
+									padding: "0.55rem 1.1rem",
+									backgroundColor: colors.gold,
+									color: colors.bgVoid,
+									border: "none",
+									borderRadius: radii.pill,
+									fontWeight: 600,
+									cursor: "pointer",
+								}}
+							>
+								{t("relations.header.newView")}
+							</button>
+						)}
 					</div>
 				) : (
 					<div style={{ flex: 1, position: "relative", minHeight: 0 }}>

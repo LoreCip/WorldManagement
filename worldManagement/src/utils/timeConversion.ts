@@ -1,10 +1,14 @@
 import { TimeInput, TimePrecision } from "../types/timeline";
 
-// Calendario convenzionale semplificato: 12 mesi da 30 giorni.
+// Calendario convenzionale semplificato: mesi di lunghezza fissa.
 // Non rappresenta un vero calendario reale, serve solo a dare un ordinamento
 // coerente e uno "spazio" prevedibile fra le date sull'asse.
-const DAYS_PER_MONTH = 30;
-const DAYS_PER_YEAR = DAYS_PER_MONTH * 12; // 360
+export interface CalendarConfig {
+  daysPerMonth: number;
+  daysPerYear: number;
+}
+
+export const DEFAULT_CALENDAR: CalendarConfig = { daysPerMonth: 30, daysPerYear: 360 };
 
 const MONTH_NAMES = [
   "Nevaio", "Gelo", "Disgelo", "Germoglio", "Fioritura", "Sole Alto",
@@ -15,22 +19,24 @@ function monthName(m: number): string {
   return MONTH_NAMES[((m - 1) % 12 + 12) % 12];
 }
 
-export function timeInputToValue(input: TimeInput): number {
+export function timeInputToValue(input: TimeInput, calendar: CalendarConfig = DEFAULT_CALENDAR): number {
+  const { daysPerMonth, daysPerYear } = calendar;
   const month = input.month ?? 1;
   const day = input.day ?? 1;
-  return input.year * DAYS_PER_YEAR + (month - 1) * DAYS_PER_MONTH + (day - 1);
+  return input.year * daysPerYear + (month - 1) * daysPerMonth + (day - 1);
 }
 
-export function valueToTimeInput(value: number): TimeInput {
-  const year = Math.floor(value / DAYS_PER_YEAR);
-  const rem = value - year * DAYS_PER_YEAR;
-  const month = Math.floor(rem / DAYS_PER_MONTH) + 1;
-  const day = (rem % DAYS_PER_MONTH) + 1;
+export function valueToTimeInput(value: number, calendar: CalendarConfig = DEFAULT_CALENDAR): TimeInput {
+  const { daysPerMonth, daysPerYear } = calendar;
+  const year = Math.floor(value / daysPerYear);
+  const rem = value - year * daysPerYear;
+  const month = Math.floor(rem / daysPerMonth) + 1;
+  const day = (rem % daysPerMonth) + 1;
   return { year, month, day };
 }
 
-export function formatTimeValue(value: number, precision: TimePrecision): string {
-  const { year, month, day } = valueToTimeInput(value);
+export function formatTimeValue(value: number, precision: TimePrecision, calendar: CalendarConfig = DEFAULT_CALENDAR): string {
+  const { year, month, day } = valueToTimeInput(value, calendar);
   if (precision === "year") return `Anno ${year}`;
   if (precision === "month") return `${monthName(month ?? 1)}, Anno ${year}`;
   return `${day} ${monthName(month ?? 1)}, Anno ${year}`;
@@ -55,7 +61,8 @@ export function computeNiceTicks(
   minValue: number,
   maxValue: number,
   pixelWidth: number,
-  minPixelsBetweenTicks = 90
+  minPixelsBetweenTicks = 90,
+  calendar: CalendarConfig = DEFAULT_CALENDAR
 ): TickInfo[] {
   const range = Math.max(1, maxValue - minValue);
   const maxTicks = Math.max(2, Math.floor(pixelWidth / minPixelsBetweenTicks));
@@ -71,24 +78,29 @@ export function computeNiceTicks(
   const ticks: TickInfo[] = [];
   const start = Math.floor(minValue / step) * step;
   for (let v = start; v <= maxValue + step; v += step) {
-    ticks.push({ value: v, label: tickLabel(v, step) });
+    ticks.push({ value: v, label: tickLabel(v, step, calendar) });
   }
   return ticks;
 }
 
-function tickLabel(value: number, step: number): string {
-  const { year, month, day } = valueToTimeInput(value);
-  if (step < DAYS_PER_MONTH) return `${day} ${monthName(month ?? 1)} ${year}`;
-  if (step < DAYS_PER_YEAR) return `${monthName(month ?? 1)} ${year}`;
-  if (step < DAYS_PER_YEAR * 1000) return `${year}`;
+function tickLabel(value: number, step: number, calendar: CalendarConfig): string {
+  const { year, month, day } = valueToTimeInput(value, calendar);
+  if (step < calendar.daysPerMonth) return `${day} ${monthName(month ?? 1)} ${year}`;
+  if (step < calendar.daysPerYear) return `${monthName(month ?? 1)} ${year}`;
+  if (step < calendar.daysPerYear * 1000) return `${year}`;
   return `${Math.round(year / 1000)} mila`;
 }
 
-export function formatDuration(start: number, end: number, precision: TimePrecision): string {
+export function formatDuration(
+  start: number,
+  end: number,
+  precision: TimePrecision,
+  calendar: CalendarConfig = DEFAULT_CALENDAR
+): string {
   const days = end - start;
-  if (days <= 0) return formatTimeValue(start, precision);
-  if (days < 30) return `${days} giorni`;
-  if (days < 360) return `${Math.round(days / 30)} mesi`;
-  const years = Math.round(days / 360);
+  if (days <= 0) return formatTimeValue(start, precision, calendar);
+  if (days < calendar.daysPerMonth) return `${days} giorni`;
+  if (days < calendar.daysPerYear) return `${Math.round(days / calendar.daysPerMonth)} mesi`;
+  const years = Math.round(days / calendar.daysPerYear);
   return years === 1 ? "1 anno" : `${years} anni`;
 }

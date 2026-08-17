@@ -9,6 +9,7 @@ import { EditMapModal } from "../components/maps/EditMapModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
+import { Z_INDEX } from "../components/common/zIndex";
 
 interface MapViewProps {
     onOpenArticle?: (articleId: string) => void;
@@ -141,7 +142,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                         bottom: 0,
                         backgroundColor: `${colors.gold}18`,
                         border: `2px dashed ${colors.gold}`,
-                        zIndex: 3000,
+                        zIndex: Z_INDEX.dragOverlay,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -166,27 +167,15 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
 
             <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
                 {currentMapData && (
-                    <div
-                        style={{
-                            padding: "1.2rem 2rem",
-                            backgroundColor: colors.bgPanel,
-                            borderBottom: `1px solid ${colors.border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            zIndex: 1000,
-                        }}
+                    <MapHeader
+                        map={currentMapData.map}
+                        totalMapsCount={maps.length}
+                        hasHistory={history.length > 0}
+                        onBack={navigateBack}
+                        onDelete={() => handleDeleteMap(currentMapData.map.id)}
+                        onOpenArticle={onOpenArticle}
+                        onEdit={() => setIsEditMapOpen(true)}
                     >
-                        <MapHeader
-                            map={currentMapData.map}
-                            totalMapsCount={maps.length}
-                            hasHistory={history.length > 0}
-                            onBack={navigateBack}
-                            onDelete={() => handleDeleteMap(currentMapData.map.id)}
-                            onOpenArticle={onOpenArticle}
-                            onEdit={() => setIsEditMapOpen(true)}
-                        />
-
                         <PortalControls
                             isAddingPortal={isAddingPortal}
                             maps={maps}
@@ -198,7 +187,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                             onSelectTarget={setSelectedTargetMapId}
                             onLabelChange={setPortalLabel}
                         />
-                    </div>
+                    </MapHeader>
                 )}
 
                 {currentMapData ? (

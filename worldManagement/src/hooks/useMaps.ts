@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invokeSafe } from "../lib/ipc";
 import { MapItem, MapWithPortals } from "../types/map";
 import { getTopLevelMap } from "../utils/mapHierarchy";
 
@@ -11,11 +11,6 @@ export const useMaps = () => {
     const [isAddingPortal, setIsAddingPortal] = useState<boolean>(false);
     const [selectedTargetMapId, setSelectedTargetMapId] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
-
-    // Riferimenti per evitare che transizioni sovrapposte si "scavalchino" a vicenda,
-    // e per sapere se abbiamo già caricato la mappa iniziale senza mettere
-    // currentMapData nelle dipendenze di fetchMaps (che altrimenti si ricrea
-    // ad ogni navigazione, causando un re-fetch continuo).
     const transitionTimeouts = useRef<number[]>([]);
     const hasLoadedInitialMap = useRef(false);
     const currentMapDataRef = useRef<MapWithPortals | null>(null);
@@ -35,136 +30,145 @@ export const useMaps = () => {
     }, [clearPendingTransitions]);
 
     const loadMapDetails = useCallback(async (mapId: string) => {
-        try {
-            const res = await invoke<MapWithPortals>("get_map_details", { id: mapId });
-            setCurrentMapData(res);
-        } catch (err) {
-            console.error("Errore nel caricamento della mappa:", err);
+        const res = await invokeSafe<MapWithPortals>("get_map_details", { id: mapId });
+        if (res === null) {
             setError("Impossibile caricare i dettagli della mappa.");
+            return;
         }
+        setCurrentMapData(res);
     }, []);
 
     const fetchMaps = useCallback(async () => {
-        try {
-            const res = await invoke<MapItem[]>("get_all_maps");
-            setMaps(res);
-
-            if (res.length > 0 && !hasLoadedInitialMap.current) {
-                hasLoadedInitialMap.current = true;
-                const topMap = getTopLevelMap(res);
-                if (topMap) {
-                    loadMapDetails(topMap.id);
-                }
-            }
-        } catch (err) {
-            console.error("Errore nel recupero delle mappe:", err);
+        const res = await invokeSafe<MapItem[]>("get_all_maps");
+        if (res === null) {
             setError("Impossibile caricare l'elenco delle mappe.");
+            return;
+        }
+        setMaps(res);
+
+        if (res.length > 0 && !hasLoadedInitialMap.current) {
+            hasLoadedInitialMap.current = true;
+            const topMap = getTopLevelMap(res);
+            if (topMap) {
+                loadMapDetails(topMap.id);
+            }
         }
     }, [loadMapDetails]);
 
+    const runTransition = useCallback(
+        (targetMapId: string, updateHistory: (leavingMapId: string | undefined) => void) => {
+            clearPendingTransitions();
+            setIsTransitioning(true);
+            const leavingMapId = currentMapDataRef.current?.map.id;
+
+            const t1 = window.setTimeout(async () => {
+                await loadMapDetails(targetMapId);
+                updateHistory(leavingMapId);
+                const t2 = window.setTimeout(() => setIsTransitioning(false), 100);
+                transitionTimeouts.current.push(t2);
+            }, 300);
+            transitionTimeouts.current.push(t1);
+        },
+        [loadMapDetails, clearPendingTransitions]
+    );
+
     // Navigazione "interna" (click su sidebar/portali): mantiene l'animazione
     // a due tempi e la cronologia per il tasto "indietro".
-    const navigateToMap = useCallback((targetMapId: string) => {
-        if (!currentMapData || targetMapId === currentMapData.map.id || isTransitioning) return;
+    const navigateToMap = useCallback(
+        (targetMapId: string) => {
+            if (!currentMapData || targetMapId === currentMapData.map.id || isTransitioning) return;
 
-        clearPendingTransitions();
-        setIsTransitioning(true);
-        const previousId = currentMapData.map.id;
-
-        const t1 = window.setTimeout(async () => {
-            await loadMapDetails(targetMapId);
-            setHistory((prev) => {
-                if (prev[prev.length - 1] === previousId) return prev;
-                return [...prev, previousId];
+            runTransition(targetMapId, (leavingMapId) => {
+                if (!leavingMapId) return;
+                setHistory((prev) => (prev[prev.length - 1] === leavingMapId ? prev : [...prev, leavingMapId]));
             });
-            const t2 = window.setTimeout(() => setIsTransitioning(false), 100);
-            transitionTimeouts.current.push(t2);
-        }, 300);
-        transitionTimeouts.current.push(t1);
-    }, [currentMapData, isTransitioning, loadMapDetails, clearPendingTransitions]);
+        },
+        [currentMapData, isTransitioning, runTransition]
+    );
 
     const navigateBack = useCallback(() => {
         if (history.length === 0 || isTransitioning) return;
 
-        clearPendingTransitions();
         const previousMapId = history[history.length - 1];
-        setIsTransitioning(true);
-
-        const t1 = window.setTimeout(async () => {
-            await loadMapDetails(previousMapId);
+        runTransition(previousMapId, () => {
             setHistory((prev) => prev.slice(0, -1));
-            const t2 = window.setTimeout(() => setIsTransitioning(false), 100);
-            transitionTimeouts.current.push(t2);
-        }, 300);
-        transitionTimeouts.current.push(t1);
-    }, [history, isTransitioning, loadMapDetails, clearPendingTransitions]);
+        });
+    }, [history, isTransitioning, runTransition]);
 
-    // Navigazione "esterna" (link da un articolo Wiki o da un evento Timeline):
-    // niente animazione a due tempi, niente dipendenza da isTransitioning.
-    // Non può MAI lasciare isTransitioning bloccato, perché non lo tocca.
-    // Interrompe qualsiasi transizione interna in corso e salta subito alla
-    // mappa richiesta, aggiungendo comunque la mappa di provenienza alla
-    // cronologia se ce n'era una.
-    const jumpToMap = useCallback(async (targetMapId: string) => {
-        if (currentMapDataRef.current?.map.id === targetMapId) return;
+    const jumpToMap = useCallback(
+        async (targetMapId: string) => {
+            if (currentMapDataRef.current?.map.id === targetMapId) return;
 
-        clearPendingTransitions();
-        setIsTransitioning(false); // sblocca forzatamente qualunque stato precedente
+            clearPendingTransitions();
+            setIsTransitioning(false); // sblocca forzatamente qualunque stato precedente
 
-        const previousId = currentMapDataRef.current?.map.id;
-        await loadMapDetails(targetMapId);
+            const previousId = currentMapDataRef.current?.map.id;
+            await loadMapDetails(targetMapId);
 
-        if (previousId) {
-            setHistory((prev) => {
-                if (prev[prev.length - 1] === previousId) return prev;
-                return [...prev, previousId];
-            });
-        }
-    }, [loadMapDetails, clearPendingTransitions]);
+            if (previousId) {
+                setHistory((prev) => {
+                    if (prev[prev.length - 1] === previousId) return prev;
+                    return [...prev, previousId];
+                });
+            }
+        },
+        [loadMapDetails, clearPendingTransitions]
+    );
 
-    const handleAddPortal = async (x: number, y: number, label?: string) => {
-        if (!currentMapData || !selectedTargetMapId) return;
-        try {
-            await invoke<string>("add_portal", {
+    const handleAddPortal = useCallback(
+        async (x: number, y: number, label?: string) => {
+            if (!currentMapData || !selectedTargetMapId) return;
+
+            const result = await invokeSafe<string>("add_portal", {
                 sourceMapId: currentMapData.map.id,
                 targetMapId: selectedTargetMapId,
                 x,
                 y,
                 label: label || "Portale",
             });
+            if (result === null) {
+                setError("Impossibile creare il portale.");
+                return;
+            }
+
             await loadMapDetails(currentMapData.map.id);
             setIsAddingPortal(false);
             setSelectedTargetMapId("");
-        } catch (err) {
-            console.error("Errore nella creazione del portale:", err);
-            setError("Impossibile creare il portale.");
-        }
-    };
+        },
+        [currentMapData, selectedTargetMapId, loadMapDetails]
+    );
 
-    const handleDeletePortal = async (portalId: string) => {
-        if (!currentMapData) return;
-        try {
-            await invoke("delete_portal", { id: portalId });
+    const handleDeletePortal = useCallback(
+        async (portalId: string) => {
+            if (!currentMapData) return;
+
+            const result = await invokeSafe<void>("delete_portal", { id: portalId });
+            if (result === null) {
+                setError("Impossibile eliminare il portale.");
+                return;
+            }
+
             await loadMapDetails(currentMapData.map.id);
-        } catch (err) {
-            console.error("Errore nell'eliminazione del portale:", err);
-            setError("Impossibile eliminare il portale.");
-        }
-    };
+        },
+        [currentMapData, loadMapDetails]
+    );
 
-    const handleDeleteMap = async (mapId: string) => {
-        try {
-            await invoke("delete_map", { id: mapId });
-            if (currentMapData?.map.id === mapId) {
+    const handleDeleteMap = useCallback(
+        async (mapId: string) => {
+            const result = await invokeSafe<void>("delete_map", { id: mapId });
+            if (result === null) {
+                setError("Impossibile eliminare la mappa.");
+                return;
+            }
+
+            if (currentMapDataRef.current?.map.id === mapId) {
                 setCurrentMapData(null);
                 hasLoadedInitialMap.current = false;
             }
             await fetchMaps();
-        } catch (err) {
-            console.error("Errore nell'eliminazione della mappa:", err);
-            setError("Impossibile eliminare la mappa.");
-        }
-    };
+        },
+        [fetchMaps]
+    );
 
     useEffect(() => {
         fetchMaps();

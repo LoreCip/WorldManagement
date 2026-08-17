@@ -21,6 +21,17 @@
 		"save": "Salva",
 		"saving": "Salvataggio..."
 	},
+	"app": {
+		"nav": {
+			"hub": "Torna alla Hub",
+			"wiki": "Wiki & Lore",
+			"maps": "Mappe Mondiali",
+			"characters": "Schede Personaggi",
+			"timeline": "Linea del Tempo",
+			"relations": "Albero Genealogico / Relazioni",
+			"settings": "Impostazioni"
+		}
+	},
 	"hub": {
 		"eyebrow": "La tua ambientazione",
 		"title": "Il tuo Mondo",
@@ -58,6 +69,7 @@
 			"confirmDelete": "Elimina definitivamente questa voce"
 		},
 		"sidebar": {
+			"title": "Compendio",
 			"subtitle": "Cronache dell'ambientazione",
 			"newWiki": "+ Nuova voce",
 			"searchPlaceholder": "Cerca nell'ambientazione…",
@@ -119,6 +131,7 @@
 		"selectMap": "Seleziona una mappa dalla barra laterale, trascina un'immagine nel canvas o crea una nuova mappa.",
 		"newMap": "+ Nuova Mappa",
 		"form": {
+			"changeFile": "Cambia...",
 			"newMap": "Nuova Mappa",
 			"modDetails": "⚙️ Modifica Dettagli Mappa",
 			"mapTitle": "Titolo Mappa",
@@ -137,10 +150,14 @@
 			"saveMap": "Salva Mappa"
 		},
 		"canvas": {
-			"portalDefault": "Portale"
+			"portalDefault": "Portale",
+			"enterPortal": "Entra ➔",
+			"clickToPlacePortal": "Clicca un punto sulla mappa per posizionare il portale"
 		},
 		"header": {
-			"changeMap": "Modifica mappa"
+			"changeMap": "Modifica mappa",
+			"deleteMap": "Elimina questa mappa",
+			"openLinkedArticle": "Apri articolo Wiki associato"
 		},
 		"sidebar": {
 			"title": "Cartografia",
@@ -155,6 +172,9 @@
 			"newPortal": "+ Portale",
 			"destination": "Destinazione...",
 			"label": "Etichetta..."
+		},
+		"selector": {
+			"placeholder": "Scegli mappa..."
 		}
 	},
 	"timeline": {
@@ -207,7 +227,9 @@
 			"today": "Oggi",
 			"savedViews": "Viste salvate",
 			"saveView": "+ Salva vista corrente",
-			"newEvent": "+ Nuovo evento"
+			"newEvent": "+ Nuovo evento",
+			"noSavedNews": "Nessuna vista salvata",
+			"newViewNamePlaceholder": "Nome vista"
 		},
 		"minimap": {
 			"localView": "vista localizzata",
@@ -281,7 +303,8 @@
 			"linkWiki": "Collega a Voce Wiki",
 			"editNode": "Modifica Dettagli",
 			"deleteNode": "Rimuovi dal Grafo",
-			"recenter": "Ricentra Vista"
+			"recenter": "Ricentra Vista",
+			"goToLinkedView": "Vai alla vista collegata"
 		},
 		"nodeDrawer": {
 			"nameLabel": "Nome",
@@ -346,9 +369,9 @@
 				"label": "Categoria predefinita nuove voci Wiki",
 				"options": {
 					"Lore": "Lore",
-					"Personaggi": "Personaggi",
-					"Luoghi": "Luoghi",
-					"Generale": "Generale"
+					"Personaggio": "Personaggi",
+					"Luogo": "Luoghi",
+					"Fazione": "Fazioni"
 				}
 			},
 			"general_search_case_sensitive": {

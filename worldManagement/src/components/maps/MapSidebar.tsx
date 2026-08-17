@@ -3,6 +3,7 @@ import { MapItem } from "../../types/map";
 import { buildMapHierarchy, flattenMapHierarchy } from "../../utils/mapHierarchy";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { SidebarLayout } from "../common/SidebarLayout";
 
 interface MapSidebarProps {
     maps: MapItem[];
@@ -11,12 +12,14 @@ interface MapSidebarProps {
     onNewMap: () => void;
 }
 
-export const MapSidebar: React.FC<MapSidebarProps> = ({
-    maps,
-    currentMapId,
-    onSelectMap,
-    onNewMap,
-}) => {
+const MapMarkIcon: React.FC = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" stroke={colors.gold} strokeWidth="1.1" strokeLinejoin="round" />
+        <circle cx="12" cy="12" r="1.6" fill={colors.gold} />
+    </svg>
+);
+
+export const MapSidebar: React.FC<MapSidebarProps> = ({ maps, currentMapId, onSelectMap, onNewMap }) => {
     const { t } = useLocalization();
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -32,67 +35,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
     }, [flatHierarchy, searchQuery]);
 
     return (
-        <aside
-            style={{
-                width: "290px",
-                borderRight: `1px solid ${colors.borderSubtle}`,
-                display: "flex",
-                flexDirection: "column",
-                padding: "1.5rem 1.1rem",
-                backgroundColor: colors.bgPanel,
-                color: colors.textPrimary,
-                fontFamily: fonts.body,
-                boxSizing: "border-box",
-                height: "100%",
-            }}
-        >
-
-            {/* Header / Brand Mark */}
-            <div style={{ marginBottom: "1.6rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path
-                            d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"
-                            stroke={colors.gold}
-                            strokeWidth="1.1"
-                            strokeLinejoin="round"
-                        />
-                        <circle cx="12" cy="12" r="1.6" fill={colors.gold} />
-                    </svg>
-                    <h1
-                        style={{
-                            fontFamily: fonts.display,
-                            fontSize: "1.4rem",
-                            fontWeight: 600,
-                            letterSpacing: "0.01em",
-                            color: colors.textPrimary,
-                            margin: 0,
-                        }}
-                    >
-                        {t("maps.sidebar.title")}
-                    </h1>
-                </div>
-                <div
-                    style={{
-                        fontSize: "0.66rem",
-                        letterSpacing: "0.13em",
-                        textTransform: "uppercase",
-                        color: colors.textFaint,
-                        marginTop: "0.3rem",
-                        marginLeft: "1.8rem",
-                    }}
-                >
-                    {t("maps.sidebar.subtitle")}
-                </div>
-                <div
-                    style={{
-                        height: "1px",
-                        marginTop: "1rem",
-                        background: `linear-gradient(90deg, ${colors.gold}77, transparent 75%)`,
-                    }}
-                />
-            </div>
-
+        <SidebarLayout icon={<MapMarkIcon />} title={t("maps.sidebar.title")} subtitle={t("maps.sidebar.subtitle")}>
             {/* Pulsante Nuova Mappa */}
             <button
                 onClick={onNewMap}
@@ -116,7 +59,7 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                 + {t("maps.form.newMap")}
             </button>
 
-            {/* Input di ricerca nello stesso stile della Wiki */}
+            {/* Ricerca */}
             <div style={{ position: "relative", marginBottom: "1.3rem" }}>
                 <svg
                     width="14"
@@ -205,7 +148,8 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                                         whiteSpace: "nowrap",
                                     }}
                                 >
-                                    {level > 0 ? "↳ " : ""}{map.title}
+                                    {level > 0 ? "↳ " : ""}
+                                    {map.title}
                                 </div>
                                 <div
                                     style={{
@@ -224,6 +168,6 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
                     })
                 )}
             </div>
-        </aside>
+        </SidebarLayout>
     );
 };

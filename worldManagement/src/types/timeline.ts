@@ -1,17 +1,19 @@
+import { TimelineEventId, TimelineCategoryId, ArticleId, MapId } from "./core";
+
 export type TimePrecision = "day" | "month" | "year";
 
 export interface TimelineEventMeta {
-  id: string;
+  id: TimelineEventId;
   title: string;
   time_value: number;
   precision: TimePrecision;
-  category_id: string | null;
+  category_id: TimelineCategoryId | null;
 }
 
 export interface TimelineEventListItem extends TimelineEventMeta {
   end_time_value: number | null;
-  article_id: string | null;
-  map_id: string | null;
+  article_id: ArticleId | null;
+  map_id: MapId | null;
   category_name: string | null;
   category_color: string | null;
   category_icon: string | null;
@@ -20,8 +22,8 @@ export interface TimelineEventListItem extends TimelineEventMeta {
 export interface TimelineEvent extends TimelineEventMeta {
   description: string;
   end_time_value: number | null;
-  article_id: string | null;
-  map_id: string | null;
+  article_id: ArticleId | null;
+  map_id: MapId | null;
 }
 
 export interface TimeInput {
@@ -31,7 +33,7 @@ export interface TimeInput {
 }
 
 export interface TimelineCategory {
-  id: string;
+  id: TimelineCategoryId;
   name: string;
   color: string;
   icon: string;

@@ -1,27 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Sidebar } from "../components/wiki/Sidebar";
 import { ArticleEditor } from "../components/wiki/ArticleEditor";
 import { useWiki } from "../hooks/useWiki";
 
-// 1. Interfaccia aggiornata con le props di navigazione
 interface WikiViewProps {
   selectedArticleId?: string | null;
   onSelectArticle?: (id: string | null) => void;
   onNavigateToCharacterSheet?: (sheetId: string) => void;
-  onNavigateToMap?: (mapId: string) => void; // <-- NUOVA PROP
+  onNavigateToMap?: (mapId: string) => void;
 }
 
 export const WikiView: React.FC<WikiViewProps> = ({
   selectedArticleId,
   onSelectArticle,
   onNavigateToCharacterSheet,
-  onNavigateToMap, // <-- RICEZIONE PROP
+  onNavigateToMap,
 }) => {
   const {
     articles,
     searchQuery,
     currentArticle,
     isEditing,
+    linkedSheetId,
+    linkedMapId,
     setIsEditing,
     setCurrentArticle,
     handleSearch,
@@ -32,20 +33,22 @@ export const WikiView: React.FC<WikiViewProps> = ({
     handleNavigateToTitle,
   } = useWiki();
 
-  // Quando si passa un selectedArticleId dall'esterno (es. dalle Mappe o dai Personaggi)
+  const syncedExternalId = useRef<string | null | undefined>(null);
+
   useEffect(() => {
-    if (selectedArticleId && articles.length > 0) {
-      if (currentArticle?.id !== selectedArticleId) {
-        handleSelectArticle(selectedArticleId);
-      }
+    if (
+      selectedArticleId &&
+      selectedArticleId !== syncedExternalId.current &&
+      articles.length > 0
+    ) {
+      handleSelectArticle(selectedArticleId);
+      syncedExternalId.current = selectedArticleId;
     }
-  }, [selectedArticleId, articles]);
+  }, [selectedArticleId, articles, handleSelectArticle]);
 
   const onSelectArticleWrapper = (id: string) => {
     handleSelectArticle(id);
-    if (onSelectArticle) {
-      onSelectArticle(id);
-    }
+    onSelectArticle?.(id);
   };
 
   return (
@@ -53,7 +56,7 @@ export const WikiView: React.FC<WikiViewProps> = ({
       <Sidebar
         articles={articles}
         searchQuery={searchQuery}
-        selectedId={currentArticle?.id}
+        selectedId={currentArticle.id}
         onSearch={handleSearch}
         onSelectArticle={onSelectArticleWrapper}
         onNewArticle={handleNewArticle}
@@ -61,13 +64,15 @@ export const WikiView: React.FC<WikiViewProps> = ({
       <ArticleEditor
         article={currentArticle}
         isEditing={isEditing}
+        linkedSheetId={linkedSheetId}
+        linkedMapId={linkedMapId}
         onChange={setCurrentArticle}
         onSave={handleSave}
         onEdit={() => setIsEditing(true)}
-        onDelete={() => handleDeleteArticle(currentArticle?.id)}
+        onDelete={handleDeleteArticle}
         onNavigateToTitle={handleNavigateToTitle}
         onNavigateToCharacterSheet={onNavigateToCharacterSheet}
-        onNavigateToMap={onNavigateToMap} // <-- INOLTRO A ARTICLE EDITOR
+        onNavigateToMap={onNavigateToMap}
       />
     </div>
   );

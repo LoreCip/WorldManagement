@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { invokeSafe } from "../lib/ipc";
 import { useSettings } from "../context/SettingsContext";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
@@ -108,34 +108,31 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
   useEffect(() => {
     if (!isLoaded) return;
 
-    const lastVisited = getSetting<HubModuleKey | null>("last_visited_tab");
-    if (lastVisited && MODULES.some((m) => m.key === lastVisited)) {
+    // "last_visited_tab" non e nel registro pubblico delle impostazioni
+    // (di proposito: e stato UI interno, non una preferenza utente da
+    // mostrare in Impostazioni). getSetting lo tratta quindi con la firma
+    // "ampia" (string) invece che con un generic esplicito, e il risultato
+    // va validato a mano prima di fidarsene come HubModuleKey.
+    const lastVisitedRaw = getSetting("last_visited_tab");
+    const lastVisited =
+      typeof lastVisitedRaw === "string" && MODULES.some((m) => m.key === lastVisitedRaw)
+        ? (lastVisitedRaw as HubModuleKey)
+        : null;
+
+    if (lastVisited) {
       setOrder([lastVisited, ...MODULES.map((m) => m.key).filter((k) => k !== lastVisited)]);
     }
   }, [isLoaded, getSetting]);
 
   useEffect(() => {
-    // NOTA: i nomi dei comandi Tauri qui sotto sono un'ipotesi ragionevole
-    // in base alla convenzione get_all_settings/save_setting già in uso.
-    // Vanno allineati ai comandi reali esposti da ciascun modulo
-    // (modules/wiki/commands.rs, modules/maps/commands.rs, ecc.).
-    // Se un comando fallisce, il conteggio resta vuoto invece di rompere la hub.
-    const loadCounts = async () => {
-      const safeInvoke = async <T,>(cmd: string): Promise<T[] | null> => {
-        try {
-          return await invoke<T[]>(cmd);
-        } catch (err) {
-          console.warn(`Impossibile caricare conteggio da "${cmd}":`, err);
-          return null;
-        }
-      };
 
+    const loadCounts = async () => {
       const [articles, maps, sheets, events, graphNodes] = await Promise.all([
-        safeInvoke("get_all_articles"),
-        safeInvoke("get_all_maps"),
-        safeInvoke("get_character_sheets"),
-        safeInvoke("get_all_timeline_events"),
-        safeInvoke("get_all_graph_nodes"),
+        invokeSafe<unknown[]>("get_all_articles"),
+        invokeSafe<unknown[]>("get_all_maps"),
+        invokeSafe<unknown[]>("get_character_sheets"),
+        invokeSafe<unknown[]>("get_all_timeline_events"),
+        invokeSafe<unknown[]>("get_all_graph_nodes"),
       ]);
 
       setCounts({
@@ -385,9 +382,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
   );
 };
 
-// Comportamenti che le sole inline style non gestiscono bene (hover, texture
-// di sfondo, dimensioni del testo in base allo slot) — stesso pattern di
-// <style>{...}</style> già usato altrove nel progetto.
+
 const hubStyleTag = `
   .hub-tile { transition: transform .3s ease, background-color .3s ease, border-color .3s ease; }
   .hub-tile:hover { transform: translateY(-3px); }

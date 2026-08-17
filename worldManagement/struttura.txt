@@ -22,6 +22,12 @@
     │   │   │   ├── CharacterSidebar.tsx
     │   │   │   ├── NewSheetModal.tsx
     │   │   │   └── SystemModal.tsx
+    │   │   ├── common
+    │   │   │   ├── Drawer.tsx
+    │   │   │   ├── index.ts
+    │   │   │   ├── Modal.tsx
+    │   │   │   ├── SidebarLayout.tsx
+    │   │   │   └── ViewHeader.tsx
     │   │   ├── maps
     │   │   │   ├── AddMapModal.tsx
     │   │   │   ├── EditMapModal.tsx
@@ -52,6 +58,8 @@
     │   │   │   └── TimelineMinimap.tsx
     │   │   └── wiki
     │   │       ├── ArticleEditor.tsx
+    │   │       ├── MarkdownEditor.tsx
+    │   │       ├── MarkdownViewer.tsx
     │   │       ├── Sidebar.tsx
     │   │       └── TagInput.tsx
     │   ├── context
@@ -59,7 +67,9 @@
     │   │   ├── MapsContext.tsx
     │   │   └── SettingsContext.tsx
     │   ├── hooks
+    │   │   ├── useAsync.ts
     │   │   ├── useCharacters.ts
+    │   │   ├── useDisclosure.ts
     │   │   ├── useMaps.ts
     │   │   ├── useRelations.ts
     │   │   ├── useTimeline.ts
@@ -68,8 +78,11 @@
     │   │   ├── en_US.json
     │   │   └── it_IT.json
     │   ├── main.tsx
+    │   ├── services
+    │   │   └── tauri.ts
     │   ├── types
     │   │   ├── character.ts
+    │   │   ├── common.ts
     │   │   ├── map.ts
     │   │   ├── relations.ts
     │   │   ├── settingsRegistry.ts
@@ -160,4 +173,4 @@
     ├── tsconfig.node.json
     └── vite.config.ts
 
-35 directories, 126 files
+39 directories, 147 files

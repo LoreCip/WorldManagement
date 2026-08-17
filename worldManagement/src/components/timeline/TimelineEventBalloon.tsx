@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import React, { useEffect } from "react";
 import { TimelineEvent, TimePrecision, TimelineCategory } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
 import { SelectedAnchor } from "./TimelineCanvas";
 import { useLocalization } from "../../context/LocalizationContext";
-
-interface ArticleOption { id: string; title: string; }
-interface MapOption { id: string; title: string; }
+import { useLinkableOptions } from "../../hooks/useLinkableOptions";
+import { Z_INDEX } from "../common/zIndex";
 
 interface TimelineEventBalloonProps {
     event: TimelineEvent;
@@ -41,18 +39,8 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
 }) => {
     const { t } = useLocalization();
 
-    const [articles, setArticles] = useState<ArticleOption[]>([]);
-    const [maps, setMaps] = useState<MapOption[]>([]);
+    const { articles, maps } = useLinkableOptions({ articles: true, maps: true });
     const timeInput = valueToTimeInput(event.time_value);
-
-    useEffect(() => {
-        invoke<any[]>("get_all_articles").then((res) =>
-            setArticles(res.map((a) => ({ id: a.id, title: a.title })))
-        ).catch(() => { });
-        invoke<any[]>("get_all_maps").then((res) =>
-            setMaps(res.map((m) => ({ id: m.id, title: m.title })))
-        ).catch(() => { });
-    }, []);
 
     // Chiudi con Escape
     useEffect(() => {
@@ -130,7 +118,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 borderRadius: radii.lg,
                 padding: "1rem",
                 boxShadow: "0 8px 28px rgba(0,0,0,0.5)",
-                zIndex: 80,
+                zIndex: Z_INDEX.drawer,
             }}
         >
 
