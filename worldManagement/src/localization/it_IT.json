@@ -76,6 +76,10 @@
       "noResults": "Nessuna voce corrisponde alla ricerca.",
       "noSnippet": "Nessun contenuto…"
     },
+    "hook": {
+      "deleteArticleConfirm": "Sei sicuro di voler eliminare questa voce?",
+      "createFromTitleConfirm": "La voce \"{{title}}\" non esiste ancora. Vuoi crearla adesso?"
+    },
     "tag": {
       "delete": "×",
       "placeholder": "Aggiungi tag e premi Invio…"
@@ -93,7 +97,25 @@
       "zoomReset": "Ripristina zoom (100%)",
       "zoomIn": "Aumenta zoom",
       "pgTooltip": "Scheda Personaggio Giocante",
-      "npcTooltip": "Scheda Personaggio Non Giocante"
+      "npcTooltip": "Scheda Personaggio Non Giocante",
+      "noSystemFound": "Nessun sistema di gioco trovato! Creane prima uno dal pulsante 'Nuovo Sistema'.",
+      "noActiveSystem": "Seleziona prima un motore di gioco attivo dalla barra laterale.",
+      "createSheetError": "Errore nella creazione della scheda.",
+      "deleteSheetConfirm": "Sei sicuro di voler eliminare questa scheda?",
+      "saveSystemError": "Errore nel salvataggio del sistema di gioco.",
+      "systemBuiltinProtected": "I sistemi di gioco predefiniti non possono essere eliminati.",
+      "deleteSystemConfirm": "Sei sicuro di voler eliminare il sistema \"{{name}}\"?",
+      "deleteSystemError": "Impossibile eliminare il sistema di gioco.",
+      "deleteSystemSuccess": "Sistema di gioco eliminato con successo."
+    },
+    "pdf": {
+      "notLoaded": "PDF non ancora caricato in memoria.",
+      "saveError": "Errore durante il salvataggio del PDF.",
+      "sheetSaveError": "Errore durante il salvataggio della scheda.",
+      "saveSuccess": "Scheda salvata con successo!",
+      "saveException": "Errore durante il salvataggio: {{error}}",
+      "exportError": "Errore nell'esportazione del PDF.",
+      "exportSuccess": "Copia del PDF esportata con successo!"
     },
     "sidebar": {
       "title": "Personaggi",
@@ -152,7 +174,9 @@
       "associatedArticlePlaceholder": "-- Nessun articolo Wiki collegato --",
       "noLinkWiki": "-- Nessun articolo collegato --",
       "noParent": "-- Nessuna (Mappa di Livello Superiore) --",
-      "saveMap": "Salva Mappa"
+      "saveMap": "Salva Mappa",
+      "saveError": "Errore nel salvataggio della mappa.",
+      "updateError": "Errore nell'aggiornamento della mappa."
     },
     "canvas": {
       "portalDefault": "Portale",
@@ -183,6 +207,11 @@
     }
   },
   "timeline": {
+    "hook": {
+      "deleteEventConfirm": "Sei sicuro di voler eliminare questo evento dalla timeline?",
+      "deleteCategoryConfirm": "Eliminare questa categoria? Gli eventi collegati resteranno, senza categoria.",
+      "deleteEraConfirm": "Eliminare questa fascia/era?"
+    },
     "canvas": {
       "today": "OGGI",
       "closeEvents": "{{count}} eventi ravvicinati",

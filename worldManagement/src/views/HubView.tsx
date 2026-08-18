@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
-
-// Stessa chiave usata da useAppShell.ts per scrivere l'ultima tab visitata.
-const LAST_VISITED_TAB_KEY = "worldbuilder_last_visited_tab";
+import { LAST_VISITED_TAB_KEY } from "../hooks/useAppShell";
 
 // Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
 export type HubModuleKey = "wiki" | "maps" | "characters" | "timeline" | "relations";

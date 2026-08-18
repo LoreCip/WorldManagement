@@ -90,7 +90,7 @@ export const EditMapModal: React.FC<EditMapModalProps> = ({
     });
 
     if (result === null) {
-      alert("Errore nell'aggiornamento della mappa.");
+      alert(t("maps.form.updateError"));
       return;
     }
 

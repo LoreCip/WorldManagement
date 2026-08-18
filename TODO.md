@@ -1,5 +1,9 @@
 # WorldManagement
 
+## Dev checks
+Run before committing changes:
+- Frontend (`worldManagement/`): `pnpm check` (tsc --noEmit + eslint + vitest)
+- Backend (`worldManagement/src-tauri/`): `cargo test && cargo clippy`
 
 TODO:
     - Pagina impostazioni personalizzate, colori, nomi mesi, estensione massima timeline

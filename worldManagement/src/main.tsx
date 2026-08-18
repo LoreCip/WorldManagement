@@ -5,6 +5,9 @@ import "./App.css";
 
 import { SettingsProvider } from "./context/SettingsContext";
 import { LocalizationProvider } from "./context/LocalizationContext";
+import { injectThemeCssVariables } from "./components/theme/theme";
+
+injectThemeCssVariables();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>

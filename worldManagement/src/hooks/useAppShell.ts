@@ -7,7 +7,8 @@ export type ActiveTab =
 // Le uniche tab "di contenuto" la cui ultima visita viene ricordata dalla hub.
 const HUB_TRACKED_TABS: ActiveTab[] = ["wiki", "maps", "characters", "timeline", "relations"];
 
-const LAST_VISITED_TAB_KEY = "worldbuilder_last_visited_tab";
+// Esportata perche' HubView.tsx la legge per riaprire l'ultima tab visitata.
+export const LAST_VISITED_TAB_KEY = "worldbuilder_last_visited_tab";
 
 // Stato e navigazione a livello di app shell: quale tab e attiva, quali id
 // sono selezionati per il deep-link tra moduli (es. apri un articolo wiki

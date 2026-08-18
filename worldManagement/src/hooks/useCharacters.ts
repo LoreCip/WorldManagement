@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
+import { useLocalization } from "../context/LocalizationContext";
 import {
   CharacterSheet,
   GameSystem,
@@ -27,6 +28,7 @@ function writeStoredActiveSystemId(id: string | null): void {
 }
 
 export function useCharacters() {
+  const { t } = useLocalization();
   const [systems, setSystems] = useState<GameSystem[]>([]);
   const [sheets, setSheets] = useState<CharacterSheet[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,15 +87,15 @@ export function useCharacters() {
   // Apre il modal di richiesta nome; la creazione vera avviene in createNewSheet
   const handleNewSheet = useCallback(() => {
     if (systems.length === 0) {
-      alert("Nessun sistema di gioco trovato! Creane prima uno dal pulsante 'Nuovo Sistema'.");
+      alert(t("characters.hook.noSystemFound"));
       return;
     }
     if (!activeSystemId) {
-      alert("Seleziona prima un motore di gioco attivo dalla barra laterale.");
+      alert(t("characters.hook.noActiveSystem"));
       return;
     }
     setIsNewSheetModalOpen(true);
-  }, [systems.length, activeSystemId]);
+  }, [systems.length, activeSystemId, t]);
 
   // Chiamata dal modal con il nome inserito dall'utente
   const createNewSheet = useCallback(
@@ -112,7 +114,7 @@ export function useCharacters() {
 
       const savedId = await invokeSafe<string>("save_character_sheet", { payload });
       if (savedId === null) {
-        alert("Errore nella creazione della scheda.");
+        alert(t("characters.hook.createSheetError"));
         return;
       }
 
@@ -120,12 +122,12 @@ export function useCharacters() {
       setSelectedSheet({ ...payload, id: savedId, article_id: payload.article_id ?? null });
       setIsNewSheetModalOpen(false);
     },
-    [activeSystemId, loadInitialData],
+    [activeSystemId, loadInitialData, t],
   );
 
   const handleDeleteSheet = useCallback(
     async (id: string) => {
-      if (!id || !window.confirm("Sei sicuro di voler eliminare questa scheda?")) return;
+      if (!id || !window.confirm(t("characters.hook.deleteSheetConfirm"))) return;
 
       const result = await invokeSafe<void>("delete_character_sheet", { id });
       if (result === null) return;
@@ -133,21 +135,21 @@ export function useCharacters() {
       setSelectedSheet(null);
       await loadInitialData();
     },
-    [loadInitialData],
+    [loadInitialData, t],
   );
 
   const handleSaveSystem = useCallback(
     async (payload: SaveGameSystemPayload): Promise<boolean> => {
       const savedId = await invokeSafe<string>("save_game_system", { payload });
       if (savedId === null) {
-        alert("Errore nel salvataggio del sistema di gioco.");
+        alert(t("characters.hook.saveSystemError"));
         return false;
       }
       await loadInitialData();
       setActiveSystemId(savedId);
       return true;
     },
-    [loadInitialData, setActiveSystemId],
+    [loadInitialData, setActiveSystemId, t],
   );
 
   // Unico punto di mutazione della scheda attiva (dati form, variante,
@@ -190,22 +192,22 @@ export function useCharacters() {
       if (!sys) return;
 
       if (sys.is_builtin) {
-        alert("I sistemi di gioco predefiniti non possono essere eliminati.");
+        alert(t("characters.hook.systemBuiltinProtected"));
         return;
       }
-      if (!window.confirm(`Sei sicuro di voler eliminare il sistema "${sys.name}"?`)) return;
+      if (!window.confirm(t("characters.hook.deleteSystemConfirm", { name: sys.name }))) return;
 
       const result = await invokeSafe<void>("delete_game_system", { id: systemId });
       if (result === null) {
-        alert("Impossibile eliminare il sistema di gioco.");
+        alert(t("characters.hook.deleteSystemError"));
         return;
       }
 
       if (activeSystemId === systemId) setActiveSystemId(null);
       await loadInitialData();
-      alert("Sistema di gioco eliminato con successo.");
+      alert(t("characters.hook.deleteSystemSuccess"));
     },
-    [systems, activeSystemId, loadInitialData, setActiveSystemId],
+    [systems, activeSystemId, loadInitialData, setActiveSystemId, t],
   );
 
   return {

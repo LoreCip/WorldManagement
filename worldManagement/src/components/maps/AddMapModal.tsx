@@ -97,7 +97,7 @@ export const AddMapModal: React.FC<AddMapModalProps> = ({
     });
 
     if (result === null) {
-      alert("Errore nel salvataggio della mappa.");
+      alert(t("maps.form.saveError"));
       return;
     }
 

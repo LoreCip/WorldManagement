@@ -76,6 +76,10 @@
       "noResults": "No entries match your search.",
       "noSnippet": "No content…"
     },
+    "hook": {
+      "deleteArticleConfirm": "Are you sure you want to delete this entry?",
+      "createFromTitleConfirm": "The entry \"{{title}}\" doesn't exist yet. Create it now?"
+    },
     "tag": {
       "delete": "×",
       "placeholder": "Add tag and press Enter…"
@@ -93,7 +97,25 @@
       "zoomReset": "Reset zoom (100%)",
       "zoomIn": "Zoom in",
       "pgTooltip": "Player Character sheet",
-      "npcTooltip": "Non-player Character sheet"
+      "npcTooltip": "Non-player Character sheet",
+      "noSystemFound": "No game system found! Create one first using the 'New System' button.",
+      "noActiveSystem": "Select an active game engine from the sidebar first.",
+      "createSheetError": "Error creating the sheet.",
+      "deleteSheetConfirm": "Are you sure you want to delete this sheet?",
+      "saveSystemError": "Error saving the game system.",
+      "systemBuiltinProtected": "Built-in game systems cannot be deleted.",
+      "deleteSystemConfirm": "Are you sure you want to delete the system \"{{name}}\"?",
+      "deleteSystemError": "Unable to delete the game system.",
+      "deleteSystemSuccess": "Game system deleted successfully."
+    },
+    "pdf": {
+      "notLoaded": "PDF not yet loaded in memory.",
+      "saveError": "Error saving the PDF.",
+      "sheetSaveError": "Error saving the sheet.",
+      "saveSuccess": "Sheet saved successfully!",
+      "saveException": "Error while saving: {{error}}",
+      "exportError": "Error exporting the PDF.",
+      "exportSuccess": "PDF copy exported successfully!"
     },
     "sidebar": {
       "title": "Characters",
@@ -152,7 +174,9 @@
       "associatedArticlePlaceholder": "-- No linked Wiki article --",
       "noLinkWiki": "-- No linked article --",
       "noParent": "-- None (Top Level Map) --",
-      "saveMap": "Save Map"
+      "saveMap": "Save Map",
+      "saveError": "Error saving the map.",
+      "updateError": "Error updating the map."
     },
     "canvas": {
       "portalDefault": "Portal",
@@ -183,6 +207,11 @@
     }
   },
   "timeline": {
+    "hook": {
+      "deleteEventConfirm": "Are you sure you want to delete this event from the timeline?",
+      "deleteCategoryConfirm": "Delete this category? Linked events will remain, without a category.",
+      "deleteEraConfirm": "Delete this era/band?"
+    },
     "canvas": {
       "today": "TODAY",
       "closeEvents": "{{count}} close events",

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
+import { useLocalization } from "../context/LocalizationContext";
 import { Article, ArticleItem } from "../types/wiki";
 
 const EMPTY_ARTICLE: Article = { id: "", title: "", content: "", category: "Lore", tags: [] };
 
 export function useWiki() {
+  const { t } = useLocalization();
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentArticle, setCurrentArticle] = useState<Article>(EMPTY_ARTICLE);
@@ -88,7 +90,7 @@ export function useWiki() {
   const handleDeleteArticle = useCallback(async () => {
     if (!currentArticle.id) return;
 
-    const confirmed = window.confirm("Sei sicuro di voler eliminare questa voce?");
+    const confirmed = window.confirm(t("wiki.hook.deleteArticleConfirm"));
     if (!confirmed) return;
 
     const result = await invokeSafe<void>("delete_article", { id: currentArticle.id });
@@ -97,7 +99,7 @@ export function useWiki() {
     setCurrentArticle(EMPTY_ARTICLE);
     setIsEditing(false);
     await loadArticles();
-  }, [currentArticle.id, loadArticles]);
+  }, [currentArticle.id, loadArticles, t]);
 
   const handleNavigateToTitle = useCallback(
     async (title: string) => {
@@ -124,9 +126,7 @@ export function useWiki() {
         return;
       }
 
-      const createNew = window.confirm(
-        `La voce "${title}" non esiste ancora. Vuoi crearla adesso?`,
-      );
+      const createNew = window.confirm(t("wiki.hook.createFromTitleConfirm", { title }));
       if (!createNew) return;
 
       setCurrentArticle({
@@ -138,7 +138,7 @@ export function useWiki() {
       });
       setIsEditing(true);
     },
-    [articles, handleSelectArticle],
+    [articles, handleSelectArticle, t],
   );
 
   return {

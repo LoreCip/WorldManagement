@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PDFDocument } from "pdf-lib";
 import { save } from "@tauri-apps/plugin-dialog";
 import { invokeSafe } from "../lib/ipc";
+import { useLocalization } from "../context/LocalizationContext";
 import { CharacterSheet, SheetVariant } from "../types/character";
 
 type FormFieldValue = string | boolean;
@@ -31,6 +32,7 @@ export function useCharacterSheetPdf({
   updateSheet,
   containerRef,
 }: UseCharacterSheetPdfParams) {
+  const { t } = useLocalization();
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
 
@@ -130,7 +132,7 @@ export function useCharacterSheetPdf({
       console.error(
         "Salvataggio PDF interrotto: il buffer del PDF non è ancora caricato in memoria.",
       );
-      alert("PDF non ancora caricato in memoria.");
+      alert(t("characters.pdf.notLoaded"));
       return;
     }
 
@@ -174,7 +176,7 @@ export function useCharacterSheetPdf({
         console.error(
           "Salvataggio PDF interrotto: save_character_pdf ha restituito null (vedi il log IPC sopra per il motivo).",
         );
-        alert("Errore durante il salvataggio del PDF.");
+        alert(t("characters.pdf.saveError"));
         return;
       }
 
@@ -188,17 +190,17 @@ export function useCharacterSheetPdf({
         console.error(
           "Salvataggio PDF interrotto: updateSheet (save_character_sheet) ha restituito false.",
         );
-        alert("Errore durante il salvataggio della scheda.");
+        alert(t("characters.pdf.sheetSaveError"));
         return;
       }
 
       console.log("Salvataggio PDF completato con successo.");
-      alert("Scheda salvata con successo!");
+      alert(t("characters.pdf.saveSuccess"));
     } catch (err) {
       console.error("Errore durante il salvataggio:", err);
-      alert(`Errore durante il salvataggio: ${err}`);
+      alert(t("characters.pdf.saveException", { error: String(err) }));
     }
-  }, [selectedSheet, activeVariant, updateSheet]);
+  }, [selectedSheet, activeVariant, updateSheet, t]);
 
   const handleExportPdf = useCallback(async () => {
     if (!selectedSheet) return;
@@ -219,12 +221,12 @@ export function useCharacterSheetPdf({
     });
 
     if (result === null) {
-      alert("Errore nell'esportazione del PDF.");
+      alert(t("characters.pdf.exportError"));
       return;
     }
 
-    alert("Copia del PDF esportata con successo!");
-  }, [selectedSheet, activeVariant, pdfTemplateFilename]);
+    alert(t("characters.pdf.exportSuccess"));
+  }, [selectedSheet, activeVariant, pdfTemplateFilename, t]);
 
   return {
     pdfArrayBuffer,
