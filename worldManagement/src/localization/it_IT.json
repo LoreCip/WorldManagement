@@ -98,6 +98,8 @@
       "zoomIn": "Aumenta zoom",
       "pgTooltip": "Scheda Personaggio Giocante",
       "npcTooltip": "Scheda Personaggio Non Giocante",
+      "setVariantError": "Errore durante il cambio di scheda.",
+      "linkArticleError": "Errore durante l'associazione alla wiki.",
       "noSystemFound": "Nessun sistema di gioco trovato! Creane prima uno dal pulsante 'Nuovo Sistema'.",
       "noActiveSystem": "Seleziona prima un motore di gioco attivo dalla barra laterale.",
       "createSheetError": "Errore nella creazione della scheda.",

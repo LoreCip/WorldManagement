@@ -8,6 +8,7 @@ import { CharacterSidebar } from "../components/characters/CharacterSidebar";
 import { SystemModal } from "../components/characters/SystemModal";
 import { NewSheetModal } from "../components/characters/NewSheetModal";
 import { ViewHeader } from "../components/common/ViewHeader";
+import { useToast } from "../components/common/Toast";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 
@@ -50,6 +51,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
   } = useCharacters();
 
   const { t } = useLocalization();
+  const showToast = useToast();
   const { articles: allArticles } = useLinkableOptions({ articles: true });
 
   const characterArticles = useMemo(
@@ -140,13 +142,13 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
   const handleSetVariant = async (variant: "pg" | "png") => {
     if (!selectedSheet || selectedSheet.sheet_variant === variant) return;
     const success = await updateSheet({ id: selectedSheet.id, sheet_variant: variant });
-    if (!success) alert("Errore durante il cambio di scheda.");
+    if (!success) showToast(t("characters.hook.setVariantError"), "error");
   };
 
   const handleLinkArticle = async (articleId: string | null) => {
     if (!selectedSheet) return;
     const success = await updateSheet({ id: selectedSheet.id, article_id: articleId });
-    if (!success) alert("Errore durante l'associazione alla wiki.");
+    if (!success) showToast(t("characters.hook.linkArticleError"), "error");
   };
 
   const btnBase: React.CSSProperties = {

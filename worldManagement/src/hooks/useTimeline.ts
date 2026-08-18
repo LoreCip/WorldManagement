@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import {
   TimelineEvent,
   TimelineEventListItem,
@@ -24,6 +25,7 @@ const emptyEvent = (): TimelineEvent => ({
 
 export function useTimeline() {
   const { t } = useLocalization();
+  const confirm = useConfirm();
   const [events, setEvents] = useState<TimelineEventListItem[]>([]);
   const [categories, setCategories] = useState<TimelineCategory[]>([]);
   const [savedViews, setSavedViews] = useState<TimelineSavedView[]>([]);
@@ -101,7 +103,7 @@ export function useTimeline() {
   const handleDeleteEvent = useCallback(
     async (id: string) => {
       if (!id) return;
-      if (!window.confirm(t("timeline.hook.deleteEventConfirm"))) return;
+      if (!(await confirm(t("timeline.hook.deleteEventConfirm")))) return;
 
       const result = await invokeSafe<void>("delete_timeline_event", { id });
       if (result === null) return;
@@ -111,7 +113,7 @@ export function useTimeline() {
       setIsModalOpen(false);
       await loadEvents();
     },
-    [loadEvents, t],
+    [loadEvents, t, confirm],
   );
 
   const closeModal = useCallback(() => {
@@ -132,14 +134,14 @@ export function useTimeline() {
 
   const deleteCategory = useCallback(
     async (id: string) => {
-      if (!window.confirm(t("timeline.hook.deleteCategoryConfirm"))) return;
+      if (!(await confirm(t("timeline.hook.deleteCategoryConfirm")))) return;
 
       const result = await invokeSafe<void>("delete_timeline_category", { id });
       if (result === null) return;
       await loadCategories();
       await loadEvents();
     },
-    [loadCategories, loadEvents, t],
+    [loadCategories, loadEvents, t, confirm],
   );
 
   // --- Viste salvate ---
@@ -210,13 +212,13 @@ export function useTimeline() {
 
   const deleteEra = useCallback(
     async (id: string) => {
-      if (!window.confirm(t("timeline.hook.deleteEraConfirm"))) return;
+      if (!(await confirm(t("timeline.hook.deleteEraConfirm")))) return;
 
       const result = await invokeSafe<void>("delete_timeline_era", { id });
       if (result === null) return;
       await loadEras();
     },
-    [loadEras, t],
+    [loadEras, t, confirm],
   );
 
   return {

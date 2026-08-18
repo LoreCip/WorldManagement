@@ -21,6 +21,7 @@ import "@xyflow/react/dist/style.css";
 
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import { useRelations } from "../hooks/useRelations";
 import { CharacterNode, CharacterNodeFlowData } from "../components/relations/CharacterNode";
 import { RelationEdge, RelationEdgeFlowData } from "../components/relations/RelationEdge";
@@ -65,6 +66,7 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
   onNavigateToCharacterSheet,
 }) => {
   const { t } = useLocalization();
+  const confirm = useConfirm();
   const rf = useReactFlow();
   const {
     isLoading,
@@ -352,11 +354,11 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
   }, []);
 
   const handleDeleteView = useCallback(
-    (view: GraphView) => {
-      const confirmed = window.confirm(t("relations.views.deleteConfirm", { title: view.title }));
+    async (view: GraphView) => {
+      const confirmed = await confirm(t("relations.views.deleteConfirm", { title: view.title }));
       if (confirmed) deleteView(view.id);
     },
-    [deleteView, t],
+    [deleteView, t, confirm],
   );
 
   const handleRecenter = useCallback(() => {

@@ -98,6 +98,8 @@
       "zoomIn": "Zoom in",
       "pgTooltip": "Player Character sheet",
       "npcTooltip": "Non-player Character sheet",
+      "setVariantError": "Error while switching sheet variant.",
+      "linkArticleError": "Error while linking to the wiki.",
       "noSystemFound": "No game system found! Create one first using the 'New System' button.",
       "noActiveSystem": "Select an active game engine from the sidebar first.",
       "createSheetError": "Error creating the sheet.",

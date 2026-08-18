@@ -1,0 +1,176 @@
+/* Comportamenti che le sole inline style non gestiscono bene (hover, texture
+   di sfondo, dimensioni del testo in base allo slot). Estratto da un
+   <style>{...}</style> iniettato in JSX in un vero CSS Module. I colori sono
+   valori statici di src/components/theme/theme.ts (non configurabili a
+   runtime), quindi qui sono letterali invece che var(--...) per poter
+   comporre i canali alpha esadecimali (es. #c9a15a1a) come nell'originale. */
+
+.hub-tile {
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+.hub-tile:hover {
+  transform: translateY(-3px);
+}
+.hub-tile-icon {
+  transition: transform 0.35s ease;
+}
+.hub-tile:hover .hub-tile-icon {
+  transform: scale(1.1);
+}
+.hub-tile-title {
+  transition:
+    color 0.3s ease,
+    font-size 0.3s ease;
+  font-size: 1.15rem;
+}
+
+.hub-slot-hero .hub-tile-title {
+  font-size: 1.8rem;
+}
+.hub-slot-hero .hub-tile-icon {
+  font-size: 2.1rem;
+}
+.hub-slot-wide .hub-tile-title {
+  font-size: 1.35rem;
+}
+.hub-slot-s1 .hub-tile-desc,
+.hub-slot-s2 .hub-tile-desc {
+  display: none;
+}
+.hub-slot-s1 .hub-tile-title,
+.hub-slot-s2 .hub-tile-title {
+  font-size: 1.05rem;
+}
+.hub-slot-s3 .hub-tile-title {
+  font-size: 1rem;
+}
+.hub-slot-s3 .hub-tile-desc {
+  display: none;
+}
+
+/* Texture di sfondo — identità propria di ogni modulo */
+.hub-tile-wiki::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+  background-image: repeating-linear-gradient(
+    115deg,
+    #c9a15a1a 0px,
+    #c9a15a1a 1px,
+    transparent 1px,
+    transparent 9px
+  );
+}
+.hub-tile-maps::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+  background-image: repeating-radial-gradient(
+    circle at 75% 20%,
+    #5f948429 0px,
+    #5f948429 1px,
+    transparent 1px,
+    transparent 14px
+  );
+}
+.hub-tile-characters::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(ellipse 140px 140px at 80% 15%, #b6544a29, transparent 70%);
+}
+.hub-tile-timeline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+  background-image: repeating-linear-gradient(
+    0deg,
+    #7579ad1f 0px,
+    #7579ad1f 1px,
+    transparent 1px,
+    transparent 22px
+  );
+}
+.hub-tile-relations::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  transition: opacity 0.35s ease;
+  background-image:
+    repeating-linear-gradient(
+      60deg,
+      #e0bd7a1a 0px,
+      #e0bd7a1a 1px,
+      transparent 1px,
+      transparent 16px
+    ),
+    repeating-linear-gradient(
+      -60deg,
+      #e0bd7a12 0px,
+      #e0bd7a12 1px,
+      transparent 1px,
+      transparent 16px
+    );
+}
+.hub-tile:hover::before {
+  opacity: 0.85;
+}
+
+.hub-tile-wiki:hover {
+  border-color: #c9a15a80 !important;
+}
+.hub-tile-wiki:hover .hub-tile-title {
+  color: #c9a15a;
+}
+.hub-tile-maps:hover {
+  border-color: #5f948480 !important;
+}
+.hub-tile-maps:hover .hub-tile-title {
+  color: #5f9484;
+}
+.hub-tile-characters:hover {
+  border-color: #b6544a80 !important;
+}
+.hub-tile-characters:hover .hub-tile-title {
+  color: #b6544a;
+}
+.hub-tile-timeline:hover {
+  border-color: #7579ad80 !important;
+}
+.hub-tile-timeline:hover .hub-tile-title {
+  color: #7579ad;
+}
+.hub-tile-relations:hover {
+  border-color: #e0bd7a80 !important;
+}
+.hub-tile-relations:hover .hub-tile-title {
+  color: #e0bd7a;
+}
+
+@media (max-width: 640px) {
+  .hub-bento {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto !important;
+  }
+  .hub-tile {
+    grid-area: auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .hub-slot-s3 .hub-tile-desc {
+    display: block !important;
+    margin-top: 0.3rem;
+  }
+}

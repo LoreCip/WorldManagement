@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import { Article, ArticleItem } from "../types/wiki";
 
 const EMPTY_ARTICLE: Article = { id: "", title: "", content: "", category: "Lore", tags: [] };
 
 export function useWiki() {
   const { t } = useLocalization();
+  const confirm = useConfirm();
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentArticle, setCurrentArticle] = useState<Article>(EMPTY_ARTICLE);
@@ -90,7 +92,7 @@ export function useWiki() {
   const handleDeleteArticle = useCallback(async () => {
     if (!currentArticle.id) return;
 
-    const confirmed = window.confirm(t("wiki.hook.deleteArticleConfirm"));
+    const confirmed = await confirm(t("wiki.hook.deleteArticleConfirm"));
     if (!confirmed) return;
 
     const result = await invokeSafe<void>("delete_article", { id: currentArticle.id });
@@ -99,7 +101,7 @@ export function useWiki() {
     setCurrentArticle(EMPTY_ARTICLE);
     setIsEditing(false);
     await loadArticles();
-  }, [currentArticle.id, loadArticles, t]);
+  }, [currentArticle.id, loadArticles, t, confirm]);
 
   const handleNavigateToTitle = useCallback(
     async (title: string) => {
@@ -126,7 +128,7 @@ export function useWiki() {
         return;
       }
 
-      const createNew = window.confirm(t("wiki.hook.createFromTitleConfirm", { title }));
+      const createNew = await confirm(t("wiki.hook.createFromTitleConfirm", { title }));
       if (!createNew) return;
 
       setCurrentArticle({
@@ -138,7 +140,7 @@ export function useWiki() {
       });
       setIsEditing(true);
     },
-    [articles, handleSelectArticle, t],
+    [articles, handleSelectArticle, t, confirm],
   );
 
   return {

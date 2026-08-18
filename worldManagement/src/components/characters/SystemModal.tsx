@@ -3,6 +3,7 @@ import { invokeSafe } from "../../lib/ipc";
 import { GameSystem, SaveGameSystemPayload } from "../../types/character";
 import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { useToast } from "../common/Toast";
 import { Modal } from "../common/Modal";
 
 interface SystemModalProps {
@@ -19,6 +20,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
   onSave,
 }) => {
   const { t } = useLocalization();
+  const showToast = useToast();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -73,7 +75,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
       });
 
       if (uploadedFilename === null) {
-        alert(t("characters.systemModal.loadError"));
+        showToast(t("characters.systemModal.loadError"), "error");
         return;
       }
 
@@ -86,11 +88,11 @@ export const SystemModal: React.FC<SystemModalProps> = ({
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      alert(t("characters.systemModal.nameError"));
+      showToast(t("characters.systemModal.nameError"), "error");
       return;
     }
     if (!pdfPgFile) {
-      alert(t("characters.systemModal.pgError"));
+      showToast(t("characters.systemModal.pgError"), "error");
       return;
     }
 

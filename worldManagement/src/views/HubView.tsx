@@ -3,6 +3,7 @@ import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { LAST_VISITED_TAB_KEY } from "../hooks/useAppShell";
+import styles from "./HubView.module.css";
 
 // Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
 export type HubModuleKey = "wiki" | "maps" | "characters" | "timeline" | "relations";
@@ -156,8 +157,6 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
         position: "relative",
       }}
     >
-      <style>{hubStyleTag}</style>
-
       <button
         onClick={onOpenSettings}
         title={t("hub.settingsTooltip")}
@@ -217,7 +216,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
         </div>
 
         <div
-          className="hub-bento"
+          className={styles["hub-bento"]}
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",
@@ -233,7 +232,11 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
             return (
               <div
                 key={mod.key}
-                className={`hub-tile hub-tile-${mod.key} hub-slot-${slot}`}
+                className={[
+                  styles["hub-tile"],
+                  styles[`hub-tile-${mod.key}`],
+                  styles[`hub-slot-${slot}`],
+                ].join(" ")}
                 style={{
                   gridArea: SLOT_GRID_AREA[slot],
                   border: `1px solid ${colors.border}`,
@@ -252,7 +255,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                 onClick={() => onNavigate(mod.key)}
               >
                 <div
-                  className="hub-tile-accent"
+                  className={styles["hub-tile-accent"]}
                   style={{
                     position: "absolute",
                     top: 0,
@@ -267,7 +270,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                 {isStrip ? (
                   <>
                     <span
-                      className="hub-tile-num"
+                      className={styles["hub-tile-num"]}
                       style={{
                         zIndex: 2,
                         fontFamily: fonts.display,
@@ -279,11 +282,14 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     >
                       {mod.numeral}
                     </span>
-                    <span className="hub-tile-icon" style={{ zIndex: 2, fontSize: "1.5rem" }}>
+                    <span
+                      className={styles["hub-tile-icon"]}
+                      style={{ zIndex: 2, fontSize: "1.5rem" }}
+                    >
                       {mod.icon}
                     </span>
                     <span
-                      className="hub-tile-title"
+                      className={styles["hub-tile-title"]}
                       style={{
                         zIndex: 2,
                         fontFamily: fonts.display,
@@ -294,7 +300,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                       {t(mod.titleKey)}
                     </span>
                     <span
-                      className="hub-tile-desc"
+                      className={styles["hub-tile-desc"]}
                       style={{ zIndex: 2, fontSize: "0.76rem", color: colors.textFaint }}
                     >
                       {t(mod.descriptionKey)}
@@ -315,7 +321,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                 ) : (
                   <>
                     <span
-                      className="hub-tile-num"
+                      className={styles["hub-tile-num"]}
                       style={{
                         position: "absolute",
                         top: "1rem",
@@ -331,7 +337,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                       {mod.numeral}
                     </span>
                     <span
-                      className="hub-tile-icon"
+                      className={styles["hub-tile-icon"]}
                       style={{
                         position: "absolute",
                         top: "0.95rem",
@@ -344,7 +350,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     </span>
 
                     <span
-                      className="hub-tile-title"
+                      className={styles["hub-tile-title"]}
                       style={{
                         position: "relative",
                         zIndex: 2,
@@ -356,7 +362,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                       {t(mod.titleKey)}
                     </span>
                     <span
-                      className="hub-tile-desc"
+                      className={styles["hub-tile-desc"]}
                       style={{
                         position: "relative",
                         zIndex: 2,
@@ -389,64 +395,3 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
     </div>
   );
 };
-
-// Comportamenti che le sole inline style non gestiscono bene (hover, texture
-// di sfondo, dimensioni del testo in base allo slot) — stesso pattern di
-// <style>{...}</style> già usato altrove nel progetto.
-const hubStyleTag = `
-  .hub-tile { transition: transform .3s ease, background-color .3s ease, border-color .3s ease; }
-  .hub-tile:hover { transform: translateY(-3px); }
-  .hub-tile-icon { transition: transform .35s ease; }
-  .hub-tile:hover .hub-tile-icon { transform: scale(1.1); }
-  .hub-tile-title { transition: color .3s ease, font-size .3s ease; font-size: 1.15rem; }
-
-  .hub-slot-hero .hub-tile-title { font-size: 1.8rem; }
-  .hub-slot-hero .hub-tile-icon { font-size: 2.1rem; }
-  .hub-slot-wide .hub-tile-title { font-size: 1.35rem; }
-  .hub-slot-s1 .hub-tile-desc, .hub-slot-s2 .hub-tile-desc { display: none; }
-  .hub-slot-s1 .hub-tile-title, .hub-slot-s2 .hub-tile-title { font-size: 1.05rem; }
-  .hub-slot-s3 .hub-tile-title { font-size: 1rem; }
-  .hub-slot-s3 .hub-tile-desc { display: none; }
-
-  /* Texture di sfondo — identità propria di ogni modulo */
-  .hub-tile-wiki::before {
-    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
-    background-image: repeating-linear-gradient(115deg, ${colors.gold}1a 0px, ${colors.gold}1a 1px, transparent 1px, transparent 9px);
-  }
-  .hub-tile-maps::before {
-    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
-    background-image: repeating-radial-gradient(circle at 75% 20%, ${colors.verdigris}29 0px, ${colors.verdigris}29 1px, transparent 1px, transparent 14px);
-  }
-  .hub-tile-characters::before {
-    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
-    background: radial-gradient(ellipse 140px 140px at 80% 15%, ${colors.crimson}29, transparent 70%);
-  }
-  .hub-tile-timeline::before {
-    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
-    background-image: repeating-linear-gradient(0deg, ${colors.indigo}1f 0px, ${colors.indigo}1f 1px, transparent 1px, transparent 22px);
-  }
-  .hub-tile-relations::before {
-    content: ""; position: absolute; inset: 0; opacity: 0.5; transition: opacity .35s ease;
-    background-image:
-      repeating-linear-gradient(60deg, ${colors.goldBright}1a 0px, ${colors.goldBright}1a 1px, transparent 1px, transparent 16px),
-      repeating-linear-gradient(-60deg, ${colors.goldBright}12 0px, ${colors.goldBright}12 1px, transparent 1px, transparent 16px);
-  }
-  .hub-tile:hover::before { opacity: 0.85; }
-
-  .hub-tile-wiki:hover { border-color: ${colors.gold}80 !important; }
-  .hub-tile-wiki:hover .hub-tile-title { color: ${colors.gold}; }
-  .hub-tile-maps:hover { border-color: ${colors.verdigris}80 !important; }
-  .hub-tile-maps:hover .hub-tile-title { color: ${colors.verdigris}; }
-  .hub-tile-characters:hover { border-color: ${colors.crimson}80 !important; }
-  .hub-tile-characters:hover .hub-tile-title { color: ${colors.crimson}; }
-  .hub-tile-timeline:hover { border-color: ${colors.indigo}80 !important; }
-  .hub-tile-timeline:hover .hub-tile-title { color: ${colors.indigo}; }
-  .hub-tile-relations:hover { border-color: ${colors.goldBright}80 !important; }
-  .hub-tile-relations:hover .hub-tile-title { color: ${colors.goldBright}; }
-
-  @media (max-width: 640px) {
-    .hub-bento { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto !important; }
-    .hub-tile { grid-area: auto !important; flex-direction: column !important; align-items: stretch !important; }
-    .hub-slot-s3 .hub-tile-desc { display: block !important; margin-top: 0.3rem; }
-  }
-`;

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
+import { useToast } from "../components/common/Toast";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import {
   CharacterSheet,
   GameSystem,
@@ -29,6 +31,8 @@ function writeStoredActiveSystemId(id: string | null): void {
 
 export function useCharacters() {
   const { t } = useLocalization();
+  const showToast = useToast();
+  const confirm = useConfirm();
   const [systems, setSystems] = useState<GameSystem[]>([]);
   const [sheets, setSheets] = useState<CharacterSheet[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,15 +91,15 @@ export function useCharacters() {
   // Apre il modal di richiesta nome; la creazione vera avviene in createNewSheet
   const handleNewSheet = useCallback(() => {
     if (systems.length === 0) {
-      alert(t("characters.hook.noSystemFound"));
+      showToast(t("characters.hook.noSystemFound"), "error");
       return;
     }
     if (!activeSystemId) {
-      alert(t("characters.hook.noActiveSystem"));
+      showToast(t("characters.hook.noActiveSystem"), "error");
       return;
     }
     setIsNewSheetModalOpen(true);
-  }, [systems.length, activeSystemId, t]);
+  }, [systems.length, activeSystemId, t, showToast]);
 
   // Chiamata dal modal con il nome inserito dall'utente
   const createNewSheet = useCallback(
@@ -114,7 +118,7 @@ export function useCharacters() {
 
       const savedId = await invokeSafe<string>("save_character_sheet", { payload });
       if (savedId === null) {
-        alert(t("characters.hook.createSheetError"));
+        showToast(t("characters.hook.createSheetError"), "error");
         return;
       }
 
@@ -122,12 +126,12 @@ export function useCharacters() {
       setSelectedSheet({ ...payload, id: savedId, article_id: payload.article_id ?? null });
       setIsNewSheetModalOpen(false);
     },
-    [activeSystemId, loadInitialData, t],
+    [activeSystemId, loadInitialData, t, showToast],
   );
 
   const handleDeleteSheet = useCallback(
     async (id: string) => {
-      if (!id || !window.confirm(t("characters.hook.deleteSheetConfirm"))) return;
+      if (!id || !(await confirm(t("characters.hook.deleteSheetConfirm")))) return;
 
       const result = await invokeSafe<void>("delete_character_sheet", { id });
       if (result === null) return;
@@ -135,21 +139,21 @@ export function useCharacters() {
       setSelectedSheet(null);
       await loadInitialData();
     },
-    [loadInitialData, t],
+    [loadInitialData, t, confirm],
   );
 
   const handleSaveSystem = useCallback(
     async (payload: SaveGameSystemPayload): Promise<boolean> => {
       const savedId = await invokeSafe<string>("save_game_system", { payload });
       if (savedId === null) {
-        alert(t("characters.hook.saveSystemError"));
+        showToast(t("characters.hook.saveSystemError"), "error");
         return false;
       }
       await loadInitialData();
       setActiveSystemId(savedId);
       return true;
     },
-    [loadInitialData, setActiveSystemId, t],
+    [loadInitialData, setActiveSystemId, t, showToast],
   );
 
   // Unico punto di mutazione della scheda attiva (dati form, variante,
@@ -192,22 +196,22 @@ export function useCharacters() {
       if (!sys) return;
 
       if (sys.is_builtin) {
-        alert(t("characters.hook.systemBuiltinProtected"));
+        showToast(t("characters.hook.systemBuiltinProtected"), "error");
         return;
       }
-      if (!window.confirm(t("characters.hook.deleteSystemConfirm", { name: sys.name }))) return;
+      if (!(await confirm(t("characters.hook.deleteSystemConfirm", { name: sys.name })))) return;
 
       const result = await invokeSafe<void>("delete_game_system", { id: systemId });
       if (result === null) {
-        alert(t("characters.hook.deleteSystemError"));
+        showToast(t("characters.hook.deleteSystemError"), "error");
         return;
       }
 
       if (activeSystemId === systemId) setActiveSystemId(null);
       await loadInitialData();
-      alert(t("characters.hook.deleteSystemSuccess"));
+      showToast(t("characters.hook.deleteSystemSuccess"), "success");
     },
-    [systems, activeSystemId, loadInitialData, setActiveSystemId, t],
+    [systems, activeSystemId, loadInitialData, setActiveSystemId, t, showToast, confirm],
   );
 
   return {

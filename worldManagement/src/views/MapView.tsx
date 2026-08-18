@@ -4,8 +4,7 @@ import { useMaps } from "../hooks/useMaps";
 import { MapHeader } from "../components/maps/MapHeader";
 import { PortalControls } from "../components/maps/PortalControls";
 import { MapCanvas } from "../components/maps/MapCanvas";
-import { AddMapModal } from "../components/maps/AddMapModal";
-import { EditMapModal } from "../components/maps/EditMapModal";
+import { MapFormModal } from "../components/maps/MapFormModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
@@ -269,21 +268,23 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
         )}
       </div>
 
-      <AddMapModal
+      <MapFormModal
+        mode="add"
         isOpen={isAddMapOpen}
         existingMaps={maps}
         initialFilePath={droppedFilePath}
         onClose={handleCloseModal}
-        onMapAdded={refreshMaps}
+        onSaved={refreshMaps}
       />
 
       {currentMapData && (
-        <EditMapModal
+        <MapFormModal
+          mode="edit"
           isOpen={isEditMapOpen}
           currentMap={currentMapData.map}
           existingMaps={maps}
           onClose={() => setIsEditMapOpen(false)}
-          onMapUpdated={refreshMaps}
+          onSaved={refreshMaps}
         />
       )}
     </div>
