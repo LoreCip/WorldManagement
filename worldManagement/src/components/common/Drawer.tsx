@@ -68,7 +68,13 @@ export const Drawer: React.FC<DrawerProps> = ({
           <button
             onClick={onClose}
             aria-label="Chiudi"
-            style={{ background: "none", border: "none", color: colors.textFaint, cursor: "pointer", fontSize: "1.1rem" }}
+            style={{
+              background: "none",
+              border: "none",
+              color: colors.textFaint,
+              cursor: "pointer",
+              fontSize: "1.1rem",
+            }}
           >
             ✕
           </button>
@@ -78,7 +84,13 @@ export const Drawer: React.FC<DrawerProps> = ({
       {children}
 
       {footer && (
-        <div style={{ marginTop: "auto", paddingTop: "0.8rem", borderTop: `1px solid ${colors.borderSubtle}` }}>
+        <div
+          style={{
+            marginTop: "auto",
+            paddingTop: "0.8rem",
+            borderTop: `1px solid ${colors.borderSubtle}`,
+          }}
+        >
           {footer}
         </div>
       )}

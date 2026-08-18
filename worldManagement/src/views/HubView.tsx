@@ -286,7 +286,12 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     </span>
                     <span
                       className="hub-tile-title"
-                      style={{ zIndex: 2, fontFamily: fonts.display, fontWeight: 600, color: colors.textPrimary }}
+                      style={{
+                        zIndex: 2,
+                        fontFamily: fonts.display,
+                        fontWeight: 600,
+                        color: colors.textPrimary,
+                      }}
                     >
                       {t(mod.titleKey)}
                     </span>
@@ -329,7 +334,13 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     </span>
                     <span
                       className="hub-tile-icon"
-                      style={{ position: "absolute", top: "0.95rem", right: "1.1rem", zIndex: 2, fontSize: "1.5rem" }}
+                      style={{
+                        position: "absolute",
+                        top: "0.95rem",
+                        right: "1.1rem",
+                        zIndex: 2,
+                        fontSize: "1.5rem",
+                      }}
                     >
                       {mod.icon}
                     </span>
@@ -348,7 +359,13 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     </span>
                     <span
                       className="hub-tile-desc"
-                      style={{ position: "relative", zIndex: 2, fontSize: "0.76rem", color: colors.textFaint, marginTop: "0.3rem" }}
+                      style={{
+                        position: "relative",
+                        zIndex: 2,
+                        fontSize: "0.76rem",
+                        color: colors.textFaint,
+                        marginTop: "0.3rem",
+                      }}
                     >
                       {t(mod.descriptionKey)}
                     </span>

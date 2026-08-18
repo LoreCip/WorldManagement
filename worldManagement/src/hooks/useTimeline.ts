@@ -6,7 +6,7 @@ import {
   TimelineCategory,
   TimelineSavedView,
   CampaignSettings,
-  TimelineEra
+  TimelineEra,
 } from "../types/timeline";
 
 const emptyEvent = (): TimelineEvent => ({
@@ -26,7 +26,9 @@ export function useTimeline() {
   const [categories, setCategories] = useState<TimelineCategory[]>([]);
   const [savedViews, setSavedViews] = useState<TimelineSavedView[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [campaignSettings, setCampaignSettings] = useState<CampaignSettings>({ current_date_value: null });
+  const [campaignSettings, setCampaignSettings] = useState<CampaignSettings>({
+    current_date_value: null,
+  });
   const [eras, setEras] = useState<TimelineEra[]>([]);
   const [activeCategoryIds, setActiveCategoryIds] = useState<Set<string> | null>(null); // null = tutte
   const [currentEvent, setCurrentEvent] = useState<TimelineEvent>(emptyEvent());
@@ -94,18 +96,21 @@ export function useTimeline() {
     await loadEvents();
   }, [currentEvent, loadEvents]);
 
-  const handleDeleteEvent = useCallback(async (id: string) => {
-    if (!id) return;
-    if (!window.confirm("Sei sicuro di voler eliminare questo evento dalla timeline?")) return;
+  const handleDeleteEvent = useCallback(
+    async (id: string) => {
+      if (!id) return;
+      if (!window.confirm("Sei sicuro di voler eliminare questo evento dalla timeline?")) return;
 
-    const result = await invokeSafe<void>("delete_timeline_event", { id });
-    if (result === null) return;
+      const result = await invokeSafe<void>("delete_timeline_event", { id });
+      if (result === null) return;
 
-    setCurrentEvent(emptyEvent());
-    setIsEditing(false);
-    setIsModalOpen(false);
-    await loadEvents();
-  }, [loadEvents]);
+      setCurrentEvent(emptyEvent());
+      setIsEditing(false);
+      setIsModalOpen(false);
+      await loadEvents();
+    },
+    [loadEvents],
+  );
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -113,36 +118,53 @@ export function useTimeline() {
   }, []);
 
   // --- Categorie ---
-  const saveCategory = useCallback(async (category: TimelineCategory) => {
-    const result = await invokeSafe<string>("save_timeline_category", { category });
-    if (result === null) return;
-    await loadCategories();
-    await loadEvents(); // i marker già disegnati potrebbero cambiare colore/icona
-  }, [loadCategories, loadEvents]);
+  const saveCategory = useCallback(
+    async (category: TimelineCategory) => {
+      const result = await invokeSafe<string>("save_timeline_category", { category });
+      if (result === null) return;
+      await loadCategories();
+      await loadEvents(); // i marker già disegnati potrebbero cambiare colore/icona
+    },
+    [loadCategories, loadEvents],
+  );
 
-  const deleteCategory = useCallback(async (id: string) => {
-    if (!window.confirm("Eliminare questa categoria? Gli eventi collegati resteranno, senza categoria.")) return;
+  const deleteCategory = useCallback(
+    async (id: string) => {
+      if (
+        !window.confirm(
+          "Eliminare questa categoria? Gli eventi collegati resteranno, senza categoria.",
+        )
+      )
+        return;
 
-    const result = await invokeSafe<void>("delete_timeline_category", { id });
-    if (result === null) return;
-    await loadCategories();
-    await loadEvents();
-  }, [loadCategories, loadEvents]);
+      const result = await invokeSafe<void>("delete_timeline_category", { id });
+      if (result === null) return;
+      await loadCategories();
+      await loadEvents();
+    },
+    [loadCategories, loadEvents],
+  );
 
   // --- Viste salvate ---
-  const saveCurrentView = useCallback(async (name: string, centerValue: number, pixelsPerDay: number) => {
-    const result = await invokeSafe<string>("save_timeline_view", {
-      view: { id: "", name, center_value: Math.round(centerValue), pixels_per_day: pixelsPerDay },
-    });
-    if (result === null) return;
-    await loadSavedViews();
-  }, [loadSavedViews]);
+  const saveCurrentView = useCallback(
+    async (name: string, centerValue: number, pixelsPerDay: number) => {
+      const result = await invokeSafe<string>("save_timeline_view", {
+        view: { id: "", name, center_value: Math.round(centerValue), pixels_per_day: pixelsPerDay },
+      });
+      if (result === null) return;
+      await loadSavedViews();
+    },
+    [loadSavedViews],
+  );
 
-  const deleteSavedView = useCallback(async (id: string) => {
-    const result = await invokeSafe<void>("delete_timeline_view", { id });
-    if (result === null) return;
-    await loadSavedViews();
-  }, [loadSavedViews]);
+  const deleteSavedView = useCallback(
+    async (id: string) => {
+      const result = await invokeSafe<void>("delete_timeline_view", { id });
+      if (result === null) return;
+      await loadSavedViews();
+    },
+    [loadSavedViews],
+  );
 
   // --- Ere / campagna ---
   const loadCampaignSettings = useCallback(async () => {
@@ -173,24 +195,32 @@ export function useTimeline() {
   }, [events, activeCategoryIds, searchQuery]);
 
   const setCampaignToday = useCallback(async (timeValue: number | null) => {
-    const result = await invokeSafe<void>("save_campaign_settings", { currentDateValue: timeValue });
+    const result = await invokeSafe<void>("save_campaign_settings", {
+      currentDateValue: timeValue,
+    });
     if (result === null) return;
     setCampaignSettings({ current_date_value: timeValue });
   }, []);
 
-  const saveEra = useCallback(async (era: TimelineEra) => {
-    const result = await invokeSafe<string>("save_timeline_era", { era });
-    if (result === null) return;
-    await loadEras();
-  }, [loadEras]);
+  const saveEra = useCallback(
+    async (era: TimelineEra) => {
+      const result = await invokeSafe<string>("save_timeline_era", { era });
+      if (result === null) return;
+      await loadEras();
+    },
+    [loadEras],
+  );
 
-  const deleteEra = useCallback(async (id: string) => {
-    if (!window.confirm("Eliminare questa fascia/era?")) return;
+  const deleteEra = useCallback(
+    async (id: string) => {
+      if (!window.confirm("Eliminare questa fascia/era?")) return;
 
-    const result = await invokeSafe<void>("delete_timeline_era", { id });
-    if (result === null) return;
-    await loadEras();
-  }, [loadEras]);
+      const result = await invokeSafe<void>("delete_timeline_era", { id });
+      if (result === null) return;
+      await loadEras();
+    },
+    [loadEras],
+  );
 
   return {
     events,

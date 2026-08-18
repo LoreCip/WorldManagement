@@ -11,22 +11,38 @@ export interface CalendarConfig {
 export const DEFAULT_CALENDAR: CalendarConfig = { daysPerMonth: 30, daysPerYear: 360 };
 
 const MONTH_NAMES = [
-  "Nevaio", "Gelo", "Disgelo", "Germoglio", "Fioritura", "Sole Alto",
-  "Mietitura", "Bracia", "Foglia Caduta", "Nebbia", "Brina", "Notte Lunga",
+  "Nevaio",
+  "Gelo",
+  "Disgelo",
+  "Germoglio",
+  "Fioritura",
+  "Sole Alto",
+  "Mietitura",
+  "Bracia",
+  "Foglia Caduta",
+  "Nebbia",
+  "Brina",
+  "Notte Lunga",
 ]; // placeholder generico — personalizzabile per-mondo in una fase futura
 
 function monthName(m: number): string {
-  return MONTH_NAMES[((m - 1) % 12 + 12) % 12];
+  return MONTH_NAMES[(((m - 1) % 12) + 12) % 12];
 }
 
-export function timeInputToValue(input: TimeInput, calendar: CalendarConfig = DEFAULT_CALENDAR): number {
+export function timeInputToValue(
+  input: TimeInput,
+  calendar: CalendarConfig = DEFAULT_CALENDAR,
+): number {
   const { daysPerMonth, daysPerYear } = calendar;
   const month = input.month ?? 1;
   const day = input.day ?? 1;
   return input.year * daysPerYear + (month - 1) * daysPerMonth + (day - 1);
 }
 
-export function valueToTimeInput(value: number, calendar: CalendarConfig = DEFAULT_CALENDAR): TimeInput {
+export function valueToTimeInput(
+  value: number,
+  calendar: CalendarConfig = DEFAULT_CALENDAR,
+): TimeInput {
   const { daysPerMonth, daysPerYear } = calendar;
   const year = Math.floor(value / daysPerYear);
   const rem = value - year * daysPerYear;
@@ -35,7 +51,11 @@ export function valueToTimeInput(value: number, calendar: CalendarConfig = DEFAU
   return { year, month, day };
 }
 
-export function formatTimeValue(value: number, precision: TimePrecision, calendar: CalendarConfig = DEFAULT_CALENDAR): string {
+export function formatTimeValue(
+  value: number,
+  precision: TimePrecision,
+  calendar: CalendarConfig = DEFAULT_CALENDAR,
+): string {
   const { year, month, day } = valueToTimeInput(value, calendar);
   if (precision === "year") return `Anno ${year}`;
   if (precision === "month") return `${monthName(month ?? 1)}, Anno ${year}`;
@@ -45,11 +65,24 @@ export function formatTimeValue(value: number, precision: TimePrecision, calenda
 // --- Nice ticks ---
 // Intervalli "puliti" espressi in giorni (unità interna dell'asse)
 const TICK_STEPS_DAYS = [
-  1, 5, 10, 30,
-  90, 180, 360,
-  360 * 5, 360 * 10, 360 * 25, 360 * 50,
-  360 * 100, 360 * 250, 360 * 500,
-  360 * 1000, 360 * 5000, 360 * 10000, 360 * 50000,
+  1,
+  5,
+  10,
+  30,
+  90,
+  180,
+  360,
+  360 * 5,
+  360 * 10,
+  360 * 25,
+  360 * 50,
+  360 * 100,
+  360 * 250,
+  360 * 500,
+  360 * 1000,
+  360 * 5000,
+  360 * 10000,
+  360 * 50000,
 ];
 
 export interface TickInfo {
@@ -62,7 +95,7 @@ export function computeNiceTicks(
   maxValue: number,
   pixelWidth: number,
   minPixelsBetweenTicks = 90,
-  calendar: CalendarConfig = DEFAULT_CALENDAR
+  calendar: CalendarConfig = DEFAULT_CALENDAR,
 ): TickInfo[] {
   const range = Math.max(1, maxValue - minValue);
   const maxTicks = Math.max(2, Math.floor(pixelWidth / minPixelsBetweenTicks));
@@ -95,7 +128,7 @@ export function formatDuration(
   start: number,
   end: number,
   precision: TimePrecision,
-  calendar: CalendarConfig = DEFAULT_CALENDAR
+  calendar: CalendarConfig = DEFAULT_CALENDAR,
 ): string {
   const days = end - start;
   if (days <= 0) return formatTimeValue(start, precision, calendar);

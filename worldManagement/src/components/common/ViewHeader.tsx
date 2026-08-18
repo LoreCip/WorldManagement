@@ -16,7 +16,15 @@ export interface ViewHeaderProps {
 // Intestazione condivisa per le viste di modulo. Prima MapHeader (<div>
 // grezzo) e RelationsToolbar (<header> semantico) reimplementavano la
 // stessa riga — titolo + tag + azioni — con markup e spaziatura diversi.
-export const ViewHeader: React.FC<ViewHeaderProps> = ({ title, icon, badge, onBack, backLabel, children, actions }) => {
+export const ViewHeader: React.FC<ViewHeaderProps> = ({
+  title,
+  icon,
+  badge,
+  onBack,
+  backLabel,
+  children,
+  actions,
+}) => {
   return (
     <header
       style={{
@@ -93,7 +101,15 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({ title, icon, badge, onBa
       {children}
 
       {actions && (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexShrink: 0, marginLeft: "auto" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            flexShrink: 0,
+            marginLeft: "auto",
+          }}
+        >
           {actions}
         </div>
       )}

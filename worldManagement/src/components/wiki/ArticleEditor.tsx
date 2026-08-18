@@ -4,7 +4,15 @@ import { TagInput } from "./TagInput";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownPreview } from "./MarkdownPreview";
 import { ViewHeader } from "../common/ViewHeader";
-import { colors, fonts, radii, categories, getCategoryColor, getCategoryLabel, CategoryKey } from "../theme/theme";
+import {
+  colors,
+  fonts,
+  radii,
+  categories,
+  getCategoryColor,
+  getCategoryLabel,
+  CategoryKey,
+} from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 
 interface ArticleEditorProps {
@@ -162,7 +170,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
         <button
           onClick={onDelete}
           title={t("wiki.editor.confirmDelete")}
-          style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
+          style={{
+            ...btnBase,
+            backgroundColor: "transparent",
+            color: colors.crimson,
+            border: `1px solid ${colors.crimson}77`,
+          }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = colors.crimsonWash;
             e.currentTarget.style.borderColor = colors.crimson;
@@ -179,7 +192,12 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
   ) : (
     <button
       onClick={onEdit}
-      style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}
+      style={{
+        ...btnBase,
+        backgroundColor: "transparent",
+        color: colors.gold,
+        border: `1px solid ${colors.gold}77`,
+      }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = colors.goldWash;
         e.currentTarget.style.borderColor = colors.gold;
@@ -228,7 +246,14 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
                 borderRadius: radii.pill,
               }}
             >
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: categoryColor }} />
+              <span
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "50%",
+                  backgroundColor: categoryColor,
+                }}
+              />
               {getCategoryLabel(t, article.category)}
             </span>
 
@@ -269,11 +294,28 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
         )}
       </ViewHeader>
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, padding: "1.6rem 2.5rem 2.25rem" }}>
-        <TagInput tags={article.tags || []} isEditing={isEditing} onAddTag={handleAddTag} onRemoveTag={handleRemoveTag} />
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+          padding: "1.6rem 2.5rem 2.25rem",
+        }}
+      >
+        <TagInput
+          tags={article.tags || []}
+          isEditing={isEditing}
+          onAddTag={handleAddTag}
+          onRemoveTag={handleRemoveTag}
+        />
 
         {isEditing ? (
-          <MarkdownEditor value={article.content || ""} onChange={(content) => onChange({ ...article, content })} isActive={isEditing} />
+          <MarkdownEditor
+            value={article.content || ""}
+            onChange={(content) => onChange({ ...article, content })}
+            isActive={isEditing}
+          />
         ) : (
           <MarkdownPreview content={article.content || ""} onNavigateToTitle={onNavigateToTitle} />
         )}

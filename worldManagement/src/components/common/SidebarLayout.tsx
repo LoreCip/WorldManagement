@@ -10,7 +10,13 @@ export interface SidebarLayoutProps {
   children: React.ReactNode;
 }
 
-export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ icon, title, subtitle, width = "290px", children }) => {
+export const SidebarLayout: React.FC<SidebarLayoutProps> = ({
+  icon,
+  title,
+  subtitle,
+  width = "290px",
+  children,
+}) => {
   return (
     <aside
       style={{
@@ -29,7 +35,9 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ icon, title, subti
       <div style={{ marginBottom: "1.2rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
           <span style={{ fontSize: "1.2rem", lineHeight: 1, display: "flex" }}>{icon}</span>
-          <h1 style={{ fontFamily: fonts.display, fontSize: "1.4rem", fontWeight: 600, margin: 0 }}>{title}</h1>
+          <h1 style={{ fontFamily: fonts.display, fontSize: "1.4rem", fontWeight: 600, margin: 0 }}>
+            {title}
+          </h1>
         </div>
 
         {subtitle && (
@@ -56,7 +64,15 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ icon, title, subti
         />
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {children}
       </div>
     </aside>

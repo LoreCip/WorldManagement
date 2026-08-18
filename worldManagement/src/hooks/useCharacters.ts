@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
-import { CharacterSheet, GameSystem, SaveCharacterSheetPayload, SaveGameSystemPayload } from "../types/character";
+import {
+  CharacterSheet,
+  GameSystem,
+  SaveCharacterSheetPayload,
+  SaveGameSystemPayload,
+} from "../types/character";
 
 const ACTIVE_SYSTEM_STORAGE_KEY = "worldbuilder_active_game_system_id";
 
@@ -30,7 +35,9 @@ export function useCharacters() {
   const [isNewSheetModalOpen, setIsNewSheetModalOpen] = useState(false);
 
   // Sistema di gioco attivo a livello di mondo/UI (non piu scelto per ogni scheda)
-  const [activeSystemId, setActiveSystemIdState] = useState<string | null>(readStoredActiveSystemId);
+  const [activeSystemId, setActiveSystemIdState] = useState<string | null>(
+    readStoredActiveSystemId,
+  );
 
   const setActiveSystemId = useCallback((id: string | null) => {
     setActiveSystemIdState(id);
@@ -72,7 +79,7 @@ export function useCharacters() {
     (id: string) => {
       setSelectedSheet(sheets.find((s) => s.id === id) || null);
     },
-    [sheets]
+    [sheets],
   );
 
   // Apre il modal di richiesta nome; la creazione vera avviene in createNewSheet
@@ -113,7 +120,7 @@ export function useCharacters() {
       setSelectedSheet({ ...payload, id: savedId, article_id: payload.article_id ?? null });
       setIsNewSheetModalOpen(false);
     },
-    [activeSystemId, loadInitialData]
+    [activeSystemId, loadInitialData],
   );
 
   const handleDeleteSheet = useCallback(
@@ -126,7 +133,7 @@ export function useCharacters() {
       setSelectedSheet(null);
       await loadInitialData();
     },
-    [loadInitialData]
+    [loadInitialData],
   );
 
   const handleSaveSystem = useCallback(
@@ -140,7 +147,7 @@ export function useCharacters() {
       setActiveSystemId(savedId);
       return true;
     },
-    [loadInitialData, setActiveSystemId]
+    [loadInitialData, setActiveSystemId],
   );
 
   // Unico punto di mutazione della scheda attiva (dati form, variante,
@@ -152,7 +159,9 @@ export function useCharacters() {
   // reload). Qui basta passare i campi che cambiano.
   const updateSheet = useCallback(
     async (partial: Partial<CharacterSheet> & { id: string }): Promise<boolean> => {
-      const current = sheets.find((s) => s.id === partial.id) ?? (selectedSheet?.id === partial.id ? selectedSheet : null);
+      const current =
+        sheets.find((s) => s.id === partial.id) ??
+        (selectedSheet?.id === partial.id ? selectedSheet : null);
       if (!current) return false;
 
       const merged: CharacterSheet = { ...current, ...partial };
@@ -172,7 +181,7 @@ export function useCharacters() {
       setSheets((prev) => prev.map((s) => (s.id === merged.id ? merged : s)));
       return true;
     },
-    [sheets, selectedSheet]
+    [sheets, selectedSheet],
   );
 
   const handleDeleteSystem = useCallback(
@@ -196,7 +205,7 @@ export function useCharacters() {
       await loadInitialData();
       alert("Sistema di gioco eliminato con successo.");
     },
-    [systems, activeSystemId, loadInitialData, setActiveSystemId]
+    [systems, activeSystemId, loadInitialData, setActiveSystemId],
   );
 
   return {

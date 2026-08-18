@@ -9,7 +9,9 @@ export interface ToolbarProps {
 // usare dentro un ViewHeader o standalone. Centralizza solo il layout;
 // i controlli interni restano componenti normali.
 export const Toolbar: React.FC<ToolbarProps> = ({ children }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>{children}</div>
+  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+    {children}
+  </div>
 );
 
 export interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

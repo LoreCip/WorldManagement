@@ -8,14 +8,14 @@ export interface SettingOption {
 }
 
 export interface SettingDefinition<T = unknown> {
-  key: string;              // chiave univoca, usata anche come chiave nel DB
+  key: string; // chiave univoca, usata anche come chiave nel DB
   label: string;
   description?: string;
-  category: string;         // raggruppamento nella UI (es. "Generale", "Timeline")
+  category: string; // raggruppamento nella UI (es. "Generale", "Timeline")
   type: SettingType;
   defaultValue: T;
   options?: SettingOption[]; // richiesto solo per type: "select"
-  min?: number;               // richiesto solo per type: "number"
+  min?: number; // richiesto solo per type: "number"
   max?: number;
 }
 
@@ -178,12 +178,13 @@ export function getLocalizedSettingsRegistry(t: (key: string) => string): Settin
     const descriptionKey = `${baseKey}.description`;
     const description = t(descriptionKey);
 
-    const options = "optionKeys" in item
-      ? item.optionKeys.map((opt) => ({
-          value: opt,
-          label: t(`${baseKey}.options.${opt}`),
-        }))
-      : undefined;
+    const options =
+      "optionKeys" in item
+        ? item.optionKeys.map((opt) => ({
+            value: opt,
+            label: t(`${baseKey}.options.${opt}`),
+          }))
+        : undefined;
 
     return {
       key: item.key,
@@ -217,5 +218,5 @@ type SettingValueOf<T extends SettingType> = T extends "boolean"
       : never;
 
 export type AppSettingsValues = {
-  [D in typeof rawSettingsRegistry[number] as D["key"]]: SettingValueOf<D["type"]>;
+  [D in (typeof rawSettingsRegistry)[number] as D["key"]]: SettingValueOf<D["type"]>;
 };

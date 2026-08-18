@@ -31,13 +31,29 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 }) => {
   const { t } = useLocalization();
 
-  const filteredSheets = sheets.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredSheets = sheets.filter((s) =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
-    <SidebarLayout icon="🎭" title={t("characters.sidebar.title")} subtitle={t("characters.sidebar.subtitle")}>
+    <SidebarLayout
+      icon="🎭"
+      title={t("characters.sidebar.title")}
+      subtitle={t("characters.sidebar.subtitle")}
+    >
       {/* Sistema di Gioco Attivo (globale, valido per l'intero mondo) */}
       <div style={{ marginBottom: "1.2rem" }}>
-        <label style={{ fontSize: "0.7rem", letterSpacing: "0.06em", textTransform: "uppercase", color: colors.gold, fontWeight: 600, display: "block", marginBottom: "0.4rem" }}>
+        <label
+          style={{
+            fontSize: "0.7rem",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: colors.gold,
+            fontWeight: 600,
+            display: "block",
+            marginBottom: "0.4rem",
+          }}
+        >
           {t("characters.sidebar.activeSystem")}
         </label>
         <select
@@ -74,7 +90,9 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       </div>
 
       {/* Azioni Principali */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.1rem" }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.1rem" }}
+      >
         <button
           onClick={onNewSheet}
           disabled={!activeSystemId}
@@ -133,7 +151,15 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       {/* Lista Personaggi */}
       <div style={{ flex: 1, overflowY: "auto" }}>
         {filteredSheets.length === 0 ? (
-          <div style={{ color: colors.textFaint, fontStyle: "italic", textAlign: "center", marginTop: "2rem", fontSize: "0.9rem" }}>
+          <div
+            style={{
+              color: colors.textFaint,
+              fontStyle: "italic",
+              textAlign: "center",
+              marginTop: "2rem",
+              fontSize: "0.9rem",
+            }}
+          >
             {t("characters.sidebar.noResults")}
           </div>
         ) : (
@@ -154,8 +180,24 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
                   marginBottom: "0.3rem",
                 }}
               >
-                <div style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: "1rem", color: colors.textPrimary }}>{sheet.name}</div>
-                <div style={{ fontSize: "0.68rem", color: colors.goldBright, textTransform: "uppercase", marginTop: "2px" }}>
+                <div
+                  style={{
+                    fontFamily: fonts.display,
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    color: colors.textPrimary,
+                  }}
+                >
+                  {sheet.name}
+                </div>
+                <div
+                  style={{
+                    fontSize: "0.68rem",
+                    color: colors.goldBright,
+                    textTransform: "uppercase",
+                    marginTop: "2px",
+                  }}
+                >
                   {system?.name || t("characters.sidebar.unknownSystem")}
                 </div>
               </div>

@@ -1,10 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 
 // Wrapper unico per le chiamate IPC Tauri: centralizza error handling
-// e logging, cosi gli hook di dominio non duplicano lo stesso try/catch. 
+// e logging, cosi gli hook di dominio non duplicano lo stesso try/catch.
 export async function invokeSafe<T>(
   cmd: string,
-  args?: Record<string, unknown>
+  args?: Record<string, unknown>,
 ): Promise<T | null> {
   try {
     return await invoke<T>(cmd, args);
@@ -18,10 +18,7 @@ export async function invokeSafe<T>(
 // le mutation (save/delete), dove un fallimento silenzioso nasconderebbe
 // un'operazione non andata a buon fine e il chiamante deve poterlo gestire
 // esplicitamente (es. mostrare una notifica di errore).
-export async function invokeOrThrow<T>(
-  cmd: string,
-  args?: Record<string, unknown>
-): Promise<T> {
+export async function invokeOrThrow<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
   try {
     return await invoke<T>(cmd, args);
   } catch (err) {

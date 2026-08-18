@@ -80,7 +80,14 @@ export const Modal: React.FC<ModalProps> = ({
         }}
       >
         {title && (
-          <h2 style={{ fontFamily: fonts.display, color: colors.gold, marginTop: 0, marginBottom: "1.2rem" }}>
+          <h2
+            style={{
+              fontFamily: fonts.display,
+              color: colors.gold,
+              marginTop: 0,
+              marginBottom: "1.2rem",
+            }}
+          >
             {title}
           </h2>
         )}
@@ -88,7 +95,14 @@ export const Modal: React.FC<ModalProps> = ({
         {children}
 
         {footer && (
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1.5rem" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "0.5rem",
+              marginTop: "1.5rem",
+            }}
+          >
             {footer}
           </div>
         )}

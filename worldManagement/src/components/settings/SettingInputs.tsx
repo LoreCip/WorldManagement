@@ -31,7 +31,11 @@ export interface SelectSettingInputProps {
   onChange: (value: string) => void;
 }
 
-export const SelectSettingInput: React.FC<SelectSettingInputProps> = ({ value, options, onChange }) => (
+export const SelectSettingInput: React.FC<SelectSettingInputProps> = ({
+  value,
+  options,
+  onChange,
+}) => (
   <select value={value} onChange={(e) => onChange(e.target.value)} style={baseInputStyle}>
     {options.map((opt) => (
       <option key={opt.value} value={opt.value}>
@@ -48,7 +52,12 @@ export interface NumberSettingInputProps {
   onChange: (value: number) => void;
 }
 
-export const NumberSettingInput: React.FC<NumberSettingInputProps> = ({ value, min, max, onChange }) => (
+export const NumberSettingInput: React.FC<NumberSettingInputProps> = ({
+  value,
+  min,
+  max,
+  onChange,
+}) => (
   <input
     type="number"
     value={value}
@@ -65,7 +74,12 @@ export interface TextSettingInputProps {
 }
 
 export const TextSettingInput: React.FC<TextSettingInputProps> = ({ value, onChange }) => (
-  <input type="text" value={value} onChange={(e) => onChange(e.target.value)} style={baseInputStyle} />
+  <input
+    type="text"
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    style={baseInputStyle}
+  />
 );
 
 export interface ColorSettingInputProps {

@@ -13,7 +13,11 @@ interface UseImageDropParams {
 // Calcola l'indice di carattere nel testo corrispondente a un punto dello
 // schermo, per inserire l'immagine trascinata esattamente dove e stata
 // rilasciata invece che sempre in fondo al testo.
-function getCaretIndexFromPoint(textarea: HTMLTextAreaElement, clientX: number, clientY: number): number {
+function getCaretIndexFromPoint(
+  textarea: HTMLTextAreaElement,
+  clientX: number,
+  clientY: number,
+): number {
   const rect = textarea.getBoundingClientRect();
   const style = window.getComputedStyle(textarea);
 
@@ -69,7 +73,12 @@ export function useImageDrop({ enabled, textareaRef, content, onInsert }: UseIma
     if (!el) return false;
     const rect = el.getBoundingClientRect();
     const scale = window.devicePixelRatio || 1;
-    return x / scale >= rect.left && x / scale <= rect.right && y / scale >= rect.top && y / scale <= rect.bottom;
+    return (
+      x / scale >= rect.left &&
+      x / scale <= rect.right &&
+      y / scale >= rect.top &&
+      y / scale <= rect.bottom
+    );
   };
 
   const importImageFile = async (filePath: string, dropX?: number, dropY?: number) => {
@@ -97,7 +106,8 @@ export function useImageDrop({ enabled, textareaRef, content, onInsert }: UseIma
       insertAt = getCaretIndexFromPoint(el, dropX / scale, dropY / scale);
     }
 
-    const newContent = currentContent.slice(0, insertAt) + imageMarkdown + currentContent.slice(insertAt);
+    const newContent =
+      currentContent.slice(0, insertAt) + imageMarkdown + currentContent.slice(insertAt);
     onInsert(newContent);
   };
 
@@ -110,7 +120,9 @@ export function useImageDrop({ enabled, textareaRef, content, onInsert }: UseIma
         const { payload } = event;
 
         if (payload.type === "over") {
-          setIsDragging(enabledRef.current && isPointInsideTextarea(payload.position.x, payload.position.y));
+          setIsDragging(
+            enabledRef.current && isPointInsideTextarea(payload.position.x, payload.position.y),
+          );
           return;
         }
 

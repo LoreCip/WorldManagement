@@ -58,7 +58,11 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, onNav
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         urlTransform={(url) =>
-          url.startsWith("asset:") || url.startsWith("https://asset.localhost") ? url : /^javascript:/i.test(url) ? "" : url
+          url.startsWith("asset:") || url.startsWith("https://asset.localhost")
+            ? url
+            : /^javascript:/i.test(url)
+              ? ""
+              : url
         }
         components={{
           img: ({ src, alt, ...props }) =>
@@ -71,7 +75,14 @@ export const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, onNav
                 {...props}
                 src={src}
                 alt={alt || "Immagine lore"}
-                style={{ maxWidth: "100%", maxHeight: "500px", borderRadius: radii.lg, margin: "1rem 0", border: `1px solid ${colors.borderSubtle}`, display: "block" }}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "500px",
+                  borderRadius: radii.lg,
+                  margin: "1rem 0",
+                  border: `1px solid ${colors.borderSubtle}`,
+                  display: "block",
+                }}
               />
             ),
           a: ({ href, children }) => {

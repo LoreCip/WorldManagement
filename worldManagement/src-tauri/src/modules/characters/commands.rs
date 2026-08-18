@@ -9,24 +9,50 @@ use tauri::ipc::Response;
 use tauri::State;
 use uuid::Uuid;
 
+/// Rifiuta valori che potrebbero alterare la posizione di un path costruito a partire
+/// da un argomento IPC (separatori di percorso, ".." o valori vuoti).
+fn sanitize_path_component(value: &str, field_name: &str) -> Result<(), String> {
+    if value.is_empty() || value == "." || value == ".." || value.contains('/') || value.contains('\\')
+    {
+        return Err(format!("Valore non valido per '{}'.", field_name));
+    }
+    Ok(())
+}
+
+/// Riduce un nome file arbitrario al solo componente "file name", scartando
+/// qualunque parte di percorso (protegge da path traversal via "../").
+fn sanitize_filename(value: &str, field_name: &str) -> Result<PathBuf, String> {
+    let name = std::path::Path::new(value)
+        .file_name()
+        .ok_or_else(|| format!("Valore non valido per '{}'.", field_name))?;
+    Ok(PathBuf::from(name))
+}
+
 /// Risolve il path del PDF compilato salvato per una scheda+variante.
 /// Ordine di ricerca: "<id>_<variant>.pdf" -> (solo se variant == "pg") "<id>.pdf" legacy -> None.
-fn resolve_saved_pdf_path(paths: &AppPaths, sheet_id: &str, variant: &str) -> Option<PathBuf> {
+fn resolve_saved_pdf_path(
+    paths: &AppPaths,
+    sheet_id: &str,
+    variant: &str,
+) -> Result<Option<PathBuf>, String> {
+    sanitize_path_component(sheet_id, "sheet_id")?;
+    sanitize_path_component(variant, "variant")?;
+
     let variant_path = paths
         .sheets_dir
         .join(format!("{}_{}.pdf", sheet_id, variant));
     if variant_path.exists() {
-        return Some(variant_path);
+        return Ok(Some(variant_path));
     }
 
     if variant == "pg" {
         let legacy_path = paths.sheets_dir.join(format!("{}.pdf", sheet_id));
         if legacy_path.exists() {
-            return Some(legacy_path);
+            return Ok(Some(legacy_path));
         }
     }
 
-    None
+    Ok(None)
 }
 
 // ==========================================
@@ -42,9 +68,12 @@ pub async fn load_sheet_pdf_bytes(
 ) -> Result<Response, String> {
     // 1. Prova prima a cercare il PDF specifico salvato per questa scheda+variante
     // 2. Se non esiste, fallback sul file predefinito per il sistema di gioco
-    let target_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant) {
+    let target_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant)? {
         Some(p) => p,
-        None => paths.templates_dir.join(&template_filename),
+        None => {
+            let safe_template = sanitize_filename(&template_filename, "template_filename")?;
+            paths.templates_dir.join(safe_template)
+        }
     };
 
     if !target_path.exists() {
@@ -69,6 +98,9 @@ pub fn save_character_pdf(
     pdf_bytes: Vec<u8>,
     paths: State<'_, AppPaths>,
 ) -> Result<bool, String>  {
+    sanitize_path_component(&sheet_id, "sheet_id")?;
+    sanitize_path_component(&variant, "variant")?;
+
     if !paths.sheets_dir.exists() {
         fs::create_dir_all(&paths.sheets_dir)
             .map_err(|e| format!("Impossibile creare la cartella savedSheets: {}", e))?;
@@ -91,9 +123,12 @@ pub fn export_character_pdf(
     output_path: String,
     paths: State<'_, AppPaths>,
 ) -> Result<(), String> {
-    let source_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant) {
+    let source_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant)? {
         Some(p) => p,
-        None => paths.templates_dir.join(&template_filename),
+        None => {
+            let safe_template = sanitize_filename(&template_filename, "template_filename")?;
+            paths.templates_dir.join(safe_template)
+        }
     };
 
     if !source_path.exists() {
@@ -382,6 +417,8 @@ pub fn delete_character_sheet(
     state: State<'_, DbState>,
     paths: State<'_, AppPaths>,
 ) -> Result<(), String> {
+    sanitize_path_component(&id, "id")?;
+
     let conn = state.0.lock().map_str()?;
     conn.execute("DELETE FROM character_sheets WHERE id = ?1", [&id])
         .map_err(|e| format!("Errore nell'eliminazione della scheda: {}", e))?;
@@ -445,4 +482,37 @@ pub fn upload_pdf_template(
         .map_err(|e| format!("Impossibile salvare il template PDF: {}", e))?;
 
     Ok(final_name)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sanitize_path_component_accepts_plain_ids() {
+        assert!(sanitize_path_component("a1b2c3", "sheet_id").is_ok());
+        assert!(sanitize_path_component("pg", "variant").is_ok());
+    }
+
+    #[test]
+    fn sanitize_path_component_rejects_traversal_attempts() {
+        assert!(sanitize_path_component("../../etc/passwd", "sheet_id").is_err());
+        assert!(sanitize_path_component("..", "sheet_id").is_err());
+        assert!(sanitize_path_component(".", "sheet_id").is_err());
+        assert!(sanitize_path_component("", "sheet_id").is_err());
+        assert!(sanitize_path_component("a/b", "sheet_id").is_err());
+        assert!(sanitize_path_component("a\\b", "sheet_id").is_err());
+    }
+
+    #[test]
+    fn sanitize_filename_strips_directory_components() {
+        let result = sanitize_filename("../../secret.pdf", "template_filename").unwrap();
+        assert_eq!(result, PathBuf::from("secret.pdf"));
+    }
+
+    #[test]
+    fn sanitize_filename_rejects_values_with_no_file_name() {
+        assert!(sanitize_filename("..", "template_filename").is_err());
+        assert!(sanitize_filename("", "template_filename").is_err());
+    }
 }

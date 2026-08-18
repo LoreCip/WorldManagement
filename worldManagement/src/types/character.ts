@@ -10,8 +10,8 @@ export interface FieldSchema {
 }
 
 export interface SystemSchema {
-  pdf_template_pg?: string;   // variante Personaggio Giocante
-  pdf_template_png?: string;  // variante Personaggio Non Giocante (opzionale)
+  pdf_template_pg?: string; // variante Personaggio Giocante
+  pdf_template_png?: string; // variante Personaggio Non Giocante (opzionale)
   /** @deprecated legacy, pre-varianti PG/PNG. Fallback su pdf_template_pg. */
   pdf_template?: string;
   fields: FieldSchema[];

@@ -4,6 +4,10 @@ use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
+use std::sync::LazyLock;
+
+static IMAGE_FILENAME_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"[0-9a-fA-F]{64}\.(?:png|jpg|jpeg|webp|gif)").unwrap());
 
 pub fn save_image(paths: &AppPaths, file_path: &str) -> Result<String, String> {
     let src_path = Path::new(file_path);
@@ -29,8 +33,8 @@ pub fn save_image(paths: &AppPaths, file_path: &str) -> Result<String, String> {
 }
 
 pub fn extract_image_filenames(content: &str) -> HashSet<String> {
-    let re = Regex::new(r"[0-9a-fA-F]{64}\.(?:png|jpg|jpeg|webp|gif)").unwrap();
-    re.find_iter(content)
+    IMAGE_FILENAME_RE
+        .find_iter(content)
         .map(|m| m.as_str().to_string())
         .collect()
 }

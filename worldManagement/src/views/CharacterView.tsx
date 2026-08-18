@@ -24,7 +24,11 @@ interface CharacterViewProps {
   onSelectSheet?: (id: string | null) => void;
 }
 
-export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, initialSheetId, onSelectSheet }) => {
+export const CharacterView: React.FC<CharacterViewProps> = ({
+  onNavigateToWiki,
+  initialSheetId,
+  onSelectSheet,
+}) => {
   const {
     systems,
     sheets,
@@ -55,7 +59,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
         const cat = a.category.trim().toLowerCase();
         return cat === "personaggio";
       }),
-    [allArticles]
+    [allArticles],
   );
   const syncedInitialSheetId = useRef<string | null | undefined>(null);
 
@@ -95,8 +99,13 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
     if (!selectedSystem) return "5E_CharacterSheet_Fillable.pdf";
     try {
       const parsedSchema = JSON.parse(selectedSystem.schema_json);
-      if (activeVariant === "png" && parsedSchema.pdf_template_png) return parsedSchema.pdf_template_png;
-      return parsedSchema.pdf_template_pg || parsedSchema.pdf_template || "5E_CharacterSheet_Fillable.pdf";
+      if (activeVariant === "png" && parsedSchema.pdf_template_png)
+        return parsedSchema.pdf_template_png;
+      return (
+        parsedSchema.pdf_template_pg ||
+        parsedSchema.pdf_template ||
+        "5E_CharacterSheet_Fillable.pdf"
+      );
     } catch {
       return "5E_CharacterSheet_Fillable.pdf";
     }
@@ -107,8 +116,21 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
   // interrogare i campi form gia renderizzati nel DOM.
   const { scale, containerRef, zoomIn, zoomOut, zoomReset, setScale } = usePinchZoom();
 
-  const { pdfArrayBuffer, numPages, setNumPages, handleFormInputChange, populatePageAnnotations, handleSavePdf, handleExportPdf } =
-    useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplateFilename, updateSheet, containerRef });
+  const {
+    pdfArrayBuffer,
+    numPages,
+    setNumPages,
+    handleFormInputChange,
+    populatePageAnnotations,
+    handleSavePdf,
+    handleExportPdf,
+  } = useCharacterSheetPdf({
+    selectedSheet,
+    activeVariant,
+    pdfTemplateFilename,
+    updateSheet,
+    containerRef,
+  });
 
   // Reset dello zoom quando cambio scheda
   useEffect(() => {
@@ -178,7 +200,17 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
         }}
       >
         {!selectedSheet ? (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: colors.textFaint, fontFamily: fonts.display, fontStyle: "italic" }}>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: colors.textFaint,
+              fontFamily: fonts.display,
+              fontStyle: "italic",
+            }}
+          >
             {t("characters.hook.hint")}
           </div>
         ) : (
@@ -189,33 +221,78 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
               actions={
                 <>
                   {/* Controlli zoom */}
-                  <div style={{ display: "flex", alignItems: "center", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden", marginRight: "0.3rem" }}>
-                    <button onClick={zoomOut} title={t("characters.hook.zoomOut")} style={zoomBtnBase}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: radii.sm,
+                      overflow: "hidden",
+                      marginRight: "0.3rem",
+                    }}
+                  >
+                    <button
+                      onClick={zoomOut}
+                      title={t("characters.hook.zoomOut")}
+                      style={zoomBtnBase}
+                    >
                       −
                     </button>
                     <button
                       onClick={zoomReset}
                       title={t("characters.hook.zoomReset")}
-                      style={{ ...zoomBtnBase, width: "3.2rem", fontSize: "0.72rem", fontWeight: 600, borderLeft: `1px solid ${colors.border}`, borderRight: `1px solid ${colors.border}` }}
+                      style={{
+                        ...zoomBtnBase,
+                        width: "3.2rem",
+                        fontSize: "0.72rem",
+                        fontWeight: 600,
+                        borderLeft: `1px solid ${colors.border}`,
+                        borderRight: `1px solid ${colors.border}`,
+                      }}
                     >
                       {Math.round(scale * 100)}%
                     </button>
-                    <button onClick={zoomIn} title={t("characters.hook.zoomIn")} style={zoomBtnBase}>
+                    <button
+                      onClick={zoomIn}
+                      title={t("characters.hook.zoomIn")}
+                      style={zoomBtnBase}
+                    >
                       +
                     </button>
                   </div>
 
-                  <button onClick={handleSavePdf} style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}>
+                  <button
+                    onClick={handleSavePdf}
+                    style={{
+                      ...btnBase,
+                      backgroundColor: colors.gold,
+                      color: colors.bgVoid,
+                      border: "none",
+                    }}
+                  >
                     {t("common.save")}
                   </button>
 
-                  <button onClick={handleExportPdf} style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}>
+                  <button
+                    onClick={handleExportPdf}
+                    style={{
+                      ...btnBase,
+                      backgroundColor: "transparent",
+                      color: colors.gold,
+                      border: `1px solid ${colors.gold}77`,
+                    }}
+                  >
                     {t("common.export")}
                   </button>
 
                   <button
                     onClick={() => handleDeleteSheet(selectedSheet.id)}
-                    style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
+                    style={{
+                      ...btnBase,
+                      backgroundColor: "transparent",
+                      color: colors.crimson,
+                      border: `1px solid ${colors.crimson}77`,
+                    }}
                   >
                     {t("common.delete")}
                   </button>
@@ -223,7 +300,14 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
               }
             >
               {availableVariants.length > 1 && (
-                <div style={{ display: "flex", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: radii.sm,
+                    overflow: "hidden",
+                  }}
+                >
                   {(["pg", "png"] as const)
                     .filter((v) => availableVariants.includes(v))
                     .map((v) => {
@@ -232,7 +316,11 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
                         <button
                           key={v}
                           onClick={() => handleSetVariant(v)}
-                          title={v === "pg" ? t("characters.hook.pgTooltip") : t("characters.hook.npcTooltip")}
+                          title={
+                            v === "pg"
+                              ? t("characters.hook.pgTooltip")
+                              : t("characters.hook.npcTooltip")
+                          }
                           style={{
                             padding: "0.25rem 0.7rem",
                             fontSize: "0.72rem",
@@ -245,7 +333,9 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
                             color: isActive ? colors.bgVoid : colors.textFaint,
                           }}
                         >
-                          {v === "pg" ? t("characters.systemModal.pc") : t("characters.systemModal.npc")}
+                          {v === "pg"
+                            ? t("characters.systemModal.pc")
+                            : t("characters.systemModal.npc")}
                         </button>
                       );
                     })}
@@ -253,9 +343,26 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
               )}
             </ViewHeader>
 
-            <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, padding: "1.2rem 1.8rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.8rem" }}>
-                <label style={{ fontSize: "0.78rem", color: colors.gold, fontWeight: 500 }}>{t("characters.hook.characterWiki")}</label>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                minHeight: 0,
+                padding: "1.2rem 1.8rem",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginBottom: "0.8rem",
+                }}
+              >
+                <label style={{ fontSize: "0.78rem", color: colors.gold, fontWeight: 500 }}>
+                  {t("characters.hook.characterWiki")}
+                </label>
                 <select
                   value={selectedSheet.article_id || ""}
                   onChange={(e) => handleLinkArticle(e.target.value || null)}
@@ -281,7 +388,15 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
                 {selectedSheet.article_id && onNavigateToWiki && (
                   <button
                     onClick={() => onNavigateToWiki(selectedSheet.article_id!)}
-                    style={{ background: "none", border: "none", color: colors.gold, fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: colors.gold,
+                      fontSize: "0.8rem",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      padding: 0,
+                    }}
                   >
                     {t("characters.hook.go")}
                   </button>
@@ -322,17 +437,28 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
                     <Document
                       file={pdfArrayBuffer}
                       onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                      loading={<div style={{ color: "#fff" }}>{t("characters.hook.loadingShort")}</div>}
+                      loading={
+                        <div style={{ color: "#fff" }}>{t("characters.hook.loadingShort")}</div>
+                      }
                     >
                       {Array.from(new Array(numPages), (_, index) => (
                         <div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
-                          <Page pageNumber={index + 1} renderAnnotationLayer renderTextLayer renderForms scale={scale} onRenderSuccess={populatePageAnnotations} />
+                          <Page
+                            pageNumber={index + 1}
+                            renderAnnotationLayer
+                            renderTextLayer
+                            renderForms
+                            scale={scale}
+                            onRenderSuccess={populatePageAnnotations}
+                          />
                         </div>
                       ))}
                     </Document>
                   </div>
                 ) : (
-                  <div style={{ padding: "2rem", color: colors.textFaint }}>{t("characters.hook.loading")}</div>
+                  <div style={{ padding: "2rem", color: colors.textFaint }}>
+                    {t("characters.hook.loading")}
+                  </div>
                 )}
               </div>
             </div>
@@ -340,7 +466,11 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
         )}
       </main>
 
-      <SystemModal isOpen={isSystemModalOpen} onClose={() => setIsSystemModalOpen(false)} onSave={handleSaveSystem} />
+      <SystemModal
+        isOpen={isSystemModalOpen}
+        onClose={() => setIsSystemModalOpen(false)}
+        onSave={handleSaveSystem}
+      />
 
       <NewSheetModal
         isOpen={isNewSheetModalOpen}

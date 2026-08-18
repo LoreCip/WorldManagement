@@ -1,459 +1,459 @@
 {
-	"common": {
-		"add": "Add",
-		"back": "Back",
-		"browse": "Browse...",
-		"cancel": "Cancel",
-		"close": "Close",
-		"confirm": "Confirm",
-		"current": "Current",
-		"delete": "Delete",
-		"description": "Description",
-		"dropImage": "Drop image here…",
-		"edit": "Edit",
-		"example": "e.g. ",
-		"export": "Export PDF",
-		"lore": "Lore",
-		"missingImage": "Image missing",
-		"newF": "New",
-		"newM": "New",
-		"optional": "Optional",
-		"save": "Save",
-		"saving": "Saving..."
-	},
-	"app": {
-		"nav": {
-			"hub": "Back to Hub",
-			"wiki": "Wiki & Lore",
-			"maps": "World Maps",
-			"characters": "Character Sheets",
-			"timeline": "Timeline",
-			"relations": "Family Tree / Relations",
-			"settings": "Settings"
-		}
-	},
-	"hub": {
-		"eyebrow": "Your World Building",
-		"title": "Your World",
-		"subtitle": "choose a chapter to explore",
-		"settingsTooltip": "Settings",
-		"wikiTitle": "Wiki & Lore",
-		"wikiDescription": "Lore entries, locations, factions",
-		"wikiCount": "entries",
-		"mapsTitle": "World Maps",
-		"mapsDescription": "Geography, regions, portals",
-		"mapsCount": "maps",
-		"charactersTitle": "Characters",
-		"charactersDescription": "PC and NPC sheets",
-		"charactersCount": "sheets",
-		"timelineTitle": "Timeline",
-		"timelineDescription": "Events, eras, and epochs",
-		"timelineCount": "events",
-		"relationsTitle": "Trees & Relations",
-		"relationsDescription": "Family trees, intrigue and bonds between characters and factions.",
-		"relationsCount": "nodes"
-	},
-	"wiki": {
-		"categories": {
-			"Lore": "Lore / History",
-			"Personaggio": "Character",
-			"Luogo": "Location",
-			"Fazione": "Faction"
-		},
-		"editor": {
-			"newArticle": "New article",
-			"searchPlaceholder": "Search...",
-			"mainHint": "Select an entry from the sidebar, or create a new one to get started.",
-			"titlePlaceholder": "Entry title...",
-			"openMapButton": "🗺️ Open Map →",
-			"confirmDelete": "Permanently delete this entry"
-		},
-		"sidebar": {
-			"title": "Compendium",
-			"subtitle": "World Chronicles",
-			"newWiki": "+ New entry",
-			"searchPlaceholder": "Search the world…",
-			"noResults": "No entries match your search.",
-			"noSnippet": "No content…"
-		},
-		"tag": {
-			"delete": "×",
-			"placeholder": "Add tag and press Enter…"
-		}
-	},
-	"characters": {
-		"hook": {
-			"hint": "Select a sheet from the sidebar or create a new one.",
-			"characterWiki": "Character Wiki:",
-			"noLink": "-- No link --",
-			"go": "Go to entry →",
-			"loadingShort": "Loading PDF...",
-			"loading": "Loading game system PDF...",
-			"zoomOut": "Zoom out",
-			"zoomReset": "Reset zoom (100%)",
-			"zoomIn": "Zoom in",
-			"pgTooltip": "Player Character sheet",
-			"npcTooltip": "Non-player Character sheet"
-		},
-		"sidebar": {
-			"title": "Characters",
-			"subtitle": "Sheets & Game Systems",
-			"activeSystem": "⚔️ Active Game Engine",
-			"selectSystem": "-- Select an engine --",
-			"sysNotSelected": "Select an engine before creating characters.",
-			"newSheet": "+ New Sheet",
-			"newSystem": "⚙️ New System / Template",
-			"searchPlaceholder": "Search character…",
-			"noResults": "No character sheets found.",
-			"unknownSystem": "Unknown system"
-		},
-		"sheetModal": {
-			"newCharacter": "New Character",
-			"activeGame": "Active game engine:",
-			"charName": "Character Name",
-			"createSheet": "Create Sheet"
-		},
-		"systemModal": {
-			"markdownTemplate": "# {{name}}\n\nCharacter sheet for ",
-			"pc": "PC",
-			"npc": "NPC",
-			"loadError": "Error loading PDF: ",
-			"nameError": "Enter a valid name for the game system.",
-			"pgError": "You must upload at least one fillable PDF for PC sheets.",
-			"modifySystem": "Edit Game System",
-			"newSystem": "New Game System",
-			"gameName": "Game Name",
-			"pdfPg": "Fillable PDF for PC (Player Character)",
-			"pdfPng": "Fillable PDF for NPC (Non-Player Character)",
-			"noLoadedPdf": "No PDF uploaded",
-			"saveSystem": "Save System"
-		}
-	},
-	"maps": {
-		"map": "MAP",
-		"dropImage": "📂 Drop image here to add a new map",
-		"noMapSelected": "No map selected",
-		"selectMap": "Select a map from the sidebar, drag an image into the canvas, or create a new map.",
-		"newMap": "+ New Map",
-		"form": {
-			"changeFile": "Change...",
-			"newMap": "New Map",
-			"modDetails": "⚙️ Edit Map Details",
-			"mapTitle": "Map Title",
-			"mapNamePlaceholder": "Continent of Eldoria, Dragon's Inn...",
-			"imageFile": "Image File",
-			"imageFilePlaceholder": "No file selected",
-			"imageFileChange": "Map Image File",
-			"parentMap": "Parent Map",
-			"parentMapOptional": "Parent Map (Optional)",
-			"parentMapPlaceholder": "-- None (Top Level Map) --",
-			"associatedArticle": "Linked Wiki Article",
-			"associatedArticleOptional": "Linked Wiki Article (Optional)",
-			"associatedArticlePlaceholder": "-- No linked Wiki article --",
-			"noLinkWiki": "-- No linked article --",
-			"noParent": "-- None (Top Level Map) --",
-			"saveMap": "Save Map"
-		},
-		"canvas": {
-			"portalDefault": "Portal",
-			"enterPortal": "Enter ➔",
-			"clickToPlacePortal": "Click a point on the map to place the portal"
-		},
-		"header": {
-			"changeMap": "Edit map",
-			"deleteMap": "Delete this map",
-			"openLinkedArticle": "Open linked Wiki article"
-		},
-		"sidebar": {
-			"title": "Cartography",
-			"subtitle": "World Atlas",
-			"searchPlaceholder": "Search a region or map…",
-			"noResults": "No map matches your search.",
-			"mainMap": "Main Map",
-			"subMap": "Sub-map lvl."
-		},
-		"portal": {
-			"addPortal": "Add connecting portal",
-			"newPortal": "+ Portal",
-			"destination": "Destination...",
-			"label": "Label..."
-		},
-		"selector": {
-			"placeholder": "Select map..."
-		}
-	},
-	"timeline": {
-		"canvas": {
-			"today": "TODAY",
-			"closeEvents": "{{count}} close events",
-			"footnote": "Scroll wheel to zoom · drag to scroll · click on timeline to add an event"
-		},
-		"category": {
-			"title": "Timeline Categories",
-			"noCategory": "No categories yet.",
-			"catNamePlaceholder": "Category name..."
-		},
-		"eras": {
-			"title": "Eras / Historical Epochs",
-			"subtitle": "Color-coded background bands to contextualize broad historical periods (e.g., Golden Age, Hundred Years' War)",
-			"noEra": "No eras yet.",
-			"namePlaceholder": "Era name...",
-			"startDatePlaceholder": "Start year",
-			"endDatePlaceholder": "End year"
-		},
-		"balloon": {
-			"titlePlaceholder": "Title…",
-			"year": "Year",
-			"month": "Month",
-			"day": "Day",
-			"hasDuration": "Has a duration",
-			"until": "Until {{date}}",
-			"endYearPlaceholder": "End year",
-			"endMonthPlaceholder": "End month",
-			"endDayPlaceholder": "End day",
-			"cat": "Category",
-			"noCatF": "— None —",
-			"noCatM": "— None —",
-			"noDescr": "No description.",
-			"article": "Article",
-			"map": "Map",
-			"yearDisplay": "Year {{year}}",
-			"monthDisplay": "Month {{month}}, Year {{year}}",
-			"dayDisplay": "Day {{day}}, Month {{month}}, Year {{year}}"
-		},
-		"header": {
-			"title": "Timeline",
-			"searchPlaceholder": "Search events…",
-			"autoFit": "Fit all",
-			"filters": "Filters",
-			"clearFilters": "Clear filters",
-			"manage": "Manage…",
-			"eras": "Eras",
-			"today": "Today",
-			"savedViews": "Saved views",
-			"saveView": "+ Save current view",
-			"newEvent": "+ New event",
-			"noSavedNews": "No saved views",
-			"newViewNamePlaceholder": "View name"
-		},
-		"minimap": {
-			"localView": "localized view",
-			"fullView": "full overview",
-			"showAll": "show all"
-		}
-	},
-	"relations": {
-		"header": {
-			"title": "Family Trees & Relation Maps",
-			"searchPlaceholder": "Search a tree, person or faction…",
-			"newView": "+ New View",
-			"addNode": "+ Add Node",
-			"addEdge": "+ Connect",
-			"addEdgeTooltip": "Enable connect mode: drag from one side of a node to another to create a relationship.",
-			"focusMode": "Focus Mode",
-			"focusModeTooltip": "Shows only the selected node and the nodes reachable within N steps, hiding the rest of the graph. Select a node first."
-		},
-		"views": {
-			"genealogy": "Family Tree",
-			"network": "Relation Map",
-			"selectView": "Select a view...",
-			"noViews": "No views created yet.",
-			"newViewNamePlaceholder": "View name…",
-			"newViewNamePrompt": "Name of the new view:",
-			"deleteView": "Delete view",
-			"deleteConfirm": "Permanently delete the view \"{{title}}\"? Nodes and edges will remain in the graph and in other views."
-		},
-		"empty": {
-			"firstTimeTitle": "No views created yet",
-			"firstTimeBodyPrefix": "A view is a separate workspace: create a",
-			"firstTimeBodyMid": "for a hierarchical family tree (parents/children, spouses), or a",
-			"firstTimeBodySuffix": "for a free-form map of alliances, rivalries and factions. The same nodes can appear in multiple views.",
-			"pickTitle": "Select a view to get started"
-		},
-		"connectingHint": "Drag from any side of a node to another to connect them.",
-		"focus": {
-			"depthLabel": "Distance",
-			"depthTooltip": "Number of steps (relationships) to include starting from the selected node.",
-			"needSelection": "Select a node to activate focus mode."
-		},
-		"nodeTypes": {
-			"character": "Character Sheet",
-			"placeholder": "Quick Node (No Sheet)",
-			"unknown": "Unknown Ancestor / Gap",
-			"entity": "Faction / Event"
-		},
-		"relationTypes": {
-			"parent_child": "Parent / Child",
-			"descendant_gap": "Descent with Generational Gap",
-			"spouse": "Spouse / Partner",
-			"sibling": "Sibling",
-			"foster": "Foster / Guardian",
-			"ally": "Ally / Friend",
-			"rival": "Rival / Enemy",
-			"vassal": "Vassal / Servant",
-			"member_of": "Member of Faction",
-			"custom": "Custom"
-		},
-		"gap": {
-			"label": "Generational Gap",
-			"unknownGenerations": "~{{count}} unknown generations",
-			"hint": "Connects two characters of the same bloodline separated by time."
-		},
-		"uncertain": {
-			"label": "Uncertain Relation / Rumor",
-			"tooltip": "Display this connection as unconfirmed or legendary."
-		},
-		"actions": {
-			"promoteToCharacter": "Convert to Character Sheet",
-			"linkWiki": "Link to Wiki Entry",
-			"editNode": "Edit Details",
-			"deleteNode": "Remove from Graph",
-			"recenter": "Recenter View",
-			"goToLinkedView": "Go to linked view"
-		},
-		"nodeDrawer": {
-			"nameLabel": "Name",
-			"subtitleLabel": "Subtitle",
-			"subtitlePlaceholder": "e.g. Duke of Westvale",
-			"birthLabel": "Born",
-			"deathLabel": "Died",
-			"notesLabel": "Notes",
-			"unlink": "Unlink",
-			"wikiSearchPlaceholder": "Search wiki article…",
-			"noResults": "No results.",
-			"sheetLabel": "Character Sheet",
-			"sheetSearchPlaceholder": "Search existing sheet…",
-			"linkedViewLabel": "Linked View",
-			"linkedViewNone": "None — select a view…",
-			"linkedViewHint": "If set, a 🔗 icon on the node lets you jump straight to that view.",
-			"linkedViewEmpty": "No other view available.",
-			"removeFromView": "Remove from view",
-			"promoteEmpty": "No game system available."
-		},
-		"edgeDrawer": {
-			"editTitle": "Edit Connection",
-			"typeLabel": "Relationship type",
-			"gapCountPlaceholder": "e.g. 4",
-			"labelLabel": "Label (optional)",
-			"labelPlaceholder": "e.g. \"Illegitimate child\"",
-			"descriptionLabel": "Description (optional)",
-			"descriptionPlaceholder": "Add some detail about this bond…",
-			"descriptionHint": "Visible by hovering over the edge's label on the canvas.",
-			"conflictMessage": "A connection already exists between these two nodes ({{type}}). Two different edges between the same pair aren't allowed: edit the existing one instead of creating a new one.",
-			"editConflicting": "Edit the existing connection →",
-			"deleteTooltip": "Permanently delete the edge from the graph"
-		},
-		"quickNode": {
-			"tabNew": "New node",
-			"tabExisting": "Existing node",
-			"namePlaceholder": "e.g. Anonymous Messenger",
-			"searchPlaceholder": "Search an existing node…",
-			"noneLeft": "All nodes in the graph are already in this view.",
-			"noResults": "No results.",
-			"close": "Close"
-		}
-	},
-	"settings": {
-		"title": "Settings",
-		"subtitle": "General application preferences for the entire world setting.",
-		"loadMessage": "Loading settings…",
-		"categories": {
-			"general": "General",
-			"wiki": "Wiki",
-			"timeline": "Timeline",
-			"maps": "Maps",
-			"characters": "Characters",
-			"localization": "Localization"
-		},
-		"registry": {
-			"confirm_before_delete": {
-				"label": "Confirm before deleting",
-				"description": "Always show a confirmation prompt before deleting articles, maps, events, or sheets."
-			},
-			"default_wiki_category": {
-				"label": "Default category for new Wiki entries",
-				"options": {
-					"Lore": "Lore",
-					"Personaggio": "Characters",
-					"Luogo": "Locations",
-					"Fazione": "Factions"
-				}
-			},
-			"general_search_case_sensitive": {
-				"label": "Case-sensitive search"
-			},
-			"general_search_fuzzy": {
-				"label": "Fuzzy search",
-				"description": "Find results with partial matches or small typos instead of exact matches only."
-			},
-			"general_search_include_content": {
-				"label": "Include content in search",
-				"description": "If disabled, search will only consider article titles."
-			},
-			"timeline_default_precision": {
-				"label": "Default precision for new events",
-				"description": "The suggested temporal precision level when creating a new event in the timeline.",
-				"options": {
-					"year": "Year",
-					"month": "Month",
-					"day": "Day"
-				}
-			},
-			"timeline_days_per_month": {
-				"label": "Days per month",
-				"description": "Standard length of a month in your calendar, used to calculate timeline dates."
-			},
-			"timeline_days_per_year": {
-				"label": "Days per year",
-				"description": "Standard length of a year in your calendar."
-			},
-			"timeline_start_year": {
-				"label": "Campaign start year",
-				"description": "The earliest year displayable on the timeline."
-			},
-			"timeline_end_year": {
-				"label": "Campaign end year",
-				"description": "The latest year displayable on the timeline."
-			},
-			"timeline_category_default_icon": {
-				"label": "Default icon for new categories"
-			},
-			"timeline_category_default_color": {
-				"label": "Default color for new categories"
-			},
-			"maps_default_width": {
-				"label": "Default width for new maps (px)"
-			},
-			"maps_default_height": {
-				"label": "Default height for new maps (px)"
-			},
-			"maps_portal_default_label": {
-				"label": "Default label for new portals"
-			},
-			"maps_portal_snap_to_grid": {
-				"label": "Snap portals to grid",
-				"description": "Automatically align portals to the grid when placed on a map."
-			},
-			"maps_portal_grid_size": {
-				"label": "Portal grid size (px)"
-			},
-			"characters_default_sheet_variant": {
-				"label": "Default sheet variant",
-				"options": {
-					"pg": "Player Character (PC)",
-					"png": "Non-Player Character (NPC)"
-				}
-			},
-			"characters_default_markdown_template": {
-				"label": "Default Markdown template for new sheets"
-			},
-			"localization_language": {
-				"label": "Language",
-				"options": {
-					"it": "Italian",
-					"en": "English"
-				}
-			}
-		}
-	}
+  "common": {
+    "add": "Add",
+    "back": "Back",
+    "browse": "Browse...",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "current": "Current",
+    "delete": "Delete",
+    "description": "Description",
+    "dropImage": "Drop image here…",
+    "edit": "Edit",
+    "example": "e.g. ",
+    "export": "Export PDF",
+    "lore": "Lore",
+    "missingImage": "Image missing",
+    "newF": "New",
+    "newM": "New",
+    "optional": "Optional",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "app": {
+    "nav": {
+      "hub": "Back to Hub",
+      "wiki": "Wiki & Lore",
+      "maps": "World Maps",
+      "characters": "Character Sheets",
+      "timeline": "Timeline",
+      "relations": "Family Tree / Relations",
+      "settings": "Settings"
+    }
+  },
+  "hub": {
+    "eyebrow": "Your World Building",
+    "title": "Your World",
+    "subtitle": "choose a chapter to explore",
+    "settingsTooltip": "Settings",
+    "wikiTitle": "Wiki & Lore",
+    "wikiDescription": "Lore entries, locations, factions",
+    "wikiCount": "entries",
+    "mapsTitle": "World Maps",
+    "mapsDescription": "Geography, regions, portals",
+    "mapsCount": "maps",
+    "charactersTitle": "Characters",
+    "charactersDescription": "PC and NPC sheets",
+    "charactersCount": "sheets",
+    "timelineTitle": "Timeline",
+    "timelineDescription": "Events, eras, and epochs",
+    "timelineCount": "events",
+    "relationsTitle": "Trees & Relations",
+    "relationsDescription": "Family trees, intrigue and bonds between characters and factions.",
+    "relationsCount": "nodes"
+  },
+  "wiki": {
+    "categories": {
+      "Lore": "Lore / History",
+      "Personaggio": "Character",
+      "Luogo": "Location",
+      "Fazione": "Faction"
+    },
+    "editor": {
+      "newArticle": "New article",
+      "searchPlaceholder": "Search...",
+      "mainHint": "Select an entry from the sidebar, or create a new one to get started.",
+      "titlePlaceholder": "Entry title...",
+      "openMapButton": "🗺️ Open Map →",
+      "confirmDelete": "Permanently delete this entry"
+    },
+    "sidebar": {
+      "title": "Compendium",
+      "subtitle": "World Chronicles",
+      "newWiki": "+ New entry",
+      "searchPlaceholder": "Search the world…",
+      "noResults": "No entries match your search.",
+      "noSnippet": "No content…"
+    },
+    "tag": {
+      "delete": "×",
+      "placeholder": "Add tag and press Enter…"
+    }
+  },
+  "characters": {
+    "hook": {
+      "hint": "Select a sheet from the sidebar or create a new one.",
+      "characterWiki": "Character Wiki:",
+      "noLink": "-- No link --",
+      "go": "Go to entry →",
+      "loadingShort": "Loading PDF...",
+      "loading": "Loading game system PDF...",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom (100%)",
+      "zoomIn": "Zoom in",
+      "pgTooltip": "Player Character sheet",
+      "npcTooltip": "Non-player Character sheet"
+    },
+    "sidebar": {
+      "title": "Characters",
+      "subtitle": "Sheets & Game Systems",
+      "activeSystem": "⚔️ Active Game Engine",
+      "selectSystem": "-- Select an engine --",
+      "sysNotSelected": "Select an engine before creating characters.",
+      "newSheet": "+ New Sheet",
+      "newSystem": "⚙️ New System / Template",
+      "searchPlaceholder": "Search character…",
+      "noResults": "No character sheets found.",
+      "unknownSystem": "Unknown system"
+    },
+    "sheetModal": {
+      "newCharacter": "New Character",
+      "activeGame": "Active game engine:",
+      "charName": "Character Name",
+      "createSheet": "Create Sheet"
+    },
+    "systemModal": {
+      "markdownTemplate": "# {{name}}\n\nCharacter sheet for ",
+      "pc": "PC",
+      "npc": "NPC",
+      "loadError": "Error loading PDF: ",
+      "nameError": "Enter a valid name for the game system.",
+      "pgError": "You must upload at least one fillable PDF for PC sheets.",
+      "modifySystem": "Edit Game System",
+      "newSystem": "New Game System",
+      "gameName": "Game Name",
+      "pdfPg": "Fillable PDF for PC (Player Character)",
+      "pdfPng": "Fillable PDF for NPC (Non-Player Character)",
+      "noLoadedPdf": "No PDF uploaded",
+      "saveSystem": "Save System"
+    }
+  },
+  "maps": {
+    "map": "MAP",
+    "dropImage": "📂 Drop image here to add a new map",
+    "noMapSelected": "No map selected",
+    "selectMap": "Select a map from the sidebar, drag an image into the canvas, or create a new map.",
+    "newMap": "+ New Map",
+    "form": {
+      "changeFile": "Change...",
+      "newMap": "New Map",
+      "modDetails": "⚙️ Edit Map Details",
+      "mapTitle": "Map Title",
+      "mapNamePlaceholder": "Continent of Eldoria, Dragon's Inn...",
+      "imageFile": "Image File",
+      "imageFilePlaceholder": "No file selected",
+      "imageFileChange": "Map Image File",
+      "parentMap": "Parent Map",
+      "parentMapOptional": "Parent Map (Optional)",
+      "parentMapPlaceholder": "-- None (Top Level Map) --",
+      "associatedArticle": "Linked Wiki Article",
+      "associatedArticleOptional": "Linked Wiki Article (Optional)",
+      "associatedArticlePlaceholder": "-- No linked Wiki article --",
+      "noLinkWiki": "-- No linked article --",
+      "noParent": "-- None (Top Level Map) --",
+      "saveMap": "Save Map"
+    },
+    "canvas": {
+      "portalDefault": "Portal",
+      "enterPortal": "Enter ➔",
+      "clickToPlacePortal": "Click a point on the map to place the portal"
+    },
+    "header": {
+      "changeMap": "Edit map",
+      "deleteMap": "Delete this map",
+      "openLinkedArticle": "Open linked Wiki article"
+    },
+    "sidebar": {
+      "title": "Cartography",
+      "subtitle": "World Atlas",
+      "searchPlaceholder": "Search a region or map…",
+      "noResults": "No map matches your search.",
+      "mainMap": "Main Map",
+      "subMap": "Sub-map lvl."
+    },
+    "portal": {
+      "addPortal": "Add connecting portal",
+      "newPortal": "+ Portal",
+      "destination": "Destination...",
+      "label": "Label..."
+    },
+    "selector": {
+      "placeholder": "Select map..."
+    }
+  },
+  "timeline": {
+    "canvas": {
+      "today": "TODAY",
+      "closeEvents": "{{count}} close events",
+      "footnote": "Scroll wheel to zoom · drag to scroll · click on timeline to add an event"
+    },
+    "category": {
+      "title": "Timeline Categories",
+      "noCategory": "No categories yet.",
+      "catNamePlaceholder": "Category name..."
+    },
+    "eras": {
+      "title": "Eras / Historical Epochs",
+      "subtitle": "Color-coded background bands to contextualize broad historical periods (e.g., Golden Age, Hundred Years' War)",
+      "noEra": "No eras yet.",
+      "namePlaceholder": "Era name...",
+      "startDatePlaceholder": "Start year",
+      "endDatePlaceholder": "End year"
+    },
+    "balloon": {
+      "titlePlaceholder": "Title…",
+      "year": "Year",
+      "month": "Month",
+      "day": "Day",
+      "hasDuration": "Has a duration",
+      "until": "Until {{date}}",
+      "endYearPlaceholder": "End year",
+      "endMonthPlaceholder": "End month",
+      "endDayPlaceholder": "End day",
+      "cat": "Category",
+      "noCatF": "— None —",
+      "noCatM": "— None —",
+      "noDescr": "No description.",
+      "article": "Article",
+      "map": "Map",
+      "yearDisplay": "Year {{year}}",
+      "monthDisplay": "Month {{month}}, Year {{year}}",
+      "dayDisplay": "Day {{day}}, Month {{month}}, Year {{year}}"
+    },
+    "header": {
+      "title": "Timeline",
+      "searchPlaceholder": "Search events…",
+      "autoFit": "Fit all",
+      "filters": "Filters",
+      "clearFilters": "Clear filters",
+      "manage": "Manage…",
+      "eras": "Eras",
+      "today": "Today",
+      "savedViews": "Saved views",
+      "saveView": "+ Save current view",
+      "newEvent": "+ New event",
+      "noSavedNews": "No saved views",
+      "newViewNamePlaceholder": "View name"
+    },
+    "minimap": {
+      "localView": "localized view",
+      "fullView": "full overview",
+      "showAll": "show all"
+    }
+  },
+  "relations": {
+    "header": {
+      "title": "Family Trees & Relation Maps",
+      "searchPlaceholder": "Search a tree, person or faction…",
+      "newView": "+ New View",
+      "addNode": "+ Add Node",
+      "addEdge": "+ Connect",
+      "addEdgeTooltip": "Enable connect mode: drag from one side of a node to another to create a relationship.",
+      "focusMode": "Focus Mode",
+      "focusModeTooltip": "Shows only the selected node and the nodes reachable within N steps, hiding the rest of the graph. Select a node first."
+    },
+    "views": {
+      "genealogy": "Family Tree",
+      "network": "Relation Map",
+      "selectView": "Select a view...",
+      "noViews": "No views created yet.",
+      "newViewNamePlaceholder": "View name…",
+      "newViewNamePrompt": "Name of the new view:",
+      "deleteView": "Delete view",
+      "deleteConfirm": "Permanently delete the view \"{{title}}\"? Nodes and edges will remain in the graph and in other views."
+    },
+    "empty": {
+      "firstTimeTitle": "No views created yet",
+      "firstTimeBodyPrefix": "A view is a separate workspace: create a",
+      "firstTimeBodyMid": "for a hierarchical family tree (parents/children, spouses), or a",
+      "firstTimeBodySuffix": "for a free-form map of alliances, rivalries and factions. The same nodes can appear in multiple views.",
+      "pickTitle": "Select a view to get started"
+    },
+    "connectingHint": "Drag from any side of a node to another to connect them.",
+    "focus": {
+      "depthLabel": "Distance",
+      "depthTooltip": "Number of steps (relationships) to include starting from the selected node.",
+      "needSelection": "Select a node to activate focus mode."
+    },
+    "nodeTypes": {
+      "character": "Character Sheet",
+      "placeholder": "Quick Node (No Sheet)",
+      "unknown": "Unknown Ancestor / Gap",
+      "entity": "Faction / Event"
+    },
+    "relationTypes": {
+      "parent_child": "Parent / Child",
+      "descendant_gap": "Descent with Generational Gap",
+      "spouse": "Spouse / Partner",
+      "sibling": "Sibling",
+      "foster": "Foster / Guardian",
+      "ally": "Ally / Friend",
+      "rival": "Rival / Enemy",
+      "vassal": "Vassal / Servant",
+      "member_of": "Member of Faction",
+      "custom": "Custom"
+    },
+    "gap": {
+      "label": "Generational Gap",
+      "unknownGenerations": "~{{count}} unknown generations",
+      "hint": "Connects two characters of the same bloodline separated by time."
+    },
+    "uncertain": {
+      "label": "Uncertain Relation / Rumor",
+      "tooltip": "Display this connection as unconfirmed or legendary."
+    },
+    "actions": {
+      "promoteToCharacter": "Convert to Character Sheet",
+      "linkWiki": "Link to Wiki Entry",
+      "editNode": "Edit Details",
+      "deleteNode": "Remove from Graph",
+      "recenter": "Recenter View",
+      "goToLinkedView": "Go to linked view"
+    },
+    "nodeDrawer": {
+      "nameLabel": "Name",
+      "subtitleLabel": "Subtitle",
+      "subtitlePlaceholder": "e.g. Duke of Westvale",
+      "birthLabel": "Born",
+      "deathLabel": "Died",
+      "notesLabel": "Notes",
+      "unlink": "Unlink",
+      "wikiSearchPlaceholder": "Search wiki article…",
+      "noResults": "No results.",
+      "sheetLabel": "Character Sheet",
+      "sheetSearchPlaceholder": "Search existing sheet…",
+      "linkedViewLabel": "Linked View",
+      "linkedViewNone": "None — select a view…",
+      "linkedViewHint": "If set, a 🔗 icon on the node lets you jump straight to that view.",
+      "linkedViewEmpty": "No other view available.",
+      "removeFromView": "Remove from view",
+      "promoteEmpty": "No game system available."
+    },
+    "edgeDrawer": {
+      "editTitle": "Edit Connection",
+      "typeLabel": "Relationship type",
+      "gapCountPlaceholder": "e.g. 4",
+      "labelLabel": "Label (optional)",
+      "labelPlaceholder": "e.g. \"Illegitimate child\"",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "Add some detail about this bond…",
+      "descriptionHint": "Visible by hovering over the edge's label on the canvas.",
+      "conflictMessage": "A connection already exists between these two nodes ({{type}}). Two different edges between the same pair aren't allowed: edit the existing one instead of creating a new one.",
+      "editConflicting": "Edit the existing connection →",
+      "deleteTooltip": "Permanently delete the edge from the graph"
+    },
+    "quickNode": {
+      "tabNew": "New node",
+      "tabExisting": "Existing node",
+      "namePlaceholder": "e.g. Anonymous Messenger",
+      "searchPlaceholder": "Search an existing node…",
+      "noneLeft": "All nodes in the graph are already in this view.",
+      "noResults": "No results.",
+      "close": "Close"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "General application preferences for the entire world setting.",
+    "loadMessage": "Loading settings…",
+    "categories": {
+      "general": "General",
+      "wiki": "Wiki",
+      "timeline": "Timeline",
+      "maps": "Maps",
+      "characters": "Characters",
+      "localization": "Localization"
+    },
+    "registry": {
+      "confirm_before_delete": {
+        "label": "Confirm before deleting",
+        "description": "Always show a confirmation prompt before deleting articles, maps, events, or sheets."
+      },
+      "default_wiki_category": {
+        "label": "Default category for new Wiki entries",
+        "options": {
+          "Lore": "Lore",
+          "Personaggio": "Characters",
+          "Luogo": "Locations",
+          "Fazione": "Factions"
+        }
+      },
+      "general_search_case_sensitive": {
+        "label": "Case-sensitive search"
+      },
+      "general_search_fuzzy": {
+        "label": "Fuzzy search",
+        "description": "Find results with partial matches or small typos instead of exact matches only."
+      },
+      "general_search_include_content": {
+        "label": "Include content in search",
+        "description": "If disabled, search will only consider article titles."
+      },
+      "timeline_default_precision": {
+        "label": "Default precision for new events",
+        "description": "The suggested temporal precision level when creating a new event in the timeline.",
+        "options": {
+          "year": "Year",
+          "month": "Month",
+          "day": "Day"
+        }
+      },
+      "timeline_days_per_month": {
+        "label": "Days per month",
+        "description": "Standard length of a month in your calendar, used to calculate timeline dates."
+      },
+      "timeline_days_per_year": {
+        "label": "Days per year",
+        "description": "Standard length of a year in your calendar."
+      },
+      "timeline_start_year": {
+        "label": "Campaign start year",
+        "description": "The earliest year displayable on the timeline."
+      },
+      "timeline_end_year": {
+        "label": "Campaign end year",
+        "description": "The latest year displayable on the timeline."
+      },
+      "timeline_category_default_icon": {
+        "label": "Default icon for new categories"
+      },
+      "timeline_category_default_color": {
+        "label": "Default color for new categories"
+      },
+      "maps_default_width": {
+        "label": "Default width for new maps (px)"
+      },
+      "maps_default_height": {
+        "label": "Default height for new maps (px)"
+      },
+      "maps_portal_default_label": {
+        "label": "Default label for new portals"
+      },
+      "maps_portal_snap_to_grid": {
+        "label": "Snap portals to grid",
+        "description": "Automatically align portals to the grid when placed on a map."
+      },
+      "maps_portal_grid_size": {
+        "label": "Portal grid size (px)"
+      },
+      "characters_default_sheet_variant": {
+        "label": "Default sheet variant",
+        "options": {
+          "pg": "Player Character (PC)",
+          "png": "Non-Player Character (NPC)"
+        }
+      },
+      "characters_default_markdown_template": {
+        "label": "Default Markdown template for new sheets"
+      },
+      "localization_language": {
+        "label": "Language",
+        "options": {
+          "it": "Italian",
+          "en": "English"
+        }
+      }
+    }
+  }
 }

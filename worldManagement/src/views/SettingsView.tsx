@@ -24,16 +24,32 @@ export const SettingsView: React.FC = () => {
 
   if (!isLoaded) {
     return (
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: colors.textFaint }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: colors.textFaint,
+        }}
+      >
         {t("settings.loadMessage")}
       </div>
     );
   }
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "2.5rem 3rem", backgroundColor: colors.bgVoid }}>
-
-      <h1 style={{ fontFamily: fonts.display, fontSize: "1.6rem", color: colors.textPrimary, margin: "0 0 0.3rem" }}>
+    <div
+      style={{ flex: 1, overflowY: "auto", padding: "2.5rem 3rem", backgroundColor: colors.bgVoid }}
+    >
+      <h1
+        style={{
+          fontFamily: fonts.display,
+          fontSize: "1.6rem",
+          color: colors.textPrimary,
+          margin: "0 0 0.3rem",
+        }}
+      >
         {t("settings.title")}
       </h1>
       <p style={{ color: colors.textFaint, fontSize: "0.85rem", margin: "0 0 2rem" }}>

@@ -14,7 +14,11 @@ export interface UseAsyncResult<T> extends UseAsyncState<T> {
 }
 
 export function useAsync<T>(cmd: string): UseAsyncResult<T> {
-  const [state, setState] = useState<UseAsyncState<T>>({ data: null, error: null, isLoading: false });
+  const [state, setState] = useState<UseAsyncState<T>>({
+    data: null,
+    error: null,
+    isLoading: false,
+  });
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export function useAsync<T>(cmd: string): UseAsyncResult<T> {
         return null;
       }
     },
-    [cmd]
+    [cmd],
   );
 
   const reset = useCallback(() => setState({ data: null, error: null, isLoading: false }), []);

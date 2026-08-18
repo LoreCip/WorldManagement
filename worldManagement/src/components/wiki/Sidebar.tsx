@@ -15,16 +15,32 @@ interface SidebarProps {
 
 const CompendiumIcon: React.FC = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" stroke={colors.gold} strokeWidth="1.1" strokeLinejoin="round" />
+    <path
+      d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"
+      stroke={colors.gold}
+      strokeWidth="1.1"
+      strokeLinejoin="round"
+    />
     <circle cx="12" cy="12" r="1.6" fill={colors.gold} />
   </svg>
 );
 
-export const Sidebar: React.FC<SidebarProps> = ({ articles, searchQuery, selectedId, onSearch, onSelectArticle, onNewArticle }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  articles,
+  searchQuery,
+  selectedId,
+  onSearch,
+  onSelectArticle,
+  onNewArticle,
+}) => {
   const { t } = useLocalization();
 
   return (
-    <SidebarLayout icon={<CompendiumIcon />} title={t("wiki.sidebar.title")} subtitle={t("wiki.sidebar.subtitle")}>
+    <SidebarLayout
+      icon={<CompendiumIcon />}
+      title={t("wiki.sidebar.title")}
+      subtitle={t("wiki.sidebar.subtitle")}
+    >
       <button
         onClick={onNewArticle}
         style={{
@@ -55,7 +71,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ articles, searchQuery, selecte
           fill="none"
           stroke={colors.textFaint}
           strokeWidth="2"
-          style={{ position: "absolute", left: "0.15rem", top: "50%", transform: "translateY(-50%)" }}
+          style={{
+            position: "absolute",
+            left: "0.15rem",
+            top: "50%",
+            transform: "translateY(-50%)",
+          }}
           aria-hidden="true"
         >
           <circle cx="11" cy="11" r="7" />
@@ -117,13 +138,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ articles, searchQuery, selecte
                   transition: "background-color 0.15s ease, border-color 0.15s ease",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.backgroundColor = colors.bgPanelRaised + "80";
+                  if (!isSelected)
+                    e.currentTarget.style.backgroundColor = colors.bgPanelRaised + "80";
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected) e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <div style={{ fontFamily: fonts.display, fontWeight: 600, fontSize: "1rem", color: colors.textPrimary }}>{item.title}</div>
+                <div
+                  style={{
+                    fontFamily: fonts.display,
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    color: colors.textPrimary,
+                  }}
+                >
+                  {item.title}
+                </div>
                 <div
                   style={{
                     fontSize: "0.68rem",

@@ -14,7 +14,12 @@ interface UsePinchZoomOptions {
 // Generico: nessuna dipendenza dal contenuto (PDF, mappa, canvas...),
 // intercetta solo l'evento "wheel" con ctrlKey (pinch trackpad o
 // Ctrl/Cmd + rotellina) sul nodo assegnato a `containerRef`.
-export function usePinchZoom({ min = 0.4, max = 3, sensitivity = 0.012, initialScale = 1 }: UsePinchZoomOptions = {}) {
+export function usePinchZoom({
+  min = 0.4,
+  max = 3,
+  sensitivity = 0.012,
+  initialScale = 1,
+}: UsePinchZoomOptions = {}) {
   const [scale, setScale] = useState(initialScale);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,7 +66,7 @@ export function usePinchZoom({ min = 0.4, max = 3, sensitivity = 0.012, initialS
         rafIdRef.current = requestAnimationFrame(applyPendingZoom);
       }
     },
-    [applyPendingZoom, min, max]
+    [applyPendingZoom, min, max],
   );
 
   useEffect(() => {

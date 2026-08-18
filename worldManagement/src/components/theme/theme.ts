@@ -8,54 +8,54 @@ import "@fontsource/jetbrains-mono/400.css";
 import "@fontsource/jetbrains-mono/500.css";
 
 export const colors = {
-	bgVoid: "#12141c",          // app shell background
-	bgPanel: "#181b26",         // sidebar / chrome
-	bgPanelRaised: "#222739",   // inputs, hovered rows
-	bgManuscript: "#1c1f2c",    // editor / reading surface
+  bgVoid: "#12141c", // app shell background
+  bgPanel: "#181b26", // sidebar / chrome
+  bgPanelRaised: "#222739", // inputs, hovered rows
+  bgManuscript: "#1c1f2c", // editor / reading surface
 
-	border: "#333850",
-	borderSubtle: "#262b3a",
+  border: "#333850",
+  borderSubtle: "#262b3a",
 
-	textPrimary: "#eae6da",
-	textSecondary: "#9c9686",
-	textFaint: "#5f6275",
+  textPrimary: "#eae6da",
+  textSecondary: "#9c9686",
+  textFaint: "#5f6275",
 
-	gold: "#c9a15a",
-	goldBright: "#e0bd7a",
-	goldWash: "rgba(201, 161, 90, 0.12)",
+  gold: "#c9a15a",
+  goldBright: "#e0bd7a",
+  goldWash: "rgba(201, 161, 90, 0.12)",
 
-	crimson: "#b6544a",
-	crimsonBright: "#cf695e",
-	crimsonWash: "rgba(182, 84, 74, 0.12)",
+  crimson: "#b6544a",
+  crimsonBright: "#cf695e",
+  crimsonWash: "rgba(182, 84, 74, 0.12)",
 
-	verdigris: "#5f9484",
-	indigo: "#7579ad",
+  verdigris: "#5f9484",
+  indigo: "#7579ad",
 } as const;
 
 export const fonts = {
-	display: "'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif",
-	body: "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif",
-	mono: "'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace",
+  display: "'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif",
+  body: "'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif",
+  mono: "'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace",
 } as const;
 
 export const radii = {
-	sm: "8px",
-	md: "12px",
-	lg: "18px",
-	pill: "999px",
+  sm: "8px",
+  md: "12px",
+  lg: "18px",
+  pill: "999px",
 } as const;
 
 export type CategoryKey = "Lore" | "Personaggio" | "Luogo" | "Fazione";
 
 export const categories: Record<CategoryKey, { color: string }> = {
-	Lore: { color: colors.gold },
-	Personaggio: { color: colors.crimson },
-	Luogo: { color: colors.verdigris },
-	Fazione: { color: colors.indigo },
+  Lore: { color: colors.gold },
+  Personaggio: { color: colors.crimson },
+  Luogo: { color: colors.verdigris },
+  Fazione: { color: colors.indigo },
 };
 
 export function getCategoryColor(category?: string): string {
-	return categories[category as CategoryKey]?.color ?? colors.gold;
+  return categories[category as CategoryKey]?.color ?? colors.gold;
 }
 
 /**
@@ -64,28 +64,28 @@ export function getCategoryColor(category?: string): string {
  * @param category La chiave di categoria (es. "Lore", "Personaggio")
  */
 export function getCategoryLabel(t: (key: string) => string, category?: string): string {
-	if (!category) {
-		return t("wiki.categories.Lore");
-	}
+  if (!category) {
+    return t("wiki.categories.Lore");
+  }
 
-	// Se la chiave esiste nel file json la traduciamo, altrimenti usiamo la stringa passata come fallback
-	const translationKey = `wiki.categories.${category}`;
-	const translated = t(translationKey);
+  // Se la chiave esiste nel file json la traduciamo, altrimenti usiamo la stringa passata come fallback
+  const translationKey = `wiki.categories.${category}`;
+  const translated = t(translationKey);
 
-	return translated !== translationKey ? translated : category;
+  return translated !== translationKey ? translated : category;
 }
 
 // --- Bridge verso le CSS custom properties -------------------------------
 function toCssVarName(key: string): string {
-	return `--${key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()}`;
+  return `--${key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase()}`;
 }
 
 function injectThemeCssVariables() {
-	if (typeof document === "undefined") return;
-	const root = document.documentElement.style;
-	Object.entries(colors).forEach(([key, value]) => {
-		root.setProperty(toCssVarName(key), value);
-	});
+  if (typeof document === "undefined") return;
+  const root = document.documentElement.style;
+  Object.entries(colors).forEach(([key, value]) => {
+    root.setProperty(toCssVarName(key), value);
+  });
 }
 
 injectThemeCssVariables();

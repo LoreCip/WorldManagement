@@ -48,7 +48,7 @@ export function useSettingsInternal() {
       const def = settingsRegistry.find((d) => d.key === key);
       return def?.defaultValue ?? null;
     }) as GetSetting,
-    [values]
+    [values],
   );
 
   const setSetting = useCallback(
@@ -59,7 +59,7 @@ export function useSettingsInternal() {
         console.error(`Salvataggio impostazione "${key}" fallito`);
       }
     }) as SetSetting,
-    []
+    [],
   );
 
   return { isLoaded, getSetting, setSetting };

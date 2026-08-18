@@ -57,22 +57,49 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
         {t("timeline.eras.subtitle")}
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}>
+      <div
+        style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}
+      >
         {eras.map((era) => (
           <div
             key={era.id}
             style={{
-              display: "flex", alignItems: "center", gap: "0.6rem",
-              padding: "0.4rem 0.5rem", borderRadius: radii.sm, backgroundColor: colors.bgManuscript,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              padding: "0.4rem 0.5rem",
+              borderRadius: radii.sm,
+              backgroundColor: colors.bgManuscript,
             }}
           >
-            <span style={{ width: "16px", height: "16px", borderRadius: "3px", backgroundColor: era.color, flexShrink: 0 }} />
-            <span style={{ flex: 1, color: colors.textPrimary, fontFamily: fonts.body, fontSize: "0.85rem" }}>
+            <span
+              style={{
+                width: "16px",
+                height: "16px",
+                borderRadius: "3px",
+                backgroundColor: era.color,
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                flex: 1,
+                color: colors.textPrimary,
+                fontFamily: fonts.body,
+                fontSize: "0.85rem",
+              }}
+            >
               {era.label}
             </span>
             <button
               onClick={() => onDelete(era.id)}
-              style={{ background: "none", border: "none", color: colors.crimson, cursor: "pointer", fontSize: "0.9rem" }}
+              style={{
+                background: "none",
+                border: "none",
+                color: colors.crimson,
+                cursor: "pointer",
+                fontSize: "0.9rem",
+              }}
             >
               {t("wiki.tag.delete")}
             </button>
@@ -87,32 +114,53 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
 
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.6rem" }}>
         <input
-          type="color" value={draft.color}
+          type="color"
+          value={draft.color}
           onChange={(e) => setDraft({ ...draft, color: e.target.value })}
-          style={{ width: "36px", height: "30px", border: "none", borderRadius: radii.sm, cursor: "pointer", background: "none" }}
+          style={{
+            width: "36px",
+            height: "30px",
+            border: "none",
+            borderRadius: radii.sm,
+            cursor: "pointer",
+            background: "none",
+          }}
         />
         <input
-          type="text" placeholder={t("timeline.eras.namePlaceholder")} value={draft.label}
+          type="text"
+          placeholder={t("timeline.eras.namePlaceholder")}
+          value={draft.label}
           onChange={(e) => setDraft({ ...draft, label: e.target.value })}
           style={{ ...inputStyle, flex: 1 }}
         />
       </div>
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}>
         <input
-          type="number" placeholder={t("timeline.eras.startDatePlaceholder")} value={draft.startYear}
+          type="number"
+          placeholder={t("timeline.eras.startDatePlaceholder")}
+          value={draft.startYear}
           onChange={(e) => setDraft({ ...draft, startYear: parseInt(e.target.value || "0", 10) })}
           style={{ ...inputStyle, flex: 1 }}
         />
         <input
-          type="number" placeholder={t("timeline.eras.endDatePlaceholder")} value={draft.endYear}
+          type="number"
+          placeholder={t("timeline.eras.endDatePlaceholder")}
+          value={draft.endYear}
           onChange={(e) => setDraft({ ...draft, endYear: parseInt(e.target.value || "0", 10) })}
           style={{ ...inputStyle, flex: 1 }}
         />
         <button
           onClick={handleAdd}
           style={{
-            padding: "0.4rem 0.8rem", backgroundColor: colors.gold, color: colors.bgVoid,
-            border: "none", borderRadius: radii.sm, cursor: "pointer", fontFamily: fonts.body, fontWeight: 600, fontSize: "0.82rem",
+            padding: "0.4rem 0.8rem",
+            backgroundColor: colors.gold,
+            color: colors.bgVoid,
+            border: "none",
+            borderRadius: radii.sm,
+            cursor: "pointer",
+            fontFamily: fonts.body,
+            fontWeight: 600,
+            fontSize: "0.82rem",
           }}
         >
           + {t("common.add")}
@@ -123,8 +171,14 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
         <button
           onClick={onClose}
           style={{
-            padding: "0.5rem 1rem", backgroundColor: "transparent", color: colors.textFaint,
-            border: `1px solid ${colors.borderSubtle}`, borderRadius: radii.md, cursor: "pointer", fontFamily: fonts.body, fontSize: "0.82rem",
+            padding: "0.5rem 1rem",
+            backgroundColor: "transparent",
+            color: colors.textFaint,
+            border: `1px solid ${colors.borderSubtle}`,
+            borderRadius: radii.md,
+            cursor: "pointer",
+            fontFamily: fonts.body,
+            fontSize: "0.82rem",
           }}
         >
           {t("common.close")}

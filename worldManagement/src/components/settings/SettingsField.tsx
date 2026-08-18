@@ -22,10 +22,23 @@ export const SettingsField: React.FC<SettingsFieldProps> = ({ definition, value,
         return <BooleanSettingInput value={Boolean(value)} onChange={onChange} />;
 
       case "select":
-        return <SelectSettingInput value={String(value)} options={definition.options ?? []} onChange={onChange} />;
+        return (
+          <SelectSettingInput
+            value={String(value)}
+            options={definition.options ?? []}
+            onChange={onChange}
+          />
+        );
 
       case "number":
-        return <NumberSettingInput value={Number(value)} min={definition.min} max={definition.max} onChange={onChange} />;
+        return (
+          <NumberSettingInput
+            value={Number(value)}
+            min={definition.min}
+            max={definition.max}
+            onChange={onChange}
+          />
+        );
 
       case "color":
         return <ColorSettingInput value={String(value)} onChange={onChange} />;
@@ -48,7 +61,14 @@ export const SettingsField: React.FC<SettingsFieldProps> = ({ definition, value,
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: fonts.body, fontWeight: 600, fontSize: "0.9rem", color: colors.textPrimary }}>
+        <div
+          style={{
+            fontFamily: fonts.body,
+            fontWeight: 600,
+            fontSize: "0.9rem",
+            color: colors.textPrimary,
+          }}
+        >
           {definition.label}
         </div>
         {definition.description && (

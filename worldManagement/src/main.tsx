@@ -13,5 +13,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <App />
       </LocalizationProvider>
     </SettingsProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

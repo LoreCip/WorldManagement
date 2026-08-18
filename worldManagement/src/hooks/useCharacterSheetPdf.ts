@@ -24,7 +24,13 @@ const pdfCacheKey = (sheetId: string, variant: string) => `${sheetId}::${variant
 // bytes, sincronizzazione dei valori dei campi form con il DOM renderizzato
 // da react-pdf, salvataggio (pdf-lib + IPC) ed export. Nessun rendering
 // proprio: la view resta responsabile solo della composizione JSX.
-export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplateFilename, updateSheet, containerRef }: UseCharacterSheetPdfParams) {
+export function useCharacterSheetPdf({
+  selectedSheet,
+  activeVariant,
+  pdfTemplateFilename,
+  updateSheet,
+  containerRef,
+}: UseCharacterSheetPdfParams) {
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
 
@@ -89,7 +95,9 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
   // da react-pdf ad ogni pagina).
   const populatePageAnnotations = useCallback(() => {
     if (!containerRef.current) return;
-    const inputs = containerRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input, textarea, select");
+    const inputs = containerRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      "input, textarea, select",
+    );
 
     inputs.forEach((input) => {
       const name = input.name;
@@ -108,7 +116,8 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
     const target = e.target as HTMLInputElement | HTMLTextAreaElement;
     if (!target?.name) return;
 
-    const value: FormFieldValue = target.type === "checkbox" ? (target as HTMLInputElement).checked : target.value;
+    const value: FormFieldValue =
+      target.type === "checkbox" ? (target as HTMLInputElement).checked : target.value;
     formDataRef.current[target.name] = value;
   }, []);
 
@@ -118,7 +127,9 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
       return;
     }
     if (!pristineBufferRef.current) {
-      console.error("Salvataggio PDF interrotto: il buffer del PDF non è ancora caricato in memoria.");
+      console.error(
+        "Salvataggio PDF interrotto: il buffer del PDF non è ancora caricato in memoria.",
+      );
       alert("PDF non ancora caricato in memoria.");
       return;
     }
@@ -147,7 +158,10 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
         }
       });
 
-      console.log(`Salvataggio PDF: ${appliedCount} campi applicati, ${failedFields.length} falliti.`, failedFields);
+      console.log(
+        `Salvataggio PDF: ${appliedCount} campi applicati, ${failedFields.length} falliti.`,
+        failedFields,
+      );
 
       const updatedPdfBytes = await pdfDoc.save();
 
@@ -157,15 +171,23 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
         pdfBytes: Array.from(updatedPdfBytes),
       });
       if (pdfSaved === null) {
-        console.error("Salvataggio PDF interrotto: save_character_pdf ha restituito null (vedi il log IPC sopra per il motivo).");
+        console.error(
+          "Salvataggio PDF interrotto: save_character_pdf ha restituito null (vedi il log IPC sopra per il motivo).",
+        );
         alert("Errore durante il salvataggio del PDF.");
         return;
       }
 
       const jsonStr = JSON.stringify(formDataRef.current);
-      const success = await updateSheet({ id: selectedSheet.id, data_json: jsonStr, sheet_variant: activeVariant });
+      const success = await updateSheet({
+        id: selectedSheet.id,
+        data_json: jsonStr,
+        sheet_variant: activeVariant,
+      });
       if (!success) {
-        console.error("Salvataggio PDF interrotto: updateSheet (save_character_sheet) ha restituito false.");
+        console.error(
+          "Salvataggio PDF interrotto: updateSheet (save_character_sheet) ha restituito false.",
+        );
         alert("Errore durante il salvataggio della scheda.");
         return;
       }

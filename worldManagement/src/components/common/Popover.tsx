@@ -15,7 +15,14 @@ export interface PopoverProps {
 
 // Dropdown posizionato sotto il trigger, con click-outside ed ESC per
 // chiudere.
-export const Popover: React.FC<PopoverProps> = ({ isOpen, onClose, trigger, children, align = "right", width = "220px" }) => {
+export const Popover: React.FC<PopoverProps> = ({
+  isOpen,
+  onClose,
+  trigger,
+  children,
+  align = "right",
+  width = "220px",
+}) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

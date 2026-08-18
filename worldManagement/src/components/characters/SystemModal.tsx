@@ -12,7 +12,12 @@ interface SystemModalProps {
   onSave: (payload: SaveGameSystemPayload) => Promise<boolean>;
 }
 
-export const SystemModal: React.FC<SystemModalProps> = ({ isOpen, systemToEdit, onClose, onSave }) => {
+export const SystemModal: React.FC<SystemModalProps> = ({
+  isOpen,
+  systemToEdit,
+  onClose,
+  onSave,
+}) => {
   const { t } = useLocalization();
 
   const [name, setName] = useState("");
@@ -112,59 +117,193 @@ export const SystemModal: React.FC<SystemModalProps> = ({ isOpen, systemToEdit, 
       isOpen={isOpen}
       onClose={onClose}
       width="500px"
-      title={systemToEdit ? t("characters.systemModal.modifySystem") : t("characters.systemModal.newSystem")}
+      title={
+        systemToEdit
+          ? t("characters.systemModal.modifySystem")
+          : t("characters.systemModal.newSystem")
+      }
       footer={
         <>
-          <button onClick={onClose} style={{ padding: "0.5rem 1rem", background: "transparent", color: colors.textPrimary, border: `1px solid ${colors.border}`, borderRadius: radii.sm, cursor: "pointer" }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "0.5rem 1rem",
+              background: "transparent",
+              color: colors.textPrimary,
+              border: `1px solid ${colors.border}`,
+              borderRadius: radii.sm,
+              cursor: "pointer",
+            }}
+          >
             {t("common.cancel")}
           </button>
-          <button onClick={handleSubmit} style={{ padding: "0.5rem 1rem", backgroundColor: colors.gold, color: colors.bgVoid, border: "none", borderRadius: radii.sm, fontWeight: 600, cursor: "pointer" }}>
+          <button
+            onClick={handleSubmit}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: colors.gold,
+              color: colors.bgVoid,
+              border: "none",
+              borderRadius: radii.sm,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
             {t("characters.systemModal.saveSystem")}
           </button>
         </>
       }
     >
       {/* Input nascosti per la selezione dei file */}
-      <input type="file" ref={pgFileInputRef} accept=".pdf" style={{ display: "none" }} onChange={(e) => handleFileUpload(e, "pg")} />
-      <input type="file" ref={pngFileInputRef} accept=".pdf" style={{ display: "none" }} onChange={(e) => handleFileUpload(e, "png")} />
+      <input
+        type="file"
+        ref={pgFileInputRef}
+        accept=".pdf"
+        style={{ display: "none" }}
+        onChange={(e) => handleFileUpload(e, "pg")}
+      />
+      <input
+        type="file"
+        ref={pngFileInputRef}
+        accept=".pdf"
+        style={{ display: "none" }}
+        onChange={(e) => handleFileUpload(e, "png")}
+      />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <div>
-          <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.gameName")}</label>
+          <label
+            style={{
+              fontSize: "0.85rem",
+              color: colors.textSecondary,
+              display: "block",
+              marginBottom: "0.3rem",
+            }}
+          >
+            {t("characters.systemModal.gameName")}
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("common.example") + "Fabula Ultima, Cyberpunk RED..."}
-            style={{ width: "100%", padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: "#fff", borderRadius: radii.sm }}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              backgroundColor: colors.bgVoid,
+              border: `1px solid ${colors.border}`,
+              color: "#fff",
+              borderRadius: radii.sm,
+            }}
           />
         </div>
 
         <div>
-          <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("common.description")}</label>
+          <label
+            style={{
+              fontSize: "0.85rem",
+              color: colors.textSecondary,
+              display: "block",
+              marginBottom: "0.3rem",
+            }}
+          >
+            {t("common.description")}
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
-            style={{ width: "100%", padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: "#fff", borderRadius: radii.sm }}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              backgroundColor: colors.bgVoid,
+              border: `1px solid ${colors.border}`,
+              color: "#fff",
+              borderRadius: radii.sm,
+            }}
           />
         </div>
 
         <div>
-          <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.pdfPg")}</label>
+          <label
+            style={{
+              fontSize: "0.85rem",
+              color: colors.textSecondary,
+              display: "block",
+              marginBottom: "0.3rem",
+            }}
+          >
+            {t("characters.systemModal.pdfPg")}
+          </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <input type="text" readOnly value={pdfPgFile} placeholder={t("characters.systemModal.noLoadedPdf")} style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
-            <button onClick={() => pgFileInputRef.current?.click()} style={{ padding: "0.5rem 0.8rem", backgroundColor: colors.gold, color: colors.bgVoid, border: "none", borderRadius: radii.sm, cursor: "pointer", fontWeight: 600 }}>
+            <input
+              type="text"
+              readOnly
+              value={pdfPgFile}
+              placeholder={t("characters.systemModal.noLoadedPdf")}
+              style={{
+                flex: 1,
+                padding: "0.5rem",
+                backgroundColor: colors.bgVoid,
+                border: `1px solid ${colors.border}`,
+                color: colors.gold,
+                borderRadius: radii.sm,
+              }}
+            />
+            <button
+              onClick={() => pgFileInputRef.current?.click()}
+              style={{
+                padding: "0.5rem 0.8rem",
+                backgroundColor: colors.gold,
+                color: colors.bgVoid,
+                border: "none",
+                borderRadius: radii.sm,
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
               {t("common.browse")}
             </button>
           </div>
         </div>
 
         <div>
-          <label style={{ fontSize: "0.85rem", color: colors.textSecondary, display: "block", marginBottom: "0.3rem" }}>{t("characters.systemModal.pdfPng")}</label>
+          <label
+            style={{
+              fontSize: "0.85rem",
+              color: colors.textSecondary,
+              display: "block",
+              marginBottom: "0.3rem",
+            }}
+          >
+            {t("characters.systemModal.pdfPng")}
+          </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <input type="text" readOnly value={pdfPngFile} placeholder={t("common.optional")} style={{ flex: 1, padding: "0.5rem", backgroundColor: colors.bgVoid, border: `1px solid ${colors.border}`, color: colors.gold, borderRadius: radii.sm }} />
-            <button onClick={() => pngFileInputRef.current?.click()} style={{ padding: "0.5rem 0.8rem", backgroundColor: "transparent", border: `1px solid ${colors.gold}`, color: colors.gold, borderRadius: radii.sm, cursor: "pointer" }}>
+            <input
+              type="text"
+              readOnly
+              value={pdfPngFile}
+              placeholder={t("common.optional")}
+              style={{
+                flex: 1,
+                padding: "0.5rem",
+                backgroundColor: colors.bgVoid,
+                border: `1px solid ${colors.border}`,
+                color: colors.gold,
+                borderRadius: radii.sm,
+              }}
+            />
+            <button
+              onClick={() => pngFileInputRef.current?.click()}
+              style={{
+                padding: "0.5rem 0.8rem",
+                backgroundColor: "transparent",
+                border: `1px solid ${colors.gold}`,
+                color: colors.gold,
+                borderRadius: radii.sm,
+                cursor: "pointer",
+              }}
+            >
               {t("common.browse")}
             </button>
           </div>

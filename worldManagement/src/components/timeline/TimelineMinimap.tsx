@@ -25,7 +25,7 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
   onJumpTo,
   onPanBy,
   onShowAll,
-}) => {  
+}) => {
   const { t } = useLocalization();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -113,7 +113,14 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
       }}
     >
       <svg width={width} height={HEIGHT} style={{ display: "block" }}>
-        <line x1={0} y1={HEIGHT / 2} x2={width} y2={HEIGHT / 2} stroke={colors.borderSubtle} strokeWidth={1} />
+        <line
+          x1={0}
+          y1={HEIGHT / 2}
+          x2={width}
+          y2={HEIGHT / 2}
+          stroke={colors.borderSubtle}
+          strokeWidth={1}
+        />
 
         {events.map((ev) => {
           const x = valueToX(ev.time_value);

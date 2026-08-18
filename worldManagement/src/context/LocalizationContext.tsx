@@ -6,10 +6,11 @@ import { useSettings } from "./SettingsContext";
 import it_IT from "../localization/it_IT.json";
 import en_US from "../localization/en_US.json";
 
+type LocalizationDict = { [key: string]: string | LocalizationDict };
 
 // Mappa tra il valore salvato in `localization_language` (settingsRegistry)
 // e il file di traduzione corrispondente.
-const LOCALES: Record<string, any> = {
+const LOCALES: Record<string, LocalizationDict> = {
   it: it_IT,
   en: en_US,
 };
@@ -24,20 +25,30 @@ interface LocalizationContextType {
 const LocalizationContext = createContext<LocalizationContextType | null>(null);
 
 // Naviga un oggetto annidato tramite chiave puntata, es. "hub.subtitle"
-function resolveKey(dict: any, key: string): string | undefined {
-  return key.split(".").reduce((acc, part) => (acc && typeof acc === "object" ? acc[part] : undefined), dict);
+function resolveKey(dict: LocalizationDict, key: string): string | undefined {
+  const value = key
+    .split(".")
+    .reduce<string | LocalizationDict | undefined>(
+      (acc, part) => (acc && typeof acc === "object" ? acc[part] : undefined),
+      dict,
+    );
+  return typeof value === "string" ? value : undefined;
 }
 
 // Sostituisce {{variabile}} nella stringa con i valori passati in `vars`
 function interpolate(str: string, vars?: Record<string, string | number>): string {
   if (!vars) return str;
-  return str.replace(/\{\{(\w+)\}\}/g, (_, key) => (key in vars ? String(vars[key]) : `{{${key}}}`));
+  return str.replace(/\{\{(\w+)\}\}/g, (_, key) =>
+    key in vars ? String(vars[key]) : `{{${key}}}`,
+  );
 }
 
 export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getSetting, isLoaded } = useSettings();
 
-  const language = isLoaded ? getSetting("localization_language") || FALLBACK_LOCALE : FALLBACK_LOCALE;
+  const language = isLoaded
+    ? getSetting("localization_language") || FALLBACK_LOCALE
+    : FALLBACK_LOCALE;
 
   const dict = LOCALES[language] ?? LOCALES[FALLBACK_LOCALE];
 
@@ -53,9 +64,7 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, [dict, language]);
 
   return (
-    <LocalizationContext.Provider value={{ t, language }}>
-      {children}
-    </LocalizationContext.Provider>
+    <LocalizationContext.Provider value={{ t, language }}>{children}</LocalizationContext.Provider>
   );
 };
 
