@@ -68,7 +68,7 @@ pub fn save_character_pdf(
     variant: String,
     pdf_bytes: Vec<u8>,
     paths: State<'_, AppPaths>,
-) -> Result<(), String> {
+) -> Result<bool, String>  {
     if !paths.sheets_dir.exists() {
         fs::create_dir_all(&paths.sheets_dir)
             .map_err(|e| format!("Impossibile creare la cartella savedSheets: {}", e))?;
@@ -80,7 +80,7 @@ pub fn save_character_pdf(
     fs::write(&file_path, pdf_bytes)
         .map_err(|e| format!("Impossibile salvare il PDF in locale: {}", e))?;
 
-    Ok(())
+    Ok(true)
 }
 
 #[tauri::command]

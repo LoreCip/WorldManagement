@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { useSettings } from "../context/SettingsContext";
 import { HubModuleKey } from "../views/HubView";
 
 export type ActiveTab = "hub" | "wiki" | "maps" | "characters" | "timeline" | "relations" | "settings";
 
 // Le uniche tab "di contenuto" la cui ultima visita viene ricordata dalla hub.
 const HUB_TRACKED_TABS: ActiveTab[] = ["wiki", "maps", "characters", "timeline", "relations"];
+
+const LAST_VISITED_TAB_KEY = "worldbuilder_last_visited_tab";
 
 // Stato e navigazione a livello di app shell: quale tab e attiva, quali id
 // sono selezionati per il deep-link tra moduli (es. apri un articolo wiki
@@ -17,19 +18,16 @@ export function useAppShell() {
 	const [selectedSheetId, setSelectedSheetId] = useState<string | null>(null);
 	const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
 
-	const { setSetting } = useSettings();
-
-	// Ogni cambio di tab passa da qui, così la hub sa sempre qual è stata
-	// l'ultima tab di contenuto visitata (usata per scegliere il tile "hero").
-	const handleTabChange = useCallback(
-		(tab: ActiveTab) => {
-			setActiveTab(tab);
-			if (HUB_TRACKED_TABS.includes(tab)) {
-				setSetting("last_visited_tab", tab);
+	const handleTabChange = useCallback((tab: ActiveTab) => {
+		setActiveTab(tab);
+		if (HUB_TRACKED_TABS.includes(tab)) {
+			try {
+				localStorage.setItem(LAST_VISITED_TAB_KEY, tab);
+			} catch {
+				// localStorage non disponibile: la scelta vale solo per la sessione corrente
 			}
-		},
-		[setSetting]
-	);
+		}
+	}, []);
 
 	const handleOpenArticle = useCallback(
 		(articleId: string) => {

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { invokeSafe } from "../lib/ipc";
-import { useSettings } from "../context/SettingsContext";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
+
+// Stessa chiave usata da useAppShell.ts per scrivere l'ultima tab visitata.
+const LAST_VISITED_TAB_KEY = "worldbuilder_last_visited_tab";
 
 // Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
 export type HubModuleKey = "wiki" | "maps" | "characters" | "timeline" | "relations";
@@ -87,9 +89,6 @@ const SLOT_GRID_AREA: Record<Slot, string> = {
 };
 
 export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) => {
-  const { getSetting, isLoaded } = useSettings();
-  // Gli hook vanno sempre chiamati al livello più alto del componente,
-  // mai dentro useEffect/if/cicli — per questo va qui, non più giù.
   const { t } = useLocalization();
 
   // Ordine dei moduli: il primo occupa lo slot "hero". Parte da un ordine
@@ -106,26 +105,20 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
   });
 
   useEffect(() => {
-    if (!isLoaded) return;
-
-    // "last_visited_tab" non e nel registro pubblico delle impostazioni
-    // (di proposito: e stato UI interno, non una preferenza utente da
-    // mostrare in Impostazioni). getSetting lo tratta quindi con la firma
-    // "ampia" (string) invece che con un generic esplicito, e il risultato
-    // va validato a mano prima di fidarsene come HubModuleKey.
-    const lastVisitedRaw = getSetting("last_visited_tab");
-    const lastVisited =
-      typeof lastVisitedRaw === "string" && MODULES.some((m) => m.key === lastVisitedRaw)
-        ? (lastVisitedRaw as HubModuleKey)
-        : null;
+    let lastVisited: HubModuleKey | null = null;
+    try {
+      const raw = localStorage.getItem(LAST_VISITED_TAB_KEY);
+      if (raw && MODULES.some((m) => m.key === raw)) lastVisited = raw as HubModuleKey;
+    } catch {
+      lastVisited = null;
+    }
 
     if (lastVisited) {
       setOrder([lastVisited, ...MODULES.map((m) => m.key).filter((k) => k !== lastVisited)]);
     }
-  }, [isLoaded, getSetting]);
+  }, []);
 
   useEffect(() => {
-
     const loadCounts = async () => {
       const [articles, maps, sheets, events, graphNodes] = await Promise.all([
         invokeSafe<unknown[]>("get_all_articles"),
@@ -382,7 +375,9 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
   );
 };
 
-
+// Comportamenti che le sole inline style non gestiscono bene (hover, texture
+// di sfondo, dimensioni del testo in base allo slot) — stesso pattern di
+// <style>{...}</style> già usato altrove nel progetto.
 const hubStyleTag = `
   .hub-tile { transition: transform .3s ease, background-color .3s ease, border-color .3s ease; }
   .hub-tile:hover { transform: translateY(-3px); }

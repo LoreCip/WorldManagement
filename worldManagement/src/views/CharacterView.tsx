@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { invokeSafe } from "../lib/ipc";
 import { useCharacters } from "../hooks/useCharacters";
 import { useCharacterSheetPdf } from "../hooks/useCharacterSheetPdf";
 import { usePinchZoom } from "../hooks/usePinchZoom";
+import { useLinkableOptions } from "../hooks/useLinkableOptions";
 import { CharacterSidebar } from "../components/characters/CharacterSidebar";
 import { SystemModal } from "../components/characters/SystemModal";
 import { NewSheetModal } from "../components/characters/NewSheetModal";
+import { ViewHeader } from "../components/common/ViewHeader";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
-import { ArticleMeta } from "../types/wiki";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -46,7 +46,17 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
   } = useCharacters();
 
   const { t } = useLocalization();
-  const [characterArticles, setCharacterArticles] = useState<ArticleMeta[]>([]);
+  const { articles: allArticles } = useLinkableOptions({ articles: true });
+
+  const characterArticles = useMemo(
+    () =>
+      allArticles.filter((a) => {
+        if (!a.category) return false;
+        const cat = a.category.trim().toLowerCase();
+        return cat === "personaggio";
+      }),
+    [allArticles]
+  );
   const syncedInitialSheetId = useRef<string | null | undefined>(null);
 
   useEffect(() => {
@@ -60,27 +70,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
     handleSelectSheet(id);
     onSelectSheet?.(id);
   };
-
-  // Articoli wiki di categoria "personaggio", per il collegamento scheda<->wiki.
-  useEffect(() => {
-    const fetchWikiArticles = async () => {
-      const articles = await invokeSafe<ArticleMeta[]>("get_all_articles");
-      if (!articles) return;
-
-      // Doppio confronto "personaggio"/"personaggi": compensa il
-      // disallineamento tra le chiavi categoria di settingsRegistry.ts e
-      // la union CategoryKey di theme.ts (gia segnalato nello step Wiki,
-      // non risolto qui).
-      const filtered = articles.filter((a) => {
-        if (!a.category) return false;
-        const cat = a.category.trim().toLowerCase();
-        return cat === "personaggio" || cat === "personaggi";
-      });
-      setCharacterArticles(filtered);
-    };
-
-    fetchWikiArticles();
-  }, []);
 
   const selectedSystem = useMemo(() => {
     if (!selectedSheet) return null;
@@ -180,7 +169,6 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
       <main
         style={{
           flex: 1,
-          padding: "1.2rem 1.8rem",
           display: "flex",
           flexDirection: "column",
           backgroundColor: colors.bgVoid,
@@ -195,176 +183,158 @@ export const CharacterView: React.FC<CharacterViewProps> = ({ onNavigateToWiki, 
           </div>
         ) : (
           <>
-            {/* Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-                  <h1 style={{ fontFamily: fonts.display, fontSize: "1.6rem", margin: 0, color: colors.textPrimary }}>{selectedSheet.name}</h1>
-
-                  {selectedSystem && (
-                    <span
-                      style={{
-                        backgroundColor: `${colors.gold}22`,
-                        color: colors.gold,
-                        border: `1px solid ${colors.gold}55`,
-                        padding: "0.2rem 0.6rem",
-                        borderRadius: radii.sm,
-                        fontSize: "0.75rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {selectedSystem.name}
-                    </span>
-                  )}
-
-                  {availableVariants.length > 1 && (
-                    <div style={{ display: "flex", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden" }}>
-                      {(["pg", "png"] as const)
-                        .filter((v) => availableVariants.includes(v))
-                        .map((v) => {
-                          const isActive = activeVariant === v;
-                          return (
-                            <button
-                              key={v}
-                              onClick={() => handleSetVariant(v)}
-                              title={v === "pg" ? "Scheda Personaggio Giocante" : "Scheda Personaggio Non Giocante"}
-                              style={{
-                                padding: "0.25rem 0.7rem",
-                                fontSize: "0.72rem",
-                                fontWeight: 700,
-                                letterSpacing: "0.04em",
-                                textTransform: "uppercase",
-                                border: "none",
-                                cursor: "pointer",
-                                backgroundColor: isActive ? colors.gold : "transparent",
-                                color: isActive ? colors.bgVoid : colors.textFaint,
-                              }}
-                            >
-                              {v === "pg" ? t("characters.systemModal.pc") : t("characters.systemModal.npc")}
-                            </button>
-                          );
-                        })}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.78rem", color: colors.gold, fontWeight: 500 }}>{t("characters.hook.characterWiki")}</label>
-                  <select
-                    value={selectedSheet.article_id || ""}
-                    onChange={(e) => handleLinkArticle(e.target.value || null)}
-                    style={{
-                      backgroundColor: colors.bgPanel,
-                      color: colors.textPrimary,
-                      border: `1px solid ${colors.border}`,
-                      borderRadius: radii.sm,
-                      padding: "0.25rem 0.5rem",
-                      fontSize: "0.8rem",
-                      outline: "none",
-                      colorScheme: "dark",
-                    }}
-                  >
-                    <option value="">{t("characters.hook.noLink")}</option>
-                    {characterArticles.map((art) => (
-                      <option key={art.id} value={art.id}>
-                        {art.title}
-                      </option>
-                    ))}
-                  </select>
-
-                  {selectedSheet.article_id && onNavigateToWiki && (
-                    <button
-                      onClick={() => onNavigateToWiki(selectedSheet.article_id!)}
-                      style={{ background: "none", border: "none", color: colors.gold, fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
-                    >
-                      {t("characters.hook.go")}
+            <ViewHeader
+              title={selectedSheet.name}
+              badge={selectedSystem?.name}
+              actions={
+                <>
+                  {/* Controlli zoom */}
+                  <div style={{ display: "flex", alignItems: "center", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden", marginRight: "0.3rem" }}>
+                    <button onClick={zoomOut} title={t("characters.hook.zoomOut")} style={zoomBtnBase}>
+                      −
                     </button>
-                  )}
-                </div>
-              </div>
+                    <button
+                      onClick={zoomReset}
+                      title={t("characters.hook.zoomReset")}
+                      style={{ ...zoomBtnBase, width: "3.2rem", fontSize: "0.72rem", fontWeight: 600, borderLeft: `1px solid ${colors.border}`, borderRight: `1px solid ${colors.border}` }}
+                    >
+                      {Math.round(scale * 100)}%
+                    </button>
+                    <button onClick={zoomIn} title={t("characters.hook.zoomIn")} style={zoomBtnBase}>
+                      +
+                    </button>
+                  </div>
 
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                {/* Controlli zoom */}
-                <div style={{ display: "flex", alignItems: "center", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden", marginRight: "0.3rem" }}>
-                  <button onClick={zoomOut} title="Riduci zoom" style={zoomBtnBase}>
-                    −
+                  <button onClick={handleSavePdf} style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}>
+                    {t("common.save")}
                   </button>
+
+                  <button onClick={handleExportPdf} style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}>
+                    {t("common.export")}
+                  </button>
+
                   <button
-                    onClick={zoomReset}
-                    title="Ripristina zoom (100%)"
-                    style={{ ...zoomBtnBase, width: "3.2rem", fontSize: "0.72rem", fontWeight: 600, borderLeft: `1px solid ${colors.border}`, borderRight: `1px solid ${colors.border}` }}
+                    onClick={() => handleDeleteSheet(selectedSheet.id)}
+                    style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
                   >
-                    {Math.round(scale * 100)}%
+                    {t("common.delete")}
                   </button>
-                  <button onClick={zoomIn} title="Aumenta zoom" style={zoomBtnBase}>
-                    +
-                  </button>
-                </div>
-
-                <button onClick={handleSavePdf} style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}>
-                  {t("common.save")}
-                </button>
-
-                <button onClick={handleExportPdf} style={{ ...btnBase, backgroundColor: "transparent", color: colors.gold, border: `1px solid ${colors.gold}77` }}>
-                  {t("common.export")}
-                </button>
-
-                <button
-                  onClick={() => handleDeleteSheet(selectedSheet.id)}
-                  style={{ ...btnBase, backgroundColor: "transparent", color: colors.crimson, border: `1px solid ${colors.crimson}77` }}
-                >
-                  {/* Prima: t("common.save") - mostrava l'etichetta sbagliata sul bottone Elimina */}
-                  {t("common.delete")}
-                </button>
-              </div>
-            </div>
-
-            {/* Visualizzatore PDF */}
-            <div
-              ref={containerRef}
-              onInput={handleFormInputChange}
-              onChange={handleFormInputChange}
-              style={{
-                flex: 1,
-                width: "100%",
-                height: "100%",
-                minHeight: 0,
-                borderRadius: radii.md,
-                overflow: "auto", // scroll sia verticale che orizzontale (necessario quando si fa zoom)
-                border: `1px solid ${colors.border}`,
-                backgroundColor: "#525659",
-                // overscrollBehavior evita che lo scroll "sfondi" verso la pagina quando si arriva ai bordi
-                overscrollBehavior: "contain",
-              }}
+                </>
+              }
             >
-              {pdfArrayBuffer ? (
-                <div
+              {availableVariants.length > 1 && (
+                <div style={{ display: "flex", border: `1px solid ${colors.border}`, borderRadius: radii.sm, overflow: "hidden" }}>
+                  {(["pg", "png"] as const)
+                    .filter((v) => availableVariants.includes(v))
+                    .map((v) => {
+                      const isActive = activeVariant === v;
+                      return (
+                        <button
+                          key={v}
+                          onClick={() => handleSetVariant(v)}
+                          title={v === "pg" ? t("characters.hook.pgTooltip") : t("characters.hook.npcTooltip")}
+                          style={{
+                            padding: "0.25rem 0.7rem",
+                            fontSize: "0.72rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.04em",
+                            textTransform: "uppercase",
+                            border: "none",
+                            cursor: "pointer",
+                            backgroundColor: isActive ? colors.gold : "transparent",
+                            color: isActive ? colors.bgVoid : colors.textFaint,
+                          }}
+                        >
+                          {v === "pg" ? t("characters.systemModal.pc") : t("characters.systemModal.npc")}
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
+            </ViewHeader>
+
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, padding: "1.2rem 1.8rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.8rem" }}>
+                <label style={{ fontSize: "0.78rem", color: colors.gold, fontWeight: 500 }}>{t("characters.hook.characterWiki")}</label>
+                <select
+                  value={selectedSheet.article_id || ""}
+                  onChange={(e) => handleLinkArticle(e.target.value || null)}
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    padding: "1rem 0",
-                    // margine extra per poter scrollare oltre i bordi quando si e zoomati
-                    minWidth: "100%",
-                    width: "fit-content",
-                    margin: "0 auto",
+                    backgroundColor: colors.bgPanel,
+                    color: colors.textPrimary,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: radii.sm,
+                    padding: "0.25rem 0.5rem",
+                    fontSize: "0.8rem",
+                    outline: "none",
+                    colorScheme: "dark",
                   }}
                 >
-                  <Document
-                    file={pdfArrayBuffer}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    loading={<div style={{ color: "#fff" }}>{t("characters.hook.loadingShort")}</div>}
+                  <option value="">{t("characters.hook.noLink")}</option>
+                  {characterArticles.map((art) => (
+                    <option key={art.id} value={art.id}>
+                      {art.title}
+                    </option>
+                  ))}
+                </select>
+
+                {selectedSheet.article_id && onNavigateToWiki && (
+                  <button
+                    onClick={() => onNavigateToWiki(selectedSheet.article_id!)}
+                    style={{ background: "none", border: "none", color: colors.gold, fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
                   >
-                    {Array.from(new Array(numPages), (_, index) => (
-                      <div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
-                        <Page pageNumber={index + 1} renderAnnotationLayer renderTextLayer renderForms scale={scale} onRenderSuccess={populatePageAnnotations} />
-                      </div>
-                    ))}
-                  </Document>
-                </div>
-              ) : (
-                <div style={{ padding: "2rem", color: colors.textFaint }}>{t("characters.hook.loading")}</div>
-              )}
+                    {t("characters.hook.go")}
+                  </button>
+                )}
+              </div>
+
+              {/* Visualizzatore PDF */}
+              <div
+                ref={containerRef}
+                onInput={handleFormInputChange}
+                onChange={handleFormInputChange}
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  height: "100%",
+                  minHeight: 0,
+                  borderRadius: radii.md,
+                  overflow: "auto", // scroll sia verticale che orizzontale (necessario quando si fa zoom)
+                  border: `1px solid ${colors.border}`,
+                  backgroundColor: "#525659",
+                  // overscrollBehavior evita che lo scroll "sfondi" verso la pagina quando si arriva ai bordi
+                  overscrollBehavior: "contain",
+                }}
+              >
+                {pdfArrayBuffer ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: "1rem 0",
+                      // margine extra per poter scrollare oltre i bordi quando si e zoomati
+                      minWidth: "100%",
+                      width: "fit-content",
+                      margin: "0 auto",
+                    }}
+                  >
+                    <Document
+                      file={pdfArrayBuffer}
+                      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                      loading={<div style={{ color: "#fff" }}>{t("characters.hook.loadingShort")}</div>}
+                    >
+                      {Array.from(new Array(numPages), (_, index) => (
+                        <div key={`page_${index + 1}`} style={{ marginBottom: "1.5rem" }}>
+                          <Page pageNumber={index + 1} renderAnnotationLayer renderTextLayer renderForms scale={scale} onRenderSuccess={populatePageAnnotations} />
+                        </div>
+                      ))}
+                    </Document>
+                  </div>
+                ) : (
+                  <div style={{ padding: "2rem", color: colors.textFaint }}>{t("characters.hook.loading")}</div>
+                )}
+              </div>
             </div>
           </>
         )}

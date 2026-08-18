@@ -88,7 +88,12 @@
 			"noLink": "-- No link --",
 			"go": "Go to entry →",
 			"loadingShort": "Loading PDF...",
-			"loading": "Loading game system PDF..."
+			"loading": "Loading game system PDF...",
+			"zoomOut": "Zoom out",
+			"zoomReset": "Reset zoom (100%)",
+			"zoomIn": "Zoom in",
+			"pgTooltip": "Player Character sheet",
+			"npcTooltip": "Non-player Character sheet"
 		},
 		"sidebar": {
 			"title": "Characters",

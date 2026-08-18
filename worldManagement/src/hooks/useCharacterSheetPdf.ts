@@ -113,8 +113,12 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
   }, []);
 
   const handleSavePdf = useCallback(async () => {
-    if (!selectedSheet) return;
+    if (!selectedSheet) {
+      console.warn("handleSavePdf chiamato senza una scheda selezionata.");
+      return;
+    }
     if (!pristineBufferRef.current) {
+      console.error("Salvataggio PDF interrotto: il buffer del PDF non è ancora caricato in memoria.");
       alert("PDF non ancora caricato in memoria.");
       return;
     }
@@ -122,6 +126,9 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
     try {
       const pdfDoc = await PDFDocument.load(pristineBufferRef.current.slice(0));
       const form = pdfDoc.getForm();
+
+      let appliedCount = 0;
+      const failedFields: string[] = [];
 
       Object.entries(formDataRef.current).forEach(([fieldName, val]) => {
         try {
@@ -133,19 +140,24 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
             const tf = form.getTextField(fieldName);
             tf.setText(String(val ?? ""));
           }
+          appliedCount++;
         } catch (fieldErr) {
+          failedFields.push(fieldName);
           console.warn(`Campo "${fieldName}" non trovato nel PDF:`, fieldErr);
         }
       });
 
+      console.log(`Salvataggio PDF: ${appliedCount} campi applicati, ${failedFields.length} falliti.`, failedFields);
+
       const updatedPdfBytes = await pdfDoc.save();
 
-      const pdfSaved = await invokeSafe("save_character_pdf", {
+      const pdfSaved = await invokeSafe<boolean>("save_character_pdf", {
         sheetId: selectedSheet.id,
         variant: activeVariant,
         pdfBytes: Array.from(updatedPdfBytes),
       });
       if (pdfSaved === null) {
+        console.error("Salvataggio PDF interrotto: save_character_pdf ha restituito null (vedi il log IPC sopra per il motivo).");
         alert("Errore durante il salvataggio del PDF.");
         return;
       }
@@ -153,10 +165,12 @@ export function useCharacterSheetPdf({ selectedSheet, activeVariant, pdfTemplate
       const jsonStr = JSON.stringify(formDataRef.current);
       const success = await updateSheet({ id: selectedSheet.id, data_json: jsonStr, sheet_variant: activeVariant });
       if (!success) {
+        console.error("Salvataggio PDF interrotto: updateSheet (save_character_sheet) ha restituito false.");
         alert("Errore durante il salvataggio della scheda.");
         return;
       }
 
+      console.log("Salvataggio PDF completato con successo.");
       alert("Scheda salvata con successo!");
     } catch (err) {
       console.error("Errore durante il salvataggio:", err);

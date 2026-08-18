@@ -4,6 +4,7 @@ import { invokeSafe } from "../lib/ipc";
 export interface ArticleOption {
 	id: string;
 	title: string;
+	category: string;
 }
 
 export interface MapOption {
@@ -22,7 +23,6 @@ export interface GameSystemOption {
 }
 
 interface UseLinkableOptionsParams {
-	/** Ognuna e opt-in: carica solo cio che il chiamante dichiara di volere. */
 	articles?: boolean;
 	maps?: boolean;
 	characterSheets?: boolean;
@@ -43,7 +43,7 @@ export function useLinkableOptions({
 	useEffect(() => {
 		if (!articles) return;
 		invokeSafe<ArticleOption[]>("get_all_articles").then((res) => {
-			if (res) setArticleOptions(res.map((a) => ({ id: a.id, title: a.title })));
+			if (res) setArticleOptions(res.map((a) => ({ id: a.id, title: a.title, category: a.category })));
 		});
 	}, [articles]);
 

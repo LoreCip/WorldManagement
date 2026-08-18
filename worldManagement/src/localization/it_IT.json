@@ -88,7 +88,12 @@
 			"noLink": "-- Nessun collegamento --",
 			"go": "Vai alla voce →",
 			"loadingShort": "Caricamento PDF...",
-			"loading": "Caricamento PDF del sistema in corso..."
+			"loading": "Caricamento PDF del sistema in corso...",
+			"zoomOut": "Riduci zoom",
+			"zoomReset": "Ripristina zoom (100%)",
+			"zoomIn": "Aumenta zoom",
+			"pgTooltip": "Scheda Personaggio Giocante",
+			"npcTooltip": "Scheda Personaggio Non Giocante"
 		},
 		"sidebar": {
 			"title": "Personaggi",
