@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, radii } from "../theme/theme";
+import { Button, ButtonProps } from "./Button";
 
 export interface ToolbarProps {
   children: React.ReactNode;
@@ -14,25 +14,18 @@ export const Toolbar: React.FC<ToolbarProps> = ({ children }) => (
   </div>
 );
 
-export interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ToolbarButtonProps extends Omit<ButtonProps, "variant" | "size" | "pill"> {
   active?: boolean;
 }
 
-// Bottone "a pillola" con stato attivo/inattivo.
+// Bottone "a pillola" con stato attivo/inattivo: wrapper sottile su Button
+// che fissa variante/forma cosi' i chiamanti esistenti non cambiano.
 export const ToolbarButton: React.FC<ToolbarButtonProps> = ({ active, style, ...rest }) => (
-  <button
+  <Button
+    variant="secondary"
+    pill
+    active={active}
+    style={{ padding: "0.45rem 0.8rem", fontSize: "0.78rem", ...style }}
     {...rest}
-    style={{
-      padding: "0.45rem 0.8rem",
-      borderRadius: radii.pill,
-      fontSize: "0.78rem",
-      fontWeight: 600,
-      cursor: "pointer",
-      border: `1px solid ${active ? colors.gold : colors.border}`,
-      backgroundColor: active ? colors.goldWash : "transparent",
-      color: active ? colors.goldBright : colors.textSecondary,
-      whiteSpace: "nowrap",
-      ...style,
-    }}
   />
 );

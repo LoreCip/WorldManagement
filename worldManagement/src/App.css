@@ -101,3 +101,12 @@ select option {
   background-color: var(--bg-panel-raised);
   color: var(--text-primary);
 }
+
+/* Nasconde le etichette secondarie (es. testo del bottone "indietro") sotto
+   i 900px di larghezza. Era iniettata solo da MapView.tsx: qui si applica
+   in tutte le viste che usano la classe (ViewHeader, MapHeader, PortalControls). */
+@media (max-width: 900px) {
+  .hide-on-small {
+    display: none;
+  }
+}

@@ -1,0 +1,141 @@
+/* Sistema di bottoni condiviso. Usa le CSS custom properties iniettate da
+   injectThemeCssVariables() (src/components/theme/theme.ts) cosi' i colori
+   restano un'unica fonte di verita' con il resto del tema. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.button:focus-visible {
+  border-color: var(--gold);
+  outline: none;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- Dimensioni --- */
+
+.size-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+}
+.size-md {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+.size-lg {
+  padding: 0.65rem 1.3rem;
+  font-size: 0.95rem;
+}
+
+.pill {
+  border-radius: 999px;
+}
+
+/* --- Varianti --- */
+
+.primary {
+  background-color: var(--gold);
+  border-color: var(--gold);
+  color: var(--bg-void);
+}
+.primary:hover:not(:disabled) {
+  background-color: var(--gold-bright);
+  border-color: var(--gold-bright);
+}
+
+.secondary {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.secondary.active {
+  border-color: var(--gold);
+  background-color: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+.danger {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-faint);
+}
+.danger:hover:not(:disabled) {
+  border-color: var(--crimson);
+  color: var(--crimson-bright);
+}
+.danger.active {
+  border-color: var(--crimson);
+  background-color: var(--crimson-wash);
+  color: var(--crimson-bright);
+}
+
+.ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--text-primary);
+  opacity: 0.55;
+}
+.ghost:hover:not(:disabled) {
+  opacity: 1;
+}
+.ghost.active {
+  opacity: 1;
+  background-color: var(--bg-panel-raised);
+}
+
+/* icon / stepper: dimensione impostata inline (vedi Button.tsx), qui solo
+   forma e colore. Dichiarate dopo le regole .size-* cosi' azzerano il
+   padding ereditato mantenendo la stessa specificita'. */
+.iconOnly {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.icon {
+  border-color: var(--border);
+  background-color: transparent;
+  color: var(--text-faint);
+}
+.icon:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+.icon.active {
+  border-color: var(--gold);
+  background-color: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+.stepper {
+  border: none;
+  background-color: var(--bg-panel);
+  color: var(--text-primary);
+}
+.stepper:hover:not(:disabled) {
+  color: var(--gold-bright);
+}

@@ -143,12 +143,6 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
                     .leaflet-container {
                         background-color: ${colors.bgVoid} !important;
                     }
-                    
-                    @media (max-width: 900px) {
-                        .hide-on-small {
-                            display: none;
-                        }
-                    }
                 `}
       </style>
 

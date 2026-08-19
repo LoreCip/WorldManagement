@@ -28,6 +28,7 @@
     "d3-force": "^3.0.0",
     "dagre": "^0.8.5",
     "leaflet": "^1.9.4",
+    "lucide-react": "^1.31.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "5.4.296",
     "react": "^19.1.0",
