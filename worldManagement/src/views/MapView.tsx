@@ -6,10 +6,9 @@ import { PortalControls } from "../components/maps/PortalControls";
 import { MapCanvas } from "../components/maps/MapCanvas";
 import { MapFormModal } from "../components/maps/MapFormModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
-import { colors, fonts } from "../components/theme/theme";
+import { colors, fonts, Z_INDEX } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 import { useToast } from "../components/common/Toast";
-import { Z_INDEX } from "../components/common/zIndex";
 import { Button } from "../components/common/Button";
 
 interface MapViewProps {

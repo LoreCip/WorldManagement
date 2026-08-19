@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X, ScrollText, Drama, Link2 } from "lucide-react";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, fonts, radii, fieldLabelStyle, inputStyle } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphNodeData, GraphView } from "../../types/relations";
 import { useLinkableOptions } from "../../hooks/useLinkableOptions";
@@ -20,28 +20,6 @@ interface NodeDrawerProps {
   onOpenCharacterSheet?: (sheetId: string) => void;
   onNavigateToView?: (viewId: string) => void;
 }
-
-const fieldLabelStyle: React.CSSProperties = {
-  fontSize: "0.66rem",
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  color: colors.textFaint,
-  marginBottom: "0.3rem",
-  display: "block",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  backgroundColor: colors.bgPanelRaised,
-  color: colors.textPrimary,
-  border: `1px solid ${colors.border}`,
-  borderRadius: radii.sm,
-  padding: "0.5rem 0.6rem",
-  fontFamily: fonts.body,
-  fontSize: "0.88rem",
-  outline: "none",
-  boxSizing: "border-box",
-};
 
 export const NodeDrawer: React.FC<NodeDrawerProps> = ({
   node,

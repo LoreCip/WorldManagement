@@ -16,7 +16,6 @@
     "lore": "Lore",
     "missingImage": "Image missing",
     "newF": "New",
-    "newM": "New",
     "optional": "Optional",
     "save": "Save",
     "saving": "Saving..."
@@ -189,7 +188,8 @@
     "canvas": {
       "portalDefault": "Portal",
       "enterPortal": "Enter ➔",
-      "clickToPlacePortal": "Click a point on the map to place the portal"
+      "clickToPlacePortal": "Click a point on the map to place the portal",
+      "selectTargetFirst": "First select a destination map"
     },
     "header": {
       "changeMap": "Edit map",
@@ -209,9 +209,6 @@
       "newPortal": "+ Portal",
       "destination": "Destination...",
       "label": "Label..."
-    },
-    "selector": {
-      "placeholder": "Select map..."
     }
   },
   "timeline": {
@@ -272,7 +269,7 @@
       "savedViews": "Saved views",
       "saveView": "+ Save current view",
       "newEvent": "+ New event",
-      "noSavedNews": "No saved views",
+      "noSavedViews": "No saved views",
       "newViewNamePlaceholder": "View name"
     },
     "minimap": {
@@ -296,9 +293,7 @@
       "genealogy": "Family Tree",
       "network": "Relation Map",
       "selectView": "Select a view...",
-      "noViews": "No views created yet.",
       "newViewNamePlaceholder": "View name…",
-      "newViewNamePrompt": "Name of the new view:",
       "deleteView": "Delete view",
       "deleteConfirm": "Permanently delete the view \"{{title}}\"? Nodes and edges will remain in the graph and in other views."
     },

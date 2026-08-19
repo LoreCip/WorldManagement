@@ -111,7 +111,9 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             fontFamily: fonts.body,
             fontSize: "0.82rem",
             outline: "none",
-            width: "180px",
+            flex: "1 1 140px",
+            minWidth: "90px",
+            maxWidth: "180px",
           }}
         />
 

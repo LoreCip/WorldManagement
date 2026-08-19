@@ -102,6 +102,18 @@ select option {
   color: var(--text-primary);
 }
 
+/* input[type=number]: le frecce native (chiare, bordate) stonano col tema
+   scuro — stessa scelta gia' fatta per <select> qui sopra. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Nasconde le etichette secondarie (es. testo del bottone "indietro") sotto
    i 900px di larghezza. Era iniettata solo da MapView.tsx: qui si applica
    in tutte le viste che usano la classe (ViewHeader, MapHeader, PortalControls). */

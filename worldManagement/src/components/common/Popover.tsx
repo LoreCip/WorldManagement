@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { colors, radii } from "../theme/theme";
-import { Z_INDEX } from "./zIndex";
+import { colors, radii, Z_INDEX } from "../theme/theme";
 import { ensureCommonAnimations } from "./Animations";
 
 export interface PopoverProps {

@@ -6,9 +6,8 @@ import "leaflet/dist/leaflet.css";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 import { MapMeta, MapPortal } from "../../types/map";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, fonts, radii, Z_INDEX } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
-import { Z_INDEX } from "../common/zIndex";
 import { Button } from "../common/Button";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {

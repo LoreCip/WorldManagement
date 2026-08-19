@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, fonts, radii, Z_INDEX, fieldLabelStyle, inputStyle } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphEdgeData, GraphNodeData, RelationType } from "../../types/relations";
-import { Z_INDEX } from "../common/zIndex";
 import { Button } from "../common/Button";
 
 interface EdgeDrawerProps {
@@ -23,28 +22,6 @@ interface EdgeDrawerProps {
    *  mentre il drawer è aperto. */
   onDraftChange?: (draft: { type: RelationType; label: string; isUncertain: boolean }) => void;
 }
-
-const fieldLabelStyle: React.CSSProperties = {
-  fontSize: "0.66rem",
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  color: colors.textFaint,
-  marginBottom: "0.3rem",
-  display: "block",
-};
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  backgroundColor: colors.bgPanelRaised,
-  color: colors.textPrimary,
-  border: `1px solid ${colors.border}`,
-  borderRadius: radii.sm,
-  padding: "0.5rem 0.6rem",
-  fontFamily: fonts.body,
-  fontSize: "0.88rem",
-  outline: "none",
-  boxSizing: "border-box",
-};
 
 // Nota di design: a differenza di NodeDrawer, questo NON usa il componente
 // <Drawer> condiviso. <Drawer> e un pannello docked a tutta altezza; qui

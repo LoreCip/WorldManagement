@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import { X, ScrollText, Map as MapIcon } from "lucide-react";
 import { TimelineEvent, TimePrecision, TimelineCategory } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, fonts, radii, Z_INDEX } from "../theme/theme";
 import { SelectedAnchor } from "./TimelineCanvas";
 import { useLocalization } from "../../context/LocalizationContext";
 import { useLinkableOptions } from "../../hooks/useLinkableOptions";
-import { Z_INDEX } from "../common/zIndex";
 import { Button } from "../common/Button";
+import { BALLOON_WIDTH, BALLOON_MAX_HEIGHT, BALLOON_GAP } from "./balloonLayout";
 
 interface TimelineEventBalloonProps {
   event: TimelineEvent;
@@ -22,9 +22,6 @@ interface TimelineEventBalloonProps {
   onNavigateToArticle?: (articleId: string) => void;
   onNavigateToMap?: (mapId: string) => void;
 }
-
-const BALLOON_WIDTH = 300;
-const GAP = 14; // distanza fra il marker e il balloon
 
 export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
   event,
@@ -122,10 +119,10 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
       style={{
         position: "fixed", // <-- era "absolute"
         left: `${anchor.x}px`,
-        top: `${anchor.y + (isAbove ? -GAP : GAP)}px`,
+        top: `${anchor.y + (isAbove ? -BALLOON_GAP : BALLOON_GAP)}px`,
         transform: `translate(-50%, ${isAbove ? "-100%" : "0"})`,
-        width: `${BALLOON_WIDTH}px`,
-        maxHeight: "min(420px, 70vh)",
+        width: `min(${BALLOON_WIDTH}px, calc(100vw - 32px))`,
+        maxHeight: `min(${BALLOON_MAX_HEIGHT}px, 70vh)`,
         overflowY: "auto",
         overscrollBehavior: "contain",
         backgroundColor: colors.bgPanel,
@@ -220,7 +217,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
               value={timeInput.year}
               onChange={(e) => updateTime({ year: parseInt(e.target.value || "0", 10) })}
               placeholder={t("timeline.balloon.year")}
-              style={{ ...inputStyle, flex: 1 }}
+              style={{ ...inputStyle, flex: 1, minWidth: 0 }}
             />
             {event.precision !== "year" && (
               <input
@@ -230,7 +227,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 value={timeInput.month ?? 1}
                 onChange={(e) => updateTime({ month: clampInt(e.target.value, 1, 12) })}
                 placeholder={t("timeline.balloon.month")}
-                style={{ ...inputStyle, flex: 1 }}
+                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
               />
             )}
             {event.precision === "day" && (
@@ -241,7 +238,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 value={timeInput.day ?? 1}
                 onChange={(e) => updateTime({ day: clampInt(e.target.value, 1, 30) })}
                 placeholder={t("timeline.balloon.day")}
-                style={{ ...inputStyle, flex: 1 }}
+                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
               />
             )}
           </div>
@@ -283,7 +280,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
               value={endTimeInput.year}
               onChange={(e) => updateEndTime({ year: parseInt(e.target.value || "0", 10) })}
               placeholder={t("timeline.balloon.endYearPlaceholder")}
-              style={{ ...inputStyle, flex: 1 }}
+              style={{ ...inputStyle, flex: 1, minWidth: 0 }}
             />
             {event.precision !== "year" && (
               <input
@@ -293,7 +290,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 value={endTimeInput.month ?? 1}
                 onChange={(e) => updateEndTime({ month: clampInt(e.target.value, 1, 12) })}
                 placeholder={t("timeline.balloon.endMonthPlaceholder")}
-                style={{ ...inputStyle, flex: 1 }}
+                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
               />
             )}
             {event.precision === "day" && (
@@ -304,7 +301,7 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
                 value={endTimeInput.day ?? 1}
                 onChange={(e) => updateEndTime({ day: clampInt(e.target.value, 1, 30) })}
                 placeholder={t("timeline.balloon.endDayPlaceholder")}
-                style={{ ...inputStyle, flex: 1 }}
+                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
               />
             )}
           </div>

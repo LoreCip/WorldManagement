@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { colors, fonts, radii } from "../theme/theme";
-import { Z_INDEX } from "./zIndex";
+import { colors, fonts, radii, Z_INDEX } from "../theme/theme";
 import { ensureCommonAnimations } from "./Animations";
 
 export interface ModalProps {

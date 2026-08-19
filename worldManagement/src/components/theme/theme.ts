@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
 import "@fontsource/cormorant-garamond/700.css";
@@ -44,6 +45,35 @@ export const radii = {
   lg: "18px",
   pill: "999px",
 } as const;
+
+export const Z_INDEX = {
+  drawer: 900,
+  modal: 1000,
+  popover: 1100,
+  dragOverlay: 3000,
+} as const;
+
+export const fieldLabelStyle: CSSProperties = {
+  fontSize: "0.66rem",
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: colors.textFaint,
+  marginBottom: "0.3rem",
+  display: "block",
+};
+
+export const inputStyle: CSSProperties = {
+  width: "100%",
+  backgroundColor: colors.bgPanelRaised,
+  color: colors.textPrimary,
+  border: `1px solid ${colors.border}`,
+  borderRadius: radii.sm,
+  padding: "0.5rem 0.6rem",
+  fontFamily: fonts.body,
+  fontSize: "0.88rem",
+  outline: "none",
+  boxSizing: "border-box",
+};
 
 export type CategoryKey = "Lore" | "Personaggio" | "Luogo" | "Fazione";
 

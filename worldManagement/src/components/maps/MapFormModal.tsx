@@ -23,6 +23,28 @@ interface MapFormModalProps {
   onSaved: () => void;
 }
 
+const mapFieldLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.85rem",
+  marginBottom: "0.4rem",
+  color: colors.textSecondary,
+};
+
+const mapSelectStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "0.6rem",
+  borderRadius: radii.sm,
+  backgroundColor: colors.bgPanelRaised,
+  color: colors.textPrimary,
+  border: `1px solid ${colors.border}`,
+  fontSize: "0.9rem",
+};
+
+const mapTitleInputStyle: React.CSSProperties = {
+  ...mapSelectStyle,
+  outline: "none",
+};
+
 // Unifica AddMapModal e EditMapModal: i due form erano ~90% identici
 // (titolo, file picker, mappa padre, articolo collegato), differendo solo
 // nei valori iniziali, nel comando IPC da chiamare (save_map vs update_map)
@@ -157,14 +179,7 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
         style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
       >
         <div>
-          <label
-            style={{
-              display: "block",
-              fontSize: "0.85rem",
-              marginBottom: "0.4rem",
-              color: colors.textSecondary,
-            }}
-          >
+          <label style={mapFieldLabelStyle}>
             {t("maps.form.mapTitle")}
             {mode === "add" && " *"}
           </label>
@@ -176,28 +191,12 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
               mode === "add" ? t("common.example") + t("maps.form.mapNamePlaceholder") : undefined
             }
             required
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              borderRadius: radii.sm,
-              backgroundColor: colors.bgPanelRaised,
-              border: `1px solid ${colors.border}`,
-              color: colors.textPrimary,
-              outline: "none",
-              fontSize: "0.9rem",
-            }}
+            style={mapTitleInputStyle}
           />
         </div>
 
         <div>
-          <label
-            style={{
-              display: "block",
-              fontSize: "0.85rem",
-              marginBottom: "0.4rem",
-              color: colors.textSecondary,
-            }}
-          >
+          <label style={mapFieldLabelStyle}>
             {mode === "add" ? `${t("maps.form.imageFile")} *` : t("maps.form.imageFileChange")}
           </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -215,13 +214,10 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
               }
               placeholder={mode === "add" ? t("maps.form.imageFilePlaceholder") : undefined}
               style={{
+                ...mapSelectStyle,
                 flex: 1,
-                padding: "0.6rem",
-                borderRadius: radii.sm,
-                backgroundColor: colors.bgPanelRaised,
-                border: `1px solid ${colors.border}`,
-                color: mode === "edit" && selectedFilePath ? colors.gold : colors.textPrimary,
                 fontSize: "0.85rem",
+                color: mode === "edit" && selectedFilePath ? colors.gold : colors.textPrimary,
               }}
             />
             <Button type="button" variant="secondary" size="sm" onClick={handleSelectFile}>
@@ -232,28 +228,11 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
 
         {mode === "edit" && (
           <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.85rem",
-                marginBottom: "0.4rem",
-                color: colors.textSecondary,
-              }}
-            >
-              {t("maps.form.associatedArticle")}
-            </label>
+            <label style={mapFieldLabelStyle}>{t("maps.form.associatedArticle")}</label>
             <select
               value={associatedArticleId}
               onChange={(e) => setAssociatedArticleId(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                borderRadius: radii.sm,
-                backgroundColor: colors.bgPanelRaised,
-                color: colors.textPrimary,
-                border: `1px solid ${colors.border}`,
-                fontSize: "0.9rem",
-              }}
+              style={mapSelectStyle}
             >
               <option value="">{t("maps.form.noLinkWiki")}</option>
               {articles.map((art) => (
@@ -266,28 +245,13 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
         )}
 
         <div>
-          <label
-            style={{
-              display: "block",
-              fontSize: "0.85rem",
-              marginBottom: "0.4rem",
-              color: colors.textSecondary,
-            }}
-          >
+          <label style={mapFieldLabelStyle}>
             {mode === "add" ? t("maps.form.parentMapOptional") : t("maps.form.parentMap")}
           </label>
           <select
             value={parentMapId}
             onChange={(e) => setParentMapId(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.6rem",
-              borderRadius: radii.sm,
-              backgroundColor: colors.bgPanelRaised,
-              color: colors.textPrimary,
-              border: `1px solid ${colors.border}`,
-              fontSize: "0.9rem",
-            }}
+            style={mapSelectStyle}
           >
             <option value="">
               {mode === "add" ? t("maps.form.parentMapPlaceholder") : t("maps.form.noParent")}
@@ -304,28 +268,11 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
 
         {mode === "add" && (
           <div>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.85rem",
-                marginBottom: "0.4rem",
-                color: colors.textSecondary,
-              }}
-            >
-              {t("maps.form.associatedArticleOptional")}
-            </label>
+            <label style={mapFieldLabelStyle}>{t("maps.form.associatedArticleOptional")}</label>
             <select
               value={associatedArticleId}
               onChange={(e) => setAssociatedArticleId(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.6rem",
-                borderRadius: radii.sm,
-                backgroundColor: colors.bgPanelRaised,
-                color: colors.textPrimary,
-                border: `1px solid ${colors.border}`,
-                fontSize: "0.9rem",
-              }}
+              style={mapSelectStyle}
             >
               <option value="">{t("maps.form.associatedArticlePlaceholder")}</option>
               {articles.map((art) => (

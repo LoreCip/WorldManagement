@@ -44,7 +44,14 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
   return (
     <Modal isOpen onClose={onClose} width="420px" title={t("timeline.category.title")}>
       <div
-        style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          marginBottom: "1.2rem",
+          maxHeight: "min(240px, 32vh)",
+          overflowY: "auto",
+        }}
       >
         {categories.map((cat) => (
           <div
@@ -95,13 +102,21 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
         )}
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
         <input
           type="text"
           value={draft.icon}
           maxLength={2}
           onChange={(e) => setDraft({ ...draft, icon: e.target.value })}
-          style={{ ...inputStyle, width: "42px", textAlign: "center" }}
+          style={{ ...inputStyle, width: "42px", textAlign: "center", flexShrink: 0 }}
         />
         <input
           type="color"
@@ -114,6 +129,7 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
             borderRadius: radii.sm,
             cursor: "pointer",
             background: "none",
+            flexShrink: 0,
           }}
         />
         <input
@@ -121,9 +137,9 @@ export const TimelineCategoryManager: React.FC<TimelineCategoryManagerProps> = (
           placeholder={t("timeline.category.catNamePlaceholder")}
           value={draft.name}
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-          style={{ ...inputStyle, flex: 1 }}
+          style={{ ...inputStyle, flex: "1 1 100px", minWidth: 0 }}
         />
-        <Button variant="primary" size="sm" icon={Plus} onClick={handleAdd}>
+        <Button variant="primary" size="sm" icon={Plus} onClick={handleAdd} style={{ flexShrink: 0 }}>
           {t("common.add")}
         </Button>
       </div>

@@ -16,7 +16,6 @@
     "lore": "Lore",
     "missingImage": "Immagine non disponibile",
     "newF": "Nuova",
-    "newM": "Nuovo",
     "optional": "Opzionale",
     "save": "Salva",
     "saving": "Salvataggio..."
@@ -189,7 +188,8 @@
     "canvas": {
       "portalDefault": "Portale",
       "enterPortal": "Entra ➔",
-      "clickToPlacePortal": "Clicca un punto sulla mappa per posizionare il portale"
+      "clickToPlacePortal": "Clicca un punto sulla mappa per posizionare il portale",
+      "selectTargetFirst": "Seleziona prima una mappa di destinazione"
     },
     "header": {
       "changeMap": "Modifica mappa",
@@ -209,9 +209,6 @@
       "newPortal": "+ Portale",
       "destination": "Destinazione...",
       "label": "Etichetta..."
-    },
-    "selector": {
-      "placeholder": "Scegli mappa..."
     }
   },
   "timeline": {
@@ -272,7 +269,7 @@
       "savedViews": "Viste salvate",
       "saveView": "+ Salva vista corrente",
       "newEvent": "+ Nuovo evento",
-      "noSavedNews": "Nessuna vista salvata",
+      "noSavedViews": "Nessuna vista salvata",
       "newViewNamePlaceholder": "Nome vista"
     },
     "minimap": {
@@ -296,9 +293,7 @@
       "genealogy": "Albero Genealogico",
       "network": "Mappa Relazionale",
       "selectView": "Seleziona una vista...",
-      "noViews": "Nessuna vista ancora creata.",
       "newViewNamePlaceholder": "Nome della vista…",
-      "newViewNamePrompt": "Nome della nuova vista:",
       "deleteView": "Elimina vista",
       "deleteConfirm": "Eliminare definitivamente la vista \"{{title}}\"? I nodi e gli archi resteranno nel grafo e nelle altre viste."
     },

@@ -14,6 +14,20 @@ interface SystemModalProps {
   onSave: (payload: SaveGameSystemPayload) => Promise<boolean>;
 }
 
+const systemFieldLabelStyle: React.CSSProperties = {
+  fontSize: "0.85rem",
+  color: colors.textSecondary,
+  display: "block",
+  marginBottom: "0.3rem",
+};
+
+const systemFieldStyle: React.CSSProperties = {
+  padding: "0.5rem",
+  backgroundColor: colors.bgVoid,
+  border: `1px solid ${colors.border}`,
+  borderRadius: radii.sm,
+};
+
 export const SystemModal: React.FC<SystemModalProps> = ({
   isOpen,
   systemToEdit,
@@ -154,14 +168,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <div>
-          <label
-            style={{
-              fontSize: "0.85rem",
-              color: colors.textSecondary,
-              display: "block",
-              marginBottom: "0.3rem",
-            }}
-          >
+          <label style={systemFieldLabelStyle}>
             {t("characters.systemModal.gameName")}
           </label>
           <input
@@ -169,52 +176,24 @@ export const SystemModal: React.FC<SystemModalProps> = ({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("common.example") + "Fabula Ultima, Cyberpunk RED..."}
-            style={{
-              width: "100%",
-              padding: "0.5rem",
-              backgroundColor: colors.bgVoid,
-              border: `1px solid ${colors.border}`,
-              color: "#fff",
-              borderRadius: radii.sm,
-            }}
+            style={{ ...systemFieldStyle, width: "100%", color: "#fff" }}
           />
         </div>
 
         <div>
-          <label
-            style={{
-              fontSize: "0.85rem",
-              color: colors.textSecondary,
-              display: "block",
-              marginBottom: "0.3rem",
-            }}
-          >
+          <label style={systemFieldLabelStyle}>
             {t("common.description")}
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
-            style={{
-              width: "100%",
-              padding: "0.5rem",
-              backgroundColor: colors.bgVoid,
-              border: `1px solid ${colors.border}`,
-              color: "#fff",
-              borderRadius: radii.sm,
-            }}
+            style={{ ...systemFieldStyle, width: "100%", color: "#fff" }}
           />
         </div>
 
         <div>
-          <label
-            style={{
-              fontSize: "0.85rem",
-              color: colors.textSecondary,
-              display: "block",
-              marginBottom: "0.3rem",
-            }}
-          >
+          <label style={systemFieldLabelStyle}>
             {t("characters.systemModal.pdfPg")}
           </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -223,14 +202,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
               readOnly
               value={pdfPgFile}
               placeholder={t("characters.systemModal.noLoadedPdf")}
-              style={{
-                flex: 1,
-                padding: "0.5rem",
-                backgroundColor: colors.bgVoid,
-                border: `1px solid ${colors.border}`,
-                color: colors.gold,
-                borderRadius: radii.sm,
-              }}
+              style={{ ...systemFieldStyle, flex: 1, color: colors.gold }}
             />
             <Button variant="primary" size="sm" onClick={() => pgFileInputRef.current?.click()}>
               {t("common.browse")}
@@ -239,14 +211,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
         </div>
 
         <div>
-          <label
-            style={{
-              fontSize: "0.85rem",
-              color: colors.textSecondary,
-              display: "block",
-              marginBottom: "0.3rem",
-            }}
-          >
+          <label style={systemFieldLabelStyle}>
             {t("characters.systemModal.pdfPng")}
           </label>
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -255,14 +220,7 @@ export const SystemModal: React.FC<SystemModalProps> = ({
               readOnly
               value={pdfPngFile}
               placeholder={t("common.optional")}
-              style={{
-                flex: 1,
-                padding: "0.5rem",
-                backgroundColor: colors.bgVoid,
-                border: `1px solid ${colors.border}`,
-                color: colors.gold,
-                borderRadius: radii.sm,
-              }}
+              style={{ ...systemFieldStyle, flex: 1, color: colors.gold }}
             />
             <Button variant="secondary" size="sm" onClick={() => pngFileInputRef.current?.click()}>
               {t("common.browse")}

@@ -11,6 +11,7 @@ import { TimelineEventListItem, TimelineEra } from "../../types/timeline";
 import { computeNiceTicks, formatTimeValue, formatDuration } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { BALLOON_WIDTH, BALLOON_MAX_HEIGHT, SCREEN_MARGIN } from "./balloonLayout";
 
 interface TimelineCanvasProps {
   events: TimelineEventListItem[];
@@ -20,6 +21,8 @@ interface TimelineCanvasProps {
   onSelectEvent: (id: string) => void;
   onCreateEvent: (timeValue: number, screenX?: number, screenY?: number) => void;
   onViewportChange?: (viewport: Viewport) => void;
+  onSelectedAnchorChange?: (anchor: SelectedAnchor | null) => void;
+  zoomDisabled?: boolean; // disattiva zoom (rotella + pulsanti) mentre si crea un nuovo evento
 }
 
 export interface Viewport {
@@ -56,22 +59,6 @@ export interface SelectedAnchor {
   y: number;
   side: "above" | "below";
 }
-
-interface TimelineCanvasProps {
-  events: TimelineEventListItem[];
-  eras?: TimelineEra[];
-  todayValue?: number | null;
-  selectedId?: string | null;
-  onSelectEvent: (id: string) => void;
-  onCreateEvent: (timeValue: number, screenX?: number, screenY?: number) => void;
-  onViewportChange?: (viewport: Viewport) => void;
-  onSelectedAnchorChange?: (anchor: SelectedAnchor | null) => void; // nuovo
-  zoomDisabled?: boolean; // disattiva zoom (rotella + pulsanti) mentre si crea un nuovo evento
-}
-
-const BALLOON_WIDTH = 300;
-const BALLOON_MAX_HEIGHT = 420; // deve combaciare con maxHeight nel balloon
-const SCREEN_MARGIN = 16; // margine minimo dai bordi della finestra
 
 const MIN_PIXELS_PER_DAY = 0.00002;
 const MAX_PIXELS_PER_DAY = 40;
@@ -902,7 +889,10 @@ export const TimelineCanvas = forwardRef<TimelineCanvasHandle, TimelineCanvasPro
             onClick={(e) => e.stopPropagation()}
             style={{
               position: "absolute",
-              left: `${openOverflow.x}px`,
+              // Clampata come il balloon: senza questo, un cluster vicino al
+              // bordo sinistro/destro del canvas apre il popup mezzo tagliato
+              // fuori dall'area visibile.
+              left: `${clamp(openOverflow.x, 100 + SCREEN_MARGIN, Math.max(100 + SCREEN_MARGIN, width - 100 - SCREEN_MARGIN))}px`,
               top: "50%",
               transform: "translate(-50%, -50%)",
               backgroundColor: colors.bgPanel,

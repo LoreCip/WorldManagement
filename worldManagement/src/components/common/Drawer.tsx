@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
-import { colors, fonts } from "../theme/theme";
-import { Z_INDEX } from "./zIndex";
+import { colors, fonts, Z_INDEX } from "../theme/theme";
 import { ensureCommonAnimations } from "./Animations";
 import { Button } from "./Button";
 

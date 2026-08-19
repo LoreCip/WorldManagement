@@ -1,6 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { colors, fonts, radii } from "../theme/theme";
-import { Z_INDEX } from "./zIndex";
+import { colors, fonts, radii, Z_INDEX } from "../theme/theme";
 import { ensureCommonAnimations } from "./Animations";
 
 export type ToastVariant = "error" | "success" | "info";

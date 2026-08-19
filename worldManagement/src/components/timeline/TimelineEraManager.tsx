@@ -60,7 +60,14 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
       </p>
 
       <div
-        style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.2rem" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5rem",
+          marginBottom: "1.2rem",
+          maxHeight: "min(240px, 32vh)",
+          overflowY: "auto",
+        }}
       >
         {eras.map((era) => (
           <div
@@ -129,25 +136,33 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
           placeholder={t("timeline.eras.namePlaceholder")}
           value={draft.label}
           onChange={(e) => setDraft({ ...draft, label: e.target.value })}
-          style={{ ...inputStyle, flex: 1 }}
+          style={{ ...inputStyle, flex: 1, minWidth: 0 }}
         />
       </div>
-      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
         <input
           type="number"
           placeholder={t("timeline.eras.startDatePlaceholder")}
           value={draft.startYear}
           onChange={(e) => setDraft({ ...draft, startYear: parseInt(e.target.value || "0", 10) })}
-          style={{ ...inputStyle, flex: 1 }}
+          style={{ ...inputStyle, flex: "1 1 70px", minWidth: 0 }}
         />
         <input
           type="number"
           placeholder={t("timeline.eras.endDatePlaceholder")}
           value={draft.endYear}
           onChange={(e) => setDraft({ ...draft, endYear: parseInt(e.target.value || "0", 10) })}
-          style={{ ...inputStyle, flex: 1 }}
+          style={{ ...inputStyle, flex: "1 1 70px", minWidth: 0 }}
         />
-        <Button variant="primary" size="sm" icon={Plus} onClick={handleAdd}>
+        <Button variant="primary" size="sm" icon={Plus} onClick={handleAdd} style={{ flexShrink: 0 }}>
           {t("common.add")}
         </Button>
       </div>
