@@ -78,7 +78,8 @@
     },
     "hook": {
       "deleteArticleConfirm": "Sei sicuro di voler eliminare questa voce?",
-      "createFromTitleConfirm": "La voce \"{{title}}\" non esiste ancora. Vuoi crearla adesso?"
+      "createFromTitleConfirm": "La voce \"{{title}}\" non esiste ancora. Vuoi crearla adesso?",
+      "unsavedChangesConfirm": "Ci sono modifiche non salvate a questa voce. Vuoi scartarle?"
     },
     "tag": {
       "delete": "×",
@@ -104,6 +105,7 @@
       "noActiveSystem": "Seleziona prima un motore di gioco attivo dalla barra laterale.",
       "createSheetError": "Errore nella creazione della scheda.",
       "deleteSheetConfirm": "Sei sicuro di voler eliminare questa scheda?",
+      "unsavedChangesConfirm": "Ci sono modifiche non salvate su questa scheda. Vuoi scartarle?",
       "saveSystemError": "Errore nel salvataggio del sistema di gioco.",
       "systemBuiltinProtected": "I sistemi di gioco predefiniti non possono essere eliminati.",
       "deleteSystemConfirm": "Sei sicuro di voler eliminare il sistema \"{{name}}\"?",
@@ -154,6 +156,10 @@
     }
   },
   "maps": {
+    "hook": {
+      "deleteMapConfirm": "Sei sicuro di voler eliminare questa mappa? Anche i suoi portali verranno eliminati.",
+      "deletePortalConfirm": "Sei sicuro di voler eliminare questo portale?"
+    },
     "map": "MAPPA",
     "dropImage": "📂 Rilascia qui l'immagine per aggiungere una nuova mappa",
     "noMapSelected": "Nessuna mappa selezionata",
@@ -359,9 +365,11 @@
       "linkedViewHint": "Se impostata, un'icona 🔗 sul nodo permette di saltare direttamente a quella vista.",
       "linkedViewEmpty": "Nessun'altra vista disponibile.",
       "removeFromView": "Rimuovi dalla vista",
-      "promoteEmpty": "Nessun sistema di gioco disponibile."
+      "promoteEmpty": "Nessun sistema di gioco disponibile.",
+      "deleteConfirm": "Eliminare definitivamente questo nodo? Verrà rimosso da tutte le viste."
     },
     "edgeDrawer": {
+      "deleteConfirm": "Eliminare definitivamente questo collegamento? Verrà rimosso da tutte le viste.",
       "editTitle": "Modifica Collegamento",
       "typeLabel": "Tipo di relazione",
       "gapCountPlaceholder": "es. 4",

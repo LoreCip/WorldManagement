@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { invokeSafe } from "../lib/ipc";
+import { invokeSafe, invokeOrThrow } from "../lib/ipc";
+import { useLocalization } from "../context/LocalizationContext";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import { MapItem, MapWithPortals } from "../types/map";
 import { getTopLevelMap } from "../utils/mapHierarchy";
 
 export const useMaps = () => {
+  const { t } = useLocalization();
+  const confirm = useConfirm();
   const [maps, setMaps] = useState<MapItem[]>([]);
   const [currentMapData, setCurrentMapData] = useState<MapWithPortals | null>(null);
   const [history, setHistory] = useState<string[]>([]);
@@ -33,6 +37,11 @@ export const useMaps = () => {
     const res = await invokeSafe<MapWithPortals>("get_map_details", { id: mapId });
     if (res === null) {
       setError("Impossibile caricare i dettagli della mappa.");
+      // La mappa richiesta non esiste più lato backend (es. una voce di
+      // sidebar rimasta visibile da uno stato non ancora riallineato):
+      // la togliamo localmente così non resta più cliccabile/in cronologia.
+      setMaps((prev) => prev.filter((m) => m.id !== mapId));
+      setHistory((prev) => prev.filter((id) => id !== mapId));
       return;
     }
     setCurrentMapData(res);
@@ -144,32 +153,64 @@ export const useMaps = () => {
     async (portalId: string) => {
       if (!currentMapData) return;
 
-      const result = await invokeSafe<void>("delete_portal", { id: portalId });
-      if (result === null) {
+      const confirmed = await confirm(t("maps.hook.deletePortalConfirm"));
+      if (!confirmed) return;
+
+      try {
+        await invokeOrThrow<void>("delete_portal", { id: portalId });
+      } catch {
         setError("Impossibile eliminare il portale.");
         return;
       }
 
       await loadMapDetails(currentMapData.map.id);
     },
-    [currentMapData, loadMapDetails],
+    [currentMapData, loadMapDetails, confirm, t],
   );
 
   const handleDeleteMap = useCallback(
     async (mapId: string) => {
-      const result = await invokeSafe<void>("delete_map", { id: mapId });
-      if (result === null) {
+      const confirmed = await confirm(t("maps.hook.deleteMapConfirm"));
+      if (!confirmed) return;
+
+      const wasCurrentMap = currentMapDataRef.current?.map.id === mapId;
+      const parentMapId = wasCurrentMap ? currentMapDataRef.current?.map.parent_map_id : null;
+
+      try {
+        await invokeOrThrow<void>("delete_map", { id: mapId });
+      } catch {
         setError("Impossibile eliminare la mappa.");
         return;
       }
 
-      if (currentMapDataRef.current?.map.id === mapId) {
-        setCurrentMapData(null);
-        hasLoadedInitialMap.current = false;
+      // Aggiorna la lista in locale subito invece di aspettare un
+      // round-trip fetchMaps(): la voce sparisce dalla sidebar all'istante.
+      // I figli della mappa eliminata diventano orfani (il backend fa
+      // ON DELETE SET NULL su parent_map_id), quindi li rispecchiamo qui.
+      setMaps((prev) =>
+        prev
+          .filter((m) => m.id !== mapId)
+          .map((m) => (m.parent_map_id === mapId ? { ...m, parent_map_id: null } : m)),
+      );
+
+      // La mappa eliminata potrebbe comparire nella cronologia "indietro"
+      // (es. l'utente l'ha visitata in passato ma sta guardando un'altra
+      // mappa ora): senza questa pulizia, un successivo "indietro" tenta di
+      // ricaricare un id ormai inesistente e get_map_details fallisce.
+      setHistory((prev) => prev.filter((id) => id !== mapId));
+
+      if (wasCurrentMap) {
+        clearPendingTransitions();
+        setIsTransitioning(false);
+        if (parentMapId) {
+          await loadMapDetails(parentMapId);
+        } else {
+          setCurrentMapData(null);
+          hasLoadedInitialMap.current = false;
+        }
       }
-      await fetchMaps();
     },
-    [fetchMaps],
+    [confirm, t, loadMapDetails, clearPendingTransitions],
   );
 
   useEffect(() => {

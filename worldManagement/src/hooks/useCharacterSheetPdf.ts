@@ -37,10 +37,21 @@ export function useCharacterSheetPdf({
   const showToast = useToast();
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState<ArrayBuffer | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
+  const [isDirty, setIsDirty] = useState(false);
 
   const formDataRef = useRef<Record<string, FormFieldValue>>({});
   const pristineBufferRef = useRef<ArrayBuffer | null>(null);
   const pdfCacheRef = useRef<Map<string, ArrayBuffer>>(new Map());
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,6 +61,7 @@ export function useCharacterSheetPdf({
         setPdfArrayBuffer(null);
         formDataRef.current = {};
         pristineBufferRef.current = null;
+        setIsDirty(false);
         return;
       }
 
@@ -60,6 +72,7 @@ export function useCharacterSheetPdf({
         initialData = {};
       }
       formDataRef.current = initialData;
+      setIsDirty(false);
 
       const cacheKey = pdfCacheKey(selectedSheet.id, activeVariant);
       const cached = pdfCacheRef.current.get(cacheKey);
@@ -123,6 +136,7 @@ export function useCharacterSheetPdf({
     const value: FormFieldValue =
       target.type === "checkbox" ? (target as HTMLInputElement).checked : target.value;
     formDataRef.current[target.name] = value;
+    setIsDirty(true);
   }, []);
 
   const handleSavePdf = useCallback(async () => {
@@ -197,6 +211,7 @@ export function useCharacterSheetPdf({
       }
 
       console.log("Salvataggio PDF completato con successo.");
+      setIsDirty(false);
       showToast(t("characters.pdf.saveSuccess"), "success");
     } catch (err) {
       console.error("Errore durante il salvataggio:", err);
@@ -234,6 +249,7 @@ export function useCharacterSheetPdf({
     pdfArrayBuffer,
     numPages,
     setNumPages,
+    isDirty,
     handleFormInputChange,
     populatePageAnnotations,
     handleSavePdf,

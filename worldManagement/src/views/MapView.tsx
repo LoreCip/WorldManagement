@@ -8,6 +8,7 @@ import { MapFormModal } from "../components/maps/MapFormModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
+import { useToast } from "../components/common/Toast";
 import { Z_INDEX } from "../components/common/zIndex";
 
 interface MapViewProps {
@@ -32,9 +33,12 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
     handleDeletePortal,
     handleDeleteMap,
     refreshMaps,
+    error,
+    clearError,
   } = useMaps();
 
   const { t } = useLocalization();
+  const showToast = useToast();
 
   const [portalLabel, setPortalLabel] = useState<string>("");
 
@@ -44,6 +48,12 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
   const [isHoveringDrop, setIsHoveringDrop] = useState(false);
 
   const lastHandledInitialMapIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!error) return;
+    showToast(error, "error");
+    clearError();
+  }, [error, showToast, clearError]);
 
   useEffect(() => {
     if (!initialMapId || maps.length === 0) return;

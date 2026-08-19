@@ -341,11 +341,14 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
 
   const handleDeleteEdge = useCallback(
     async (id: string) => {
+      const confirmed = await confirm(t("relations.edgeDrawer.deleteConfirm"));
+      if (!confirmed) return;
+
       await deleteEdge(id);
       setPendingEdge(null);
       setDraftEdgePreview(null);
     },
-    [deleteEdge],
+    [deleteEdge, confirm, t],
   );
 
   const handleCloseEdgeDrawer = useCallback(() => {
@@ -705,6 +708,8 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
               await saveNode(n);
             }}
             onDelete={async (id) => {
+              const confirmed = await confirm(t("relations.nodeDrawer.deleteConfirm"));
+              if (!confirmed) return;
               await deleteNode(id);
               setSelectedNodeId(null);
             }}

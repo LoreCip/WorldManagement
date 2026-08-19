@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { invokeSafe } from "../lib/ipc";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { invokeSafe, invokeOrThrow } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { useConfirm } from "../components/common/ConfirmDialog";
 import { Article, ArticleItem } from "../types/wiki";
@@ -15,6 +15,27 @@ export function useWiki() {
   const [isEditing, setIsEditing] = useState(false);
   const [linkedSheetId, setLinkedSheetId] = useState<string | null>(null);
   const [linkedMapId, setLinkedMapId] = useState<string | null>(null);
+
+  // Snapshot dell'ultima versione caricata/salvata: confrontandolo con
+  // currentArticle sappiamo se ci sono modifiche non salvate prima di
+  // scartarle (cambio articolo, "nuovo articolo", chiusura finestra).
+  const savedSnapshotRef = useRef<string>(JSON.stringify(EMPTY_ARTICLE));
+  const isDirty = isEditing && JSON.stringify(currentArticle) !== savedSnapshotRef.current;
+
+  const confirmDiscardChanges = useCallback(async () => {
+    if (!isDirty) return true;
+    return confirm(t("wiki.hook.unsavedChangesConfirm"));
+  }, [isDirty, confirm, t]);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
   const loadArticles = useCallback(async () => {
     const res = await invokeSafe<ArticleItem[]>("get_all_articles");
@@ -64,14 +85,19 @@ export function useWiki() {
     [loadArticles],
   );
 
-  const handleSelectArticle = useCallback(async (id: string) => {
-    const res = await invokeSafe<Article>("get_article_by_id", { id });
-    console.log("handleSelectArticle: risposta IPC per id", id, "->", res);
-    if (res) {
-      setCurrentArticle(res);
-      setIsEditing(false);
-    }
-  }, []);
+  const handleSelectArticle = useCallback(
+    async (id: string) => {
+      if (!(await confirmDiscardChanges())) return;
+
+      const res = await invokeSafe<Article>("get_article_by_id", { id });
+      if (res) {
+        setCurrentArticle(res);
+        savedSnapshotRef.current = JSON.stringify(res);
+        setIsEditing(false);
+      }
+    },
+    [confirmDiscardChanges],
+  );
 
   const handleSave = useCallback(async () => {
     if (!currentArticle.title.trim()) return;
@@ -79,15 +105,20 @@ export function useWiki() {
     const savedId = await invokeSafe<string>("save_article", { article: currentArticle });
     if (savedId === null) return;
 
-    setCurrentArticle((prev) => ({ ...prev, id: savedId }));
+    const saved = { ...currentArticle, id: savedId };
+    setCurrentArticle(saved);
+    savedSnapshotRef.current = JSON.stringify(saved);
     setIsEditing(false);
     await loadArticles();
   }, [currentArticle, loadArticles]);
 
-  const handleNewArticle = useCallback(() => {
+  const handleNewArticle = useCallback(async () => {
+    if (!(await confirmDiscardChanges())) return;
+
     setCurrentArticle(EMPTY_ARTICLE);
+    savedSnapshotRef.current = JSON.stringify(EMPTY_ARTICLE);
     setIsEditing(true);
-  }, []);
+  }, [confirmDiscardChanges]);
 
   const handleDeleteArticle = useCallback(async () => {
     if (!currentArticle.id) return;
@@ -95,10 +126,14 @@ export function useWiki() {
     const confirmed = await confirm(t("wiki.hook.deleteArticleConfirm"));
     if (!confirmed) return;
 
-    const result = await invokeSafe<void>("delete_article", { id: currentArticle.id });
-    if (result === null) return;
+    try {
+      await invokeOrThrow<void>("delete_article", { id: currentArticle.id });
+    } catch {
+      return;
+    }
 
     setCurrentArticle(EMPTY_ARTICLE);
+    savedSnapshotRef.current = JSON.stringify(EMPTY_ARTICLE);
     setIsEditing(false);
     await loadArticles();
   }, [currentArticle.id, loadArticles, t, confirm]);
@@ -131,16 +166,20 @@ export function useWiki() {
       const createNew = await confirm(t("wiki.hook.createFromTitleConfirm", { title }));
       if (!createNew) return;
 
-      setCurrentArticle({
+      if (!(await confirmDiscardChanges())) return;
+
+      const draft: Article = {
         id: "",
         title,
         content: `# ${title}\n\nScrivi qui la descrizione di ${title}...`,
         category: "Lore",
         tags: [],
-      });
+      };
+      setCurrentArticle(draft);
+      savedSnapshotRef.current = JSON.stringify(draft);
       setIsEditing(true);
     },
-    [articles, handleSelectArticle, t, confirm],
+    [articles, handleSelectArticle, t, confirm, confirmDiscardChanges],
   );
 
   return {

@@ -78,7 +78,8 @@
     },
     "hook": {
       "deleteArticleConfirm": "Are you sure you want to delete this entry?",
-      "createFromTitleConfirm": "The entry \"{{title}}\" doesn't exist yet. Create it now?"
+      "createFromTitleConfirm": "The entry \"{{title}}\" doesn't exist yet. Create it now?",
+      "unsavedChangesConfirm": "This entry has unsaved changes. Discard them?"
     },
     "tag": {
       "delete": "×",
@@ -104,6 +105,7 @@
       "noActiveSystem": "Select an active game engine from the sidebar first.",
       "createSheetError": "Error creating the sheet.",
       "deleteSheetConfirm": "Are you sure you want to delete this sheet?",
+      "unsavedChangesConfirm": "This sheet has unsaved changes. Discard them?",
       "saveSystemError": "Error saving the game system.",
       "systemBuiltinProtected": "Built-in game systems cannot be deleted.",
       "deleteSystemConfirm": "Are you sure you want to delete the system \"{{name}}\"?",
@@ -154,6 +156,10 @@
     }
   },
   "maps": {
+    "hook": {
+      "deleteMapConfirm": "Are you sure you want to delete this map? Its portals will be deleted too.",
+      "deletePortalConfirm": "Are you sure you want to delete this portal?"
+    },
     "map": "MAP",
     "dropImage": "📂 Drop image here to add a new map",
     "noMapSelected": "No map selected",
@@ -359,9 +365,11 @@
       "linkedViewHint": "If set, a 🔗 icon on the node lets you jump straight to that view.",
       "linkedViewEmpty": "No other view available.",
       "removeFromView": "Remove from view",
-      "promoteEmpty": "No game system available."
+      "promoteEmpty": "No game system available.",
+      "deleteConfirm": "Permanently delete this node? It will be removed from every view."
     },
     "edgeDrawer": {
+      "deleteConfirm": "Permanently delete this connection? It will be removed from every view.",
       "editTitle": "Edit Connection",
       "typeLabel": "Relationship type",
       "gapCountPlaceholder": "e.g. 4",

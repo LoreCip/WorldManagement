@@ -9,6 +9,7 @@ import { SystemModal } from "../components/characters/SystemModal";
 import { NewSheetModal } from "../components/characters/NewSheetModal";
 import { ViewHeader } from "../components/common/ViewHeader";
 import { useToast } from "../components/common/Toast";
+import { useConfirm } from "../components/common/ConfirmDialog";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 
@@ -52,6 +53,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
 
   const { t } = useLocalization();
   const showToast = useToast();
+  const confirm = useConfirm();
   const { articles: allArticles } = useLinkableOptions({ articles: true });
 
   const characterArticles = useMemo(
@@ -72,9 +74,21 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     }
   }, [initialSheetId, sheets, handleSelectSheet]);
 
-  const onSelectSheetWrapper = (id: string) => {
+  const onSelectSheetWrapper = async (id: string) => {
+    if (selectedSheet && id !== selectedSheet.id && isDirty) {
+      const proceed = await confirm(t("characters.hook.unsavedChangesConfirm"));
+      if (!proceed) return;
+    }
     handleSelectSheet(id);
     onSelectSheet?.(id);
+  };
+
+  const onCreateSheetWrapper = async (name: string) => {
+    if (selectedSheet && isDirty) {
+      const proceed = await confirm(t("characters.hook.unsavedChangesConfirm"));
+      if (!proceed) return;
+    }
+    await createNewSheet(name);
   };
 
   const selectedSystem = useMemo(() => {
@@ -122,6 +136,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     pdfArrayBuffer,
     numPages,
     setNumPages,
+    isDirty,
     handleFormInputChange,
     populatePageAnnotations,
     handleSavePdf,
@@ -478,7 +493,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
         isOpen={isNewSheetModalOpen}
         systemName={systems.find((s) => s.id === activeSystemId)?.name}
         onClose={() => setIsNewSheetModalOpen(false)}
-        onCreate={createNewSheet}
+        onCreate={onCreateSheetWrapper}
       />
     </div>
   );

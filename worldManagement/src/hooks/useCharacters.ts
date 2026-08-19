@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { invokeSafe } from "../lib/ipc";
+import { invokeSafe, invokeOrThrow } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { useToast } from "../components/common/Toast";
 import { useConfirm } from "../components/common/ConfirmDialog";
@@ -133,8 +133,11 @@ export function useCharacters() {
     async (id: string) => {
       if (!id || !(await confirm(t("characters.hook.deleteSheetConfirm")))) return;
 
-      const result = await invokeSafe<void>("delete_character_sheet", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_character_sheet", { id });
+      } catch {
+        return;
+      }
 
       setSelectedSheet(null);
       await loadInitialData();
@@ -201,8 +204,9 @@ export function useCharacters() {
       }
       if (!(await confirm(t("characters.hook.deleteSystemConfirm", { name: sys.name })))) return;
 
-      const result = await invokeSafe<void>("delete_game_system", { id: systemId });
-      if (result === null) {
+      try {
+        await invokeOrThrow<void>("delete_game_system", { id: systemId });
+      } catch {
         showToast(t("characters.hook.deleteSystemError"), "error");
         return;
       }

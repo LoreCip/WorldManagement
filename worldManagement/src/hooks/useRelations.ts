@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { invokeSafe } from "../lib/ipc";
+import { invokeSafe, invokeOrThrow } from "../lib/ipc";
 import {
   GraphEdgeData,
   GraphNodeData,
@@ -80,8 +80,11 @@ export function useRelations() {
 
   const deleteView = useCallback(
     async (id: string) => {
-      const result = await invokeSafe<void>("delete_graph_view", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_graph_view", { id });
+      } catch {
+        return;
+      }
       if (currentViewId === id) setCurrentViewId(null);
       await loadAll();
     },
@@ -180,8 +183,11 @@ export function useRelations() {
 
   const deleteNode = useCallback(
     async (id: string) => {
-      const result = await invokeSafe<void>("delete_graph_node", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_graph_node", { id });
+      } catch {
+        return;
+      }
       await loadAll();
     },
     [loadAll],
@@ -241,8 +247,11 @@ export function useRelations() {
 
   const deleteEdge = useCallback(
     async (id: string) => {
-      const result = await invokeSafe<void>("delete_graph_edge", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_graph_edge", { id });
+      } catch {
+        return;
+      }
       await loadAll();
     },
     [loadAll],

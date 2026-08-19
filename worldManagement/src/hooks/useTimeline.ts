@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { invokeSafe } from "../lib/ipc";
+import { invokeSafe, invokeOrThrow } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { useConfirm } from "../components/common/ConfirmDialog";
 import {
@@ -105,8 +105,11 @@ export function useTimeline() {
       if (!id) return;
       if (!(await confirm(t("timeline.hook.deleteEventConfirm")))) return;
 
-      const result = await invokeSafe<void>("delete_timeline_event", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_timeline_event", { id });
+      } catch {
+        return;
+      }
 
       setCurrentEvent(emptyEvent());
       setIsEditing(false);
@@ -136,8 +139,11 @@ export function useTimeline() {
     async (id: string) => {
       if (!(await confirm(t("timeline.hook.deleteCategoryConfirm")))) return;
 
-      const result = await invokeSafe<void>("delete_timeline_category", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_timeline_category", { id });
+      } catch {
+        return;
+      }
       await loadCategories();
       await loadEvents();
     },
@@ -158,8 +164,11 @@ export function useTimeline() {
 
   const deleteSavedView = useCallback(
     async (id: string) => {
-      const result = await invokeSafe<void>("delete_timeline_view", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_timeline_view", { id });
+      } catch {
+        return;
+      }
       await loadSavedViews();
     },
     [loadSavedViews],
@@ -194,10 +203,13 @@ export function useTimeline() {
   }, [events, activeCategoryIds, searchQuery]);
 
   const setCampaignToday = useCallback(async (timeValue: number | null) => {
-    const result = await invokeSafe<void>("save_campaign_settings", {
-      currentDateValue: timeValue,
-    });
-    if (result === null) return;
+    try {
+      await invokeOrThrow<void>("save_campaign_settings", {
+        currentDateValue: timeValue,
+      });
+    } catch {
+      return;
+    }
     setCampaignSettings({ current_date_value: timeValue });
   }, []);
 
@@ -214,8 +226,11 @@ export function useTimeline() {
     async (id: string) => {
       if (!(await confirm(t("timeline.hook.deleteEraConfirm")))) return;
 
-      const result = await invokeSafe<void>("delete_timeline_era", { id });
-      if (result === null) return;
+      try {
+        await invokeOrThrow<void>("delete_timeline_era", { id });
+      } catch {
+        return;
+      }
       await loadEras();
     },
     [loadEras, t, confirm],
