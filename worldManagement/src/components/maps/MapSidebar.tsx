@@ -1,9 +1,13 @@
 import React, { useState, useMemo } from "react";
+import { Plus, Search } from "lucide-react";
 import { MapItem } from "../../types/map";
 import { buildMapHierarchy, flattenMapHierarchy } from "../../utils/mapHierarchy";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { SidebarLayout } from "../common/SidebarLayout";
+import { Button } from "../common/Button";
+import { Icon } from "../common/Icon";
+import { CompendiumIcon as MapMarkIcon } from "../common/icons/CompendiumIcon";
 
 interface MapSidebarProps {
   maps: MapItem[];
@@ -11,18 +15,6 @@ interface MapSidebarProps {
   onSelectMap: (mapId: string) => void;
   onNewMap: () => void;
 }
-
-const MapMarkIcon: React.FC = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"
-      stroke={colors.gold}
-      strokeWidth="1.1"
-      strokeLinejoin="round"
-    />
-    <circle cx="12" cy="12" r="1.6" fill={colors.gold} />
-  </svg>
-);
 
 export const MapSidebar: React.FC<MapSidebarProps> = ({
   maps,
@@ -51,48 +43,23 @@ export const MapSidebar: React.FC<MapSidebarProps> = ({
       subtitle={t("maps.sidebar.subtitle")}
     >
       {/* Pulsante Nuova Mappa */}
-      <button
+      <Button
+        variant="primary"
+        icon={Plus}
         onClick={onNewMap}
-        style={{
-          padding: "0.6rem 1rem",
-          backgroundColor: colors.gold,
-          color: colors.bgVoid,
-          border: "none",
-          borderRadius: radii.md,
-          cursor: "pointer",
-          fontFamily: fonts.body,
-          fontWeight: 600,
-          fontSize: "0.88rem",
-          letterSpacing: "0.01em",
-          marginBottom: "1.1rem",
-          transition: "background-color 0.15s ease",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
+        style={{ width: "100%", letterSpacing: "0.01em", marginBottom: "1.1rem" }}
       >
-        + {t("maps.form.newMap")}
-      </button>
+        {t("maps.form.newMap")}
+      </Button>
 
       {/* Ricerca */}
       <div style={{ position: "relative", marginBottom: "1.3rem" }}>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={colors.textFaint}
-          strokeWidth="2"
-          style={{
-            position: "absolute",
-            left: "0.15rem",
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <Icon
+          icon={Search}
+          size={14}
+          color={colors.textFaint}
+          style={{ position: "absolute", left: "0.15rem", top: "50%", transform: "translateY(-50%)" }}
+        />
         <input
           type="text"
           placeholder={t("maps.sidebar.searchPlaceholder")}

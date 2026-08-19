@@ -5,6 +5,7 @@ import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { useToast } from "../common/Toast";
 import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
 
 interface SystemModalProps {
   isOpen: boolean;
@@ -126,33 +127,12 @@ export const SystemModal: React.FC<SystemModalProps> = ({
       }
       footer={
         <>
-          <button
-            onClick={onClose}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "transparent",
-              color: colors.textPrimary,
-              border: `1px solid ${colors.border}`,
-              borderRadius: radii.sm,
-              cursor: "pointer",
-            }}
-          >
+          <Button variant="secondary" onClick={onClose}>
             {t("common.cancel")}
-          </button>
-          <button
-            onClick={handleSubmit}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: colors.gold,
-              color: colors.bgVoid,
-              border: "none",
-              borderRadius: radii.sm,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
             {t("characters.systemModal.saveSystem")}
-          </button>
+          </Button>
         </>
       }
     >
@@ -252,20 +232,9 @@ export const SystemModal: React.FC<SystemModalProps> = ({
                 borderRadius: radii.sm,
               }}
             />
-            <button
-              onClick={() => pgFileInputRef.current?.click()}
-              style={{
-                padding: "0.5rem 0.8rem",
-                backgroundColor: colors.gold,
-                color: colors.bgVoid,
-                border: "none",
-                borderRadius: radii.sm,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
-            >
+            <Button variant="primary" size="sm" onClick={() => pgFileInputRef.current?.click()}>
               {t("common.browse")}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -295,19 +264,9 @@ export const SystemModal: React.FC<SystemModalProps> = ({
                 borderRadius: radii.sm,
               }}
             />
-            <button
-              onClick={() => pngFileInputRef.current?.click()}
-              style={{
-                padding: "0.5rem 0.8rem",
-                backgroundColor: "transparent",
-                border: `1px solid ${colors.gold}`,
-                color: colors.gold,
-                borderRadius: radii.sm,
-                cursor: "pointer",
-              }}
-            >
+            <Button variant="secondary" size="sm" onClick={() => pngFileInputRef.current?.click()}>
               {t("common.browse")}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

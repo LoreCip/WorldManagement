@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { X, ScrollText, Drama, Link2 } from "lucide-react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphNodeData, GraphView } from "../../types/relations";
 import { useLinkableOptions } from "../../hooks/useLinkableOptions";
 import { Drawer } from "../common/Drawer";
+import { Button } from "../common/Button";
 
 interface NodeDrawerProps {
   node: GraphNodeData;
@@ -104,18 +106,12 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
   const footer = (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-      <button
-        onClick={() => onRemoveFromView(node.id)}
-        style={{ ...ghostButtonStyle, color: colors.textSecondary }}
-      >
+      <Button variant="secondary" size="sm" onClick={() => onRemoveFromView(node.id)}>
         {t("relations.nodeDrawer.removeFromView")}
-      </button>
-      <button
-        onClick={() => onDelete(node.id)}
-        style={{ ...ghostButtonStyle, color: colors.crimson, borderColor: `${colors.crimson}77` }}
-      >
+      </Button>
+      <Button variant="danger" size="sm" onClick={() => onDelete(node.id)}>
         {t("relations.actions.deleteNode")}
-      </button>
+      </Button>
     </div>
   );
 
@@ -187,19 +183,23 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
         <label style={fieldLabelStyle}>{t("relations.actions.linkWiki")}</label>
         {draft.wikiArticleId ? (
           <div style={{ display: "flex", gap: "0.4rem" }}>
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={ScrollText}
               onClick={() => onOpenWiki?.(draft.wikiArticleId!)}
-              style={{ ...linkButtonStyle, flex: 1 }}
+              style={{ flex: 1, justifyContent: "flex-start", color: colors.gold, borderColor: `${colors.gold}55` }}
             >
-              📜 {linkedArticleTitle ?? draft.wikiArticleId} →
-            </button>
-            <button
+              {linkedArticleTitle ?? draft.wikiArticleId} →
+            </Button>
+            <Button
+              variant="secondary"
+              iconOnly
+              size="sm"
+              icon={X}
               onClick={() => setDraft({ ...draft, wikiArticleId: undefined })}
               title={t("relations.nodeDrawer.unlink")}
-              style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
-            >
-              ✕
-            </button>
+            />
           </div>
         ) : (
           <div style={{ position: "relative" }}>
@@ -262,19 +262,23 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
         <label style={fieldLabelStyle}>{t("relations.nodeDrawer.sheetLabel")}</label>
         {draft.characterId ? (
           <div style={{ display: "flex", gap: "0.4rem" }}>
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Drama}
               onClick={() => onOpenCharacterSheet?.(draft.characterId!)}
-              style={{ ...linkButtonStyle, flex: 1 }}
+              style={{ flex: 1, justifyContent: "flex-start", color: colors.gold, borderColor: `${colors.gold}55` }}
             >
-              🎭 {linkedSheetName ?? draft.characterId} →
-            </button>
-            <button
+              {linkedSheetName ?? draft.characterId} →
+            </Button>
+            <Button
+              variant="secondary"
+              iconOnly
+              size="sm"
+              icon={X}
               onClick={() => setDraft({ ...draft, characterId: undefined })}
               title={t("relations.nodeDrawer.unlink")}
-              style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
-            >
-              ✕
-            </button>
+            />
           </div>
         ) : (
           <div style={{ position: "relative" }}>
@@ -337,24 +341,28 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
         <label style={fieldLabelStyle}>{t("relations.nodeDrawer.linkedViewLabel")}</label>
         {draft.linkedViewId ? (
           <div style={{ display: "flex", gap: "0.4rem" }}>
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={Link2}
               onClick={() => onNavigateToView?.(draft.linkedViewId!)}
               style={{
-                ...linkButtonStyle,
                 flex: 1,
+                justifyContent: "flex-start",
                 color: colors.indigo,
                 borderColor: `${colors.indigo}55`,
               }}
             >
-              🔗 {linkedViewTitle ?? draft.linkedViewId} →
-            </button>
-            <button
+              {linkedViewTitle ?? draft.linkedViewId} →
+            </Button>
+            <Button
+              variant="secondary"
+              iconOnly
+              size="sm"
+              icon={X}
               onClick={() => setDraft({ ...draft, linkedViewId: undefined })}
               title={t("relations.nodeDrawer.unlink")}
-              style={{ ...ghostButtonStyle, padding: "0.5rem 0.6rem" }}
-            >
-              ✕
-            </button>
+            />
           </div>
         ) : otherViews.length > 0 ? (
           <select
@@ -379,20 +387,9 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
         </div>
       </div>
 
-      <button
-        onClick={() => onSave(draft)}
-        style={{
-          padding: "0.55rem 1rem",
-          backgroundColor: colors.gold,
-          color: colors.bgVoid,
-          border: "none",
-          borderRadius: radii.md,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
+      <Button variant="primary" onClick={() => onSave(draft)}>
         {t("common.save")}
-      </button>
+      </Button>
 
       {/* Promozione a scheda personaggio */}
       {(draft.type === "placeholder" || draft.type === "unknown") && (
@@ -421,22 +418,14 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
                   </option>
                 ))}
               </select>
-              <button
+              <Button
+                variant="secondary"
                 onClick={handlePromote}
                 disabled={isPromoting}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  backgroundColor: "transparent",
-                  color: colors.gold,
-                  border: `1px solid ${colors.gold}77`,
-                  borderRadius: radii.sm,
-                  cursor: isPromoting ? "wait" : "pointer",
-                  fontWeight: 600,
-                }}
+                style={{ width: "100%" }}
               >
                 {isPromoting ? "…" : t("relations.actions.promoteToCharacter")}
-              </button>
+              </Button>
             </>
           ) : (
             <div style={{ fontSize: "0.75rem", color: colors.textFaint }}>
@@ -447,24 +436,4 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
       )}
     </Drawer>
   );
-};
-
-const linkButtonStyle: React.CSSProperties = {
-  textAlign: "left",
-  backgroundColor: "transparent",
-  color: colors.gold,
-  border: `1px solid ${colors.gold}55`,
-  borderRadius: radii.sm,
-  padding: "0.5rem 0.7rem",
-  cursor: "pointer",
-  fontSize: "0.82rem",
-};
-
-const ghostButtonStyle: React.CSSProperties = {
-  backgroundColor: "transparent",
-  border: `1px solid ${colors.border}`,
-  borderRadius: radii.sm,
-  padding: "0.5rem 0.7rem",
-  cursor: "pointer",
-  fontSize: "0.82rem",
 };

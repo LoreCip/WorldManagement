@@ -1,8 +1,11 @@
 import React from "react";
+import { Drama } from "lucide-react";
 import { CharacterSheet, GameSystem } from "../../types/character";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { SidebarLayout } from "../common/SidebarLayout";
+import { Icon } from "../common/Icon";
+import { Button } from "../common/Button";
 
 interface CharacterSidebarProps {
   systems: GameSystem[];
@@ -37,7 +40,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 
   return (
     <SidebarLayout
-      icon="🎭"
+      icon={<Icon icon={Drama} color={colors.crimson} size={20} />}
       title={t("characters.sidebar.title")}
       subtitle={t("characters.sidebar.subtitle")}
     >
@@ -93,38 +96,13 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       <div
         style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "1.1rem" }}
       >
-        <button
-          onClick={onNewSheet}
-          disabled={!activeSystemId}
-          style={{
-            padding: "0.6rem 1rem",
-            backgroundColor: activeSystemId ? colors.gold : colors.border,
-            color: activeSystemId ? colors.bgVoid : colors.textFaint,
-            border: "none",
-            borderRadius: radii.md,
-            cursor: activeSystemId ? "pointer" : "not-allowed",
-            fontWeight: 600,
-            fontSize: "0.88rem",
-          }}
-        >
+        <Button variant="primary" onClick={onNewSheet} disabled={!activeSystemId}>
           {t("characters.sidebar.newSheet")}
-        </button>
+        </Button>
 
-        <button
-          onClick={onOpenSystemModal}
-          style={{
-            padding: "0.45rem 0.8rem",
-            backgroundColor: "transparent",
-            color: colors.gold,
-            border: `1px solid ${colors.gold}55`,
-            borderRadius: radii.md,
-            cursor: "pointer",
-            fontSize: "0.78rem",
-            fontWeight: 500,
-          }}
-        >
+        <Button variant="secondary" size="sm" onClick={onOpenSystemModal}>
           {t("characters.sidebar.newSystem")}
-        </button>
+        </Button>
       </div>
 
       {/* Ricerca */}

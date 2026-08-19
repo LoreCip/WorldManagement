@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import { Minus, Plus } from "lucide-react";
 import { useCharacters } from "../hooks/useCharacters";
 import { useCharacterSheetPdf } from "../hooks/useCharacterSheetPdf";
 import { usePinchZoom } from "../hooks/usePinchZoom";
@@ -8,6 +9,7 @@ import { CharacterSidebar } from "../components/characters/CharacterSidebar";
 import { SystemModal } from "../components/characters/SystemModal";
 import { NewSheetModal } from "../components/characters/NewSheetModal";
 import { ViewHeader } from "../components/common/ViewHeader";
+import { Button } from "../components/common/Button";
 import { useToast } from "../components/common/Toast";
 import { useConfirm } from "../components/common/ConfirmDialog";
 import { colors, fonts, radii } from "../components/theme/theme";
@@ -166,28 +168,12 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
     if (!success) showToast(t("characters.hook.linkArticleError"), "error");
   };
 
-  const btnBase: React.CSSProperties = {
-    padding: "0.5rem 1rem",
-    borderRadius: radii.md,
-    cursor: "pointer",
-    fontFamily: fonts.body,
-    fontWeight: 600,
-    fontSize: "0.85rem",
-    transition: "all 0.15s ease",
-  };
-
-  const zoomBtnBase: React.CSSProperties = {
+  const zoomBtnStyle: React.CSSProperties = {
     width: "1.8rem",
     height: "1.8rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "none",
-    background: "transparent",
+    padding: 0,
     color: colors.textFaint,
-    cursor: "pointer",
-    fontSize: "1rem",
-    fontWeight: 700,
+    opacity: 1,
   };
 
   return (
@@ -248,71 +234,53 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                       marginRight: "0.3rem",
                     }}
                   >
-                    <button
+                    <Button
+                      variant="ghost"
+                      iconOnly
+                      icon={Minus}
+                      iconSize={14}
                       onClick={zoomOut}
                       title={t("characters.hook.zoomOut")}
-                      style={zoomBtnBase}
-                    >
-                      −
-                    </button>
-                    <button
+                      style={zoomBtnStyle}
+                    />
+                    <Button
+                      variant="ghost"
                       onClick={zoomReset}
                       title={t("characters.hook.zoomReset")}
                       style={{
-                        ...zoomBtnBase,
+                        ...zoomBtnStyle,
                         width: "3.2rem",
                         fontSize: "0.72rem",
                         fontWeight: 600,
                         borderLeft: `1px solid ${colors.border}`,
                         borderRight: `1px solid ${colors.border}`,
+                        borderRadius: 0,
                       }}
                     >
                       {Math.round(scale * 100)}%
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      iconOnly
+                      icon={Plus}
+                      iconSize={14}
                       onClick={zoomIn}
                       title={t("characters.hook.zoomIn")}
-                      style={zoomBtnBase}
-                    >
-                      +
-                    </button>
+                      style={zoomBtnStyle}
+                    />
                   </div>
 
-                  <button
-                    onClick={handleSavePdf}
-                    style={{
-                      ...btnBase,
-                      backgroundColor: colors.gold,
-                      color: colors.bgVoid,
-                      border: "none",
-                    }}
-                  >
+                  <Button variant="primary" onClick={handleSavePdf}>
                     {t("common.save")}
-                  </button>
+                  </Button>
 
-                  <button
-                    onClick={handleExportPdf}
-                    style={{
-                      ...btnBase,
-                      backgroundColor: "transparent",
-                      color: colors.gold,
-                      border: `1px solid ${colors.gold}77`,
-                    }}
-                  >
+                  <Button variant="secondary" onClick={handleExportPdf}>
                     {t("common.export")}
-                  </button>
+                  </Button>
 
-                  <button
-                    onClick={() => handleDeleteSheet(selectedSheet.id)}
-                    style={{
-                      ...btnBase,
-                      backgroundColor: "transparent",
-                      color: colors.crimson,
-                      border: `1px solid ${colors.crimson}77`,
-                    }}
-                  >
+                  <Button variant="danger" onClick={() => handleDeleteSheet(selectedSheet.id)}>
                     {t("common.delete")}
-                  </button>
+                  </Button>
                 </>
               }
             >
@@ -330,8 +298,10 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                     .map((v) => {
                       const isActive = activeVariant === v;
                       return (
-                        <button
+                        <Button
                           key={v}
+                          variant="ghost"
+                          active={isActive}
                           onClick={() => handleSetVariant(v)}
                           title={
                             v === "pg"
@@ -345,7 +315,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                             letterSpacing: "0.04em",
                             textTransform: "uppercase",
                             border: "none",
-                            cursor: "pointer",
+                            borderRadius: 0,
                             backgroundColor: isActive ? colors.gold : "transparent",
                             color: isActive ? colors.bgVoid : colors.textFaint,
                           }}
@@ -353,7 +323,7 @@ export const CharacterView: React.FC<CharacterViewProps> = ({
                           {v === "pg"
                             ? t("characters.systemModal.pc")
                             : t("characters.systemModal.npc")}
-                        </button>
+                        </Button>
                       );
                     })}
                 </div>

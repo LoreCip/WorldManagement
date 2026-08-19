@@ -6,10 +6,11 @@ import { PortalControls } from "../components/maps/PortalControls";
 import { MapCanvas } from "../components/maps/MapCanvas";
 import { MapFormModal } from "../components/maps/MapFormModal";
 import { MapSidebar } from "../components/maps/MapSidebar";
-import { colors, fonts, radii } from "../components/theme/theme";
+import { colors, fonts } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 import { useToast } from "../components/common/Toast";
 import { Z_INDEX } from "../components/common/zIndex";
+import { Button } from "../components/common/Button";
 
 interface MapViewProps {
   onOpenArticle?: (articleId: string) => void;
@@ -252,22 +253,9 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
             >
               {t("maps.selectMap")}
             </p>
-            <button
-              onClick={() => setIsAddMapOpen(true)}
-              style={{
-                padding: "0.6rem 1.4rem",
-                borderRadius: radii.md,
-                backgroundColor: colors.gold,
-                color: colors.bgVoid,
-                border: "none",
-                cursor: "pointer",
-                fontFamily: fonts.body,
-                fontWeight: 600,
-                fontSize: "0.9rem",
-              }}
-            >
+            <Button variant="primary" size="lg" onClick={() => setIsAddMapOpen(true)}>
               {t("maps.newMap")}
-            </button>
+            </Button>
           </div>
         )}
       </div>

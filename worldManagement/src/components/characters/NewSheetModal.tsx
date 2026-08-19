@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
 
 interface NewSheetModalProps {
   isOpen: boolean;
@@ -43,35 +44,12 @@ export const NewSheetModal: React.FC<NewSheetModalProps> = ({
       title={t("characters.sheetModal.newCharacter")}
       footer={
         <>
-          <button
-            onClick={onClose}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "transparent",
-              color: colors.textPrimary,
-              border: `1px solid ${colors.border}`,
-              borderRadius: radii.sm,
-              cursor: "pointer",
-            }}
-          >
+          <Button variant="secondary" onClick={onClose}>
             {t("common.cancel")}
-          </button>
-          <button
-            onClick={handleCreate}
-            disabled={!name.trim()}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: colors.gold,
-              color: colors.bgVoid,
-              border: "none",
-              borderRadius: radii.sm,
-              fontWeight: 600,
-              cursor: name.trim() ? "pointer" : "not-allowed",
-              opacity: name.trim() ? 1 : 0.5,
-            }}
-          >
+          </Button>
+          <Button variant="primary" onClick={handleCreate} disabled={!name.trim()}>
             {t("characters.sheetModal.createSheet")}
-          </button>
+          </Button>
         </>
       }
     >

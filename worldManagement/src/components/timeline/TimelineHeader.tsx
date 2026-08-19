@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { Minus, Plus, X } from "lucide-react";
 import { TimelineCategory, TimelineSavedView } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { ViewHeader } from "../common/ViewHeader";
 import { Toolbar, ToolbarButton } from "../common/Toolbar";
+import { Button } from "../common/Button";
 import { Popover } from "../common/Popover";
 
 interface TimelineHeaderProps {
@@ -89,12 +91,9 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     <ViewHeader
       title={t("timeline.header.title")}
       actions={
-        <ToolbarButton
-          onClick={onNewEvent}
-          style={{ backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}
-        >
+        <Button variant="primary" pill onClick={onNewEvent}>
           {t("timeline.header.newEvent")}
-        </ToolbarButton>
+        </Button>
       }
     >
       <Toolbar>
@@ -116,8 +115,8 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           }}
         />
 
-        <ToolbarButton onClick={onZoomOut}>−</ToolbarButton>
-        <ToolbarButton onClick={onZoomIn}>+</ToolbarButton>
+        <ToolbarButton onClick={onZoomOut} icon={Minus} title={t("timeline.header.zoomOut")} />
+        <ToolbarButton onClick={onZoomIn} icon={Plus} title={t("timeline.header.zoomIn")} />
         <ToolbarButton onClick={onFitAll}>{t("timeline.header.autoFit")}</ToolbarButton>
 
         <Popover
@@ -280,17 +279,15 @@ export const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               >
                 {view.name}
               </button>
-              <button
+              <Button
+                variant="danger"
+                iconOnly
+                size="sm"
+                icon={X}
                 onClick={() => onDeleteSavedView(view.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: colors.crimson,
-                  cursor: "pointer",
-                }}
-              >
-                ×
-              </button>
+                title={t("common.delete")}
+                style={{ border: "none", background: "none" }}
+              />
             </div>
           ))}
           {savedViews.length === 0 && (

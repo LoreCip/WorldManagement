@@ -19,9 +19,11 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
+import { Check, X, LocateFixed } from "lucide-react";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 import { useConfirm } from "../components/common/ConfirmDialog";
+import { Button } from "../components/common/Button";
 import { useRelations } from "../hooks/useRelations";
 import { CharacterNode, CharacterNodeFlowData } from "../components/relations/CharacterNode";
 import { RelationEdge, RelationEdgeFlowData } from "../components/relations/RelationEdge";
@@ -481,24 +483,17 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
                   }}
                 >
                   {views.map((v) => (
-                    <button
+                    <Button
                       key={v.id}
+                      variant="secondary"
+                      pill
                       onClick={() => setCurrentViewId(v.id)}
-                      style={{
-                        padding: "0.4rem 0.8rem",
-                        borderRadius: radii.pill,
-                        border: `1px solid ${colors.border}`,
-                        backgroundColor: colors.bgPanel,
-                        color: colors.textPrimary,
-                        fontSize: "0.8rem",
-                        cursor: "pointer",
-                      }}
                     >
                       {v.title}{" "}
                       <span style={{ color: colors.textFaint }}>
                         · {t(`relations.views.${v.type}`)}
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </>
@@ -528,50 +523,19 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
                     fontSize: "0.85rem",
                   }}
                 />
-                <button
-                  onClick={submitEmptyView}
-                  style={{
-                    padding: "0.55rem 0.9rem",
-                    backgroundColor: colors.gold,
-                    color: colors.bgVoid,
-                    border: "none",
-                    borderRadius: radii.pill,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  ✓
-                </button>
-                <button
+                <Button variant="primary" pill iconOnly icon={Check} onClick={submitEmptyView} />
+                <Button
+                  variant="secondary"
+                  pill
+                  iconOnly
+                  icon={X}
                   onClick={() => setIsCreatingFromEmpty(false)}
-                  style={{
-                    padding: "0.55rem 0.9rem",
-                    backgroundColor: "transparent",
-                    color: colors.textSecondary,
-                    border: `1px solid ${colors.border}`,
-                    borderRadius: radii.pill,
-                    cursor: "pointer",
-                  }}
-                >
-                  ✕
-                </button>
+                />
               </div>
             ) : (
-              <button
-                onClick={() => setIsCreatingFromEmpty(true)}
-                style={{
-                  marginTop: "0.4rem",
-                  padding: "0.55rem 1.1rem",
-                  backgroundColor: colors.gold,
-                  color: colors.bgVoid,
-                  border: "none",
-                  borderRadius: radii.pill,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
+              <Button variant="primary" pill onClick={() => setIsCreatingFromEmpty(true)}>
                 {t("relations.header.newView")}
-              </button>
+              </Button>
             )}
           </div>
         ) : (
@@ -604,25 +568,23 @@ const RelationsCanvas: React.FC<RelationsViewProps> = ({
               />
             </ReactFlow>
 
-            <button
+            <Button
+              variant="secondary"
+              pill
+              icon={LocateFixed}
               onClick={handleRecenter}
               title={t("relations.actions.recenter")}
               style={{
                 position: "absolute",
                 bottom: "1.2rem",
                 left: "1.2rem",
-                padding: "0.5rem 0.9rem",
-                borderRadius: "999px",
-                border: `1px solid ${colors.gold}55`,
                 backgroundColor: colors.bgPanel,
                 color: colors.gold,
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                cursor: "pointer",
+                borderColor: `${colors.gold}55`,
               }}
             >
-              ⤾ {t("relations.actions.recenter")}
-            </button>
+              {t("relations.actions.recenter")}
+            </Button>
 
             {isConnecting && (
               <div

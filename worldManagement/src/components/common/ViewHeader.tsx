@@ -1,5 +1,7 @@
 import React from "react";
+import { ArrowLeft } from "lucide-react";
 import { colors, fonts, radii } from "../theme/theme";
+import { Button } from "./Button";
 
 export interface ViewHeaderProps {
   title: React.ReactNode;
@@ -39,26 +41,15 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
       }}
     >
       {onBack && (
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={ArrowLeft}
           onClick={onBack}
-          style={{
-            padding: "0.4rem 0.7rem",
-            borderRadius: radii.md,
-            backgroundColor: colors.bgPanelRaised,
-            color: colors.gold,
-            border: `1px solid ${colors.border}`,
-            cursor: "pointer",
-            fontFamily: fonts.body,
-            fontWeight: 600,
-            fontSize: "0.85rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.3rem",
-            flexShrink: 0,
-          }}
+          style={{ backgroundColor: colors.bgPanelRaised, flexShrink: 0 }}
         >
-          ← {backLabel && <span className="hide-on-small">{backLabel}</span>}
-        </button>
+          {backLabel && <span className="hide-on-small">{backLabel}</span>}
+        </Button>
       )}
 
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", minWidth: 0 }}>

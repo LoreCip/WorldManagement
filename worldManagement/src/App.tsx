@@ -8,9 +8,11 @@ import { HubView } from "./views/HubView";
 import { RelationsView } from "./views/RelationsView";
 import { useAppShell, ActiveTab } from "./hooks/useAppShell";
 import { useLocalization } from "./context/LocalizationContext";
+import { Button } from "./components/common/Button";
+import { navIcons } from "./components/common/navIcons";
 
 interface NavIconButtonProps {
-  icon: string;
+  tab: ActiveTab;
   title: string;
   isActive: boolean;
   onClick: () => void;
@@ -18,37 +20,36 @@ interface NavIconButtonProps {
 }
 
 const NavIconButton: React.FC<NavIconButtonProps> = ({
-  icon,
+  tab,
   title,
   isActive,
   onClick,
   pinToBottom,
 }) => (
-  <button
+  <Button
+    variant="ghost"
+    active={isActive}
+    icon={navIcons[tab]}
+    iconSize={20}
     onClick={onClick}
     title={title}
+    aria-label={title}
     style={{
-      background: isActive ? colors.bgPanelRaised : "none",
-      border: "none",
-      borderRadius: radii.md,
       width: "40px",
       height: "40px",
-      fontSize: "1.2rem",
-      cursor: "pointer",
-      opacity: isActive ? 1 : 0.4,
+      padding: 0,
+      borderRadius: radii.md,
       marginTop: pinToBottom ? "auto" : undefined,
     }}
-  >
-    {icon}
-  </button>
+  />
 );
 
-const CONTENT_TABS: { tab: ActiveTab; icon: string; titleKey: string }[] = [
-  { tab: "wiki", icon: "📜", titleKey: "app.nav.wiki" },
-  { tab: "maps", icon: "🗺️", titleKey: "app.nav.maps" },
-  { tab: "characters", icon: "🎭", titleKey: "app.nav.characters" },
-  { tab: "timeline", icon: "⏳", titleKey: "app.nav.timeline" },
-  { tab: "relations", icon: "🌳", titleKey: "app.nav.relations" },
+const CONTENT_TABS: { tab: ActiveTab; titleKey: string }[] = [
+  { tab: "wiki", titleKey: "app.nav.wiki" },
+  { tab: "maps", titleKey: "app.nav.maps" },
+  { tab: "characters", titleKey: "app.nav.characters" },
+  { tab: "timeline", titleKey: "app.nav.timeline" },
+  { tab: "relations", titleKey: "app.nav.relations" },
 ];
 
 export default function App() {
@@ -92,7 +93,7 @@ export default function App() {
           }}
         >
           <NavIconButton
-            icon="🏠"
+            tab="hub"
             title={t("app.nav.hub")}
             isActive={false}
             onClick={() => handleTabChange("hub")}
@@ -100,10 +101,10 @@ export default function App() {
 
           <div style={{ width: "28px", height: "1px", backgroundColor: colors.border }} />
 
-          {CONTENT_TABS.map(({ tab, icon, titleKey }) => (
+          {CONTENT_TABS.map(({ tab, titleKey }) => (
             <NavIconButton
               key={tab}
-              icon={icon}
+              tab={tab}
               title={t(titleKey)}
               isActive={activeTab === tab}
               onClick={() => handleTabChange(tab)}
@@ -111,7 +112,7 @@ export default function App() {
           ))}
 
           <NavIconButton
-            icon="⚙️"
+            tab="settings"
             title={t("app.nav.settings")}
             isActive={activeTab === "settings"}
             onClick={() => handleTabChange("settings")}

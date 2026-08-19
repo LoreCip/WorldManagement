@@ -8,6 +8,7 @@ export interface IconProps {
   color?: string;
   strokeWidth?: number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 // Wrapper sottile attorno alle icone lucide-react: applica i default del
@@ -18,6 +19,14 @@ export const Icon: React.FC<IconProps> = ({
   color = colors.textPrimary,
   strokeWidth = 1.75,
   className,
+  style,
 }) => (
-  <IconComponent size={size} color={color} strokeWidth={strokeWidth} className={className} aria-hidden="true" />
+  <IconComponent
+    size={size}
+    color={color}
+    strokeWidth={strokeWidth}
+    className={className}
+    style={style}
+    aria-hidden="true"
+  />
 );

@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
+import { X } from "lucide-react";
 import { colors, fonts } from "../theme/theme";
 import { Z_INDEX } from "./zIndex";
 import { ensureCommonAnimations } from "./Animations";
+import { Button } from "./Button";
 
 export interface DrawerProps {
   isOpen: boolean;
@@ -65,19 +67,15 @@ export const Drawer: React.FC<DrawerProps> = ({
       {title && (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ fontFamily: fonts.display, margin: 0, fontSize: "1.15rem" }}>{title}</h3>
-          <button
+          <Button
+            variant="ghost"
+            iconOnly
+            size="sm"
+            icon={X}
             onClick={onClose}
             aria-label="Chiudi"
-            style={{
-              background: "none",
-              border: "none",
-              color: colors.textFaint,
-              cursor: "pointer",
-              fontSize: "1.1rem",
-            }}
-          >
-            ✕
-          </button>
+            style={{ border: "none" }}
+          />
         </div>
       )}
 

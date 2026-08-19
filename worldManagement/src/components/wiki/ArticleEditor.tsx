@@ -1,9 +1,11 @@
 import React from "react";
+import { Drama, Map as MapIcon } from "lucide-react";
 import { Article } from "../../types/wiki";
 import { TagInput } from "./TagInput";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownPreview } from "./MarkdownPreview";
 import { ViewHeader } from "../common/ViewHeader";
+import { Button } from "../common/Button";
 import {
   colors,
   fonts,
@@ -77,32 +79,6 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 
   const categoryColor = getCategoryColor(article.category);
 
-  const btnBase: React.CSSProperties = {
-    padding: "0.55rem 1.3rem",
-    borderRadius: radii.md,
-    cursor: "pointer",
-    fontFamily: fonts.body,
-    fontWeight: 600,
-    fontSize: "0.88rem",
-    letterSpacing: "0.01em",
-    transition: "background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease",
-  };
-
-  const pillBase: React.CSSProperties = {
-    backgroundColor: `${colors.gold}1f`,
-    color: colors.gold,
-    border: `1px solid ${colors.gold}59`,
-    padding: "3px 10px",
-    borderRadius: radii.pill,
-    fontSize: "0.72rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "4px",
-    transition: "all 0.15s ease",
-  };
-
   // In modifica il "titolo" del ViewHeader e un vero form (input + select
   // categoria); in lettura e semplice testo. ViewHeader accetta un
   // ReactNode qualsiasi in `title`, quindi entrambe le forme si adattano
@@ -157,58 +133,20 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
 
   const editActions = isEditing ? (
     <>
-      <button
-        onClick={onSave}
-        style={{ ...btnBase, backgroundColor: colors.gold, color: colors.bgVoid, border: "none" }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
-      >
+      <Button variant="primary" onClick={onSave}>
         {t("common.save")}
-      </button>
+      </Button>
 
       {article.id && (
-        <button
-          onClick={onDelete}
-          title={t("wiki.editor.confirmDelete")}
-          style={{
-            ...btnBase,
-            backgroundColor: "transparent",
-            color: colors.crimson,
-            border: `1px solid ${colors.crimson}77`,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = colors.crimsonWash;
-            e.currentTarget.style.borderColor = colors.crimson;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.borderColor = `${colors.crimson}77`;
-          }}
-        >
+        <Button variant="danger" onClick={onDelete} title={t("wiki.editor.confirmDelete")}>
           {t("common.delete")}
-        </button>
+        </Button>
       )}
     </>
   ) : (
-    <button
-      onClick={onEdit}
-      style={{
-        ...btnBase,
-        backgroundColor: "transparent",
-        color: colors.gold,
-        border: `1px solid ${colors.gold}77`,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = colors.goldWash;
-        e.currentTarget.style.borderColor = colors.gold;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "transparent";
-        e.currentTarget.style.borderColor = `${colors.gold}77`;
-      }}
-    >
+    <Button variant="secondary" onClick={onEdit}>
       {t("common.edit")}
-    </button>
+    </Button>
   );
 
   return (
@@ -258,37 +196,29 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             </span>
 
             {linkedSheetId && onNavigateToCharacterSheet && (
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
+                pill
+                icon={Drama}
                 onClick={() => onNavigateToCharacterSheet(linkedSheetId)}
-                style={pillBase}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = `${colors.gold}35`;
-                  e.currentTarget.style.borderColor = colors.gold;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = `${colors.gold}1f`;
-                  e.currentTarget.style.borderColor = `${colors.gold}59`;
-                }}
+                style={{ backgroundColor: `${colors.gold}1f`, color: colors.gold, borderColor: `${colors.gold}59` }}
               >
-                🎭 Apri Scheda PG →
-              </button>
+                Apri Scheda PG →
+              </Button>
             )}
 
             {linkedMapId && onNavigateToMap && (
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
+                pill
+                icon={MapIcon}
                 onClick={() => onNavigateToMap(linkedMapId)}
-                style={pillBase}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = `${colors.gold}35`;
-                  e.currentTarget.style.borderColor = colors.gold;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = `${colors.gold}1f`;
-                  e.currentTarget.style.borderColor = `${colors.gold}59`;
-                }}
+                style={{ backgroundColor: `${colors.gold}1f`, color: colors.gold, borderColor: `${colors.gold}59` }}
               >
                 {t("wiki.editor.openMapButton")}
-              </button>
+              </Button>
             )}
           </div>
         )}

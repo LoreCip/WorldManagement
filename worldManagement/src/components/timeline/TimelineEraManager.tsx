@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { Plus } from "lucide-react";
 import { TimelineEra } from "../../types/timeline";
 import { timeInputToValue } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
 
 interface TimelineEraManagerProps {
   eras: TimelineEra[];
@@ -91,18 +93,14 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
             >
               {era.label}
             </span>
-            <button
+            <Button
+              variant="danger"
+              size="sm"
               onClick={() => onDelete(era.id)}
-              style={{
-                background: "none",
-                border: "none",
-                color: colors.crimson,
-                cursor: "pointer",
-                fontSize: "0.9rem",
-              }}
+              style={{ border: "none", background: "none" }}
             >
               {t("wiki.tag.delete")}
-            </button>
+            </Button>
           </div>
         ))}
         {eras.length === 0 && (
@@ -149,40 +147,15 @@ export const TimelineEraManager: React.FC<TimelineEraManagerProps> = ({
           onChange={(e) => setDraft({ ...draft, endYear: parseInt(e.target.value || "0", 10) })}
           style={{ ...inputStyle, flex: 1 }}
         />
-        <button
-          onClick={handleAdd}
-          style={{
-            padding: "0.4rem 0.8rem",
-            backgroundColor: colors.gold,
-            color: colors.bgVoid,
-            border: "none",
-            borderRadius: radii.sm,
-            cursor: "pointer",
-            fontFamily: fonts.body,
-            fontWeight: 600,
-            fontSize: "0.82rem",
-          }}
-        >
-          + {t("common.add")}
-        </button>
+        <Button variant="primary" size="sm" icon={Plus} onClick={handleAdd}>
+          {t("common.add")}
+        </Button>
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <button
-          onClick={onClose}
-          style={{
-            padding: "0.5rem 1rem",
-            backgroundColor: "transparent",
-            color: colors.textFaint,
-            border: `1px solid ${colors.borderSubtle}`,
-            borderRadius: radii.md,
-            cursor: "pointer",
-            fontFamily: fonts.body,
-            fontSize: "0.82rem",
-          }}
-        >
+        <Button variant="secondary" size="sm" onClick={onClose}>
           {t("common.close")}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

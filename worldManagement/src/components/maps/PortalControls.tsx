@@ -1,7 +1,9 @@
 import React from "react";
+import { Sparkles, X } from "lucide-react";
 import { MapItem } from "../../types/map";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { Button } from "../common/Button";
 
 interface PortalControlsProps {
   isAddingPortal: boolean;
@@ -30,28 +32,16 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
 
   if (!isAddingPortal) {
     return (
-      <button
+      <Button
+        variant="secondary"
+        size="sm"
+        icon={Sparkles}
         onClick={onStart}
         title={t("maps.portal.addPortal")}
-        style={{
-          padding: "0.4rem 0.8rem",
-          borderRadius: radii.md,
-          backgroundColor: colors.bgPanelRaised,
-          color: colors.gold,
-          border: `1px solid ${colors.border}`,
-          cursor: "pointer",
-          fontFamily: fonts.body,
-          fontWeight: 500,
-          fontSize: "0.82rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.35rem",
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-        }}
+        style={{ backgroundColor: colors.bgPanelRaised, color: colors.gold, flexShrink: 0 }}
       >
-        🌀 <span className="hide-on-small">{t("maps.portal.newPortal")}</span>
-      </button>
+        <span className="hide-on-small">{t("maps.portal.newPortal")}</span>
+      </Button>
     );
   }
 
@@ -109,22 +99,15 @@ export const PortalControls: React.FC<PortalControlsProps> = ({
         }}
       />
 
-      <button
+      <Button
+        variant="danger"
+        iconOnly
+        size="sm"
+        icon={X}
         onClick={onCancel}
         title={t("common.cancel")}
-        style={{
-          padding: "0.3rem 0.5rem",
-          borderRadius: radii.sm,
-          backgroundColor: "transparent",
-          color: colors.crimson,
-          border: "none",
-          cursor: "pointer",
-          fontSize: "0.82rem",
-          fontWeight: 600,
-        }}
-      >
-        ✕
-      </button>
+        style={{ border: "none" }}
+      />
     </div>
   );
 };

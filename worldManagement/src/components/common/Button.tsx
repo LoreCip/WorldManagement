@@ -12,8 +12,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   active?: boolean;
   /** Forza la forma a pillola indipendentemente dalla variante. */
   pill?: boolean;
+  /** Forza la forma quadrata/circolare icon-only con qualsiasi variante di
+   * colore (es. variant="danger" iconOnly per un bottone elimina rotondo).
+   * Implicita per variant "icon"/"stepper". */
+  iconOnly?: boolean;
   /** Icona lucide-react opzionale, renderizzata prima del testo (o da sola
-   * per le varianti "icon"/"stepper"). */
+   * per le varianti/i bottoni icon-only). */
   icon?: LucideIcon;
   iconSize?: number;
 }
@@ -31,6 +35,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "md",
       active,
       pill,
+      iconOnly,
       icon: IconComponent,
       iconSize,
       className,
@@ -40,7 +45,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
-    const isIconOnly = variant === "icon" || variant === "stepper";
+    const isIconOnly = iconOnly || variant === "icon" || variant === "stepper";
     const dimension = isIconOnly ? (variant === "stepper" ? STEPPER_SIZE : ICON_BUTTON_SIZE[size]) : undefined;
 
     const classNames = [

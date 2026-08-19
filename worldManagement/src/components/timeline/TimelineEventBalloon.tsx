@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { X, ScrollText, Map as MapIcon } from "lucide-react";
 import { TimelineEvent, TimePrecision, TimelineCategory } from "../../types/timeline";
 import { timeInputToValue, valueToTimeInput } from "../../utils/timeConversion";
 import { colors, fonts, radii } from "../theme/theme";
@@ -6,6 +7,7 @@ import { SelectedAnchor } from "./TimelineCanvas";
 import { useLocalization } from "../../context/LocalizationContext";
 import { useLinkableOptions } from "../../hooks/useLinkableOptions";
 import { Z_INDEX } from "../common/zIndex";
+import { Button } from "../common/Button";
 
 interface TimelineEventBalloonProps {
   event: TimelineEvent;
@@ -111,15 +113,6 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
     boxSizing: "border-box",
   };
 
-  const btnBase: React.CSSProperties = {
-    padding: "0.4rem 0.75rem",
-    borderRadius: radii.md,
-    cursor: "pointer",
-    fontFamily: fonts.body,
-    fontWeight: 600,
-    fontSize: "0.76rem",
-  };
-
   const isAbove = anchor.side === "above";
 
   return (
@@ -160,24 +153,15 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
         }
       />
 
-      <button
+      <Button
+        variant="ghost"
+        iconOnly
+        size="sm"
+        icon={X}
         onClick={onClose}
         title={t("common.close")}
-        style={{
-          position: "absolute",
-          top: "0.5rem",
-          right: "0.5rem",
-          background: "none",
-          border: "none",
-          color: colors.textFaint,
-          cursor: "pointer",
-          fontSize: "1rem",
-          lineHeight: 1,
-          padding: "0.2rem",
-        }}
-      >
-        {/* Simbolo, non testo: non serve passare da t() */}×
-      </button>
+        style={{ position: "absolute", top: "0.5rem", right: "0.5rem", border: "none" }}
+      />
 
       {isEditing ? (
         <input
@@ -211,24 +195,20 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
         {isEditing && (
           <div style={{ display: "flex", gap: "0.3rem", marginBottom: "0.4rem" }}>
             {(["year", "month", "day"] as TimePrecision[]).map((p) => (
-              <button
+              <Button
                 key={p}
+                variant="secondary"
+                size="sm"
+                active={event.precision === p}
                 onClick={() => setPrecision(p)}
-                style={{
-                  ...btnBase,
-                  padding: "0.25rem 0.5rem",
-                  fontSize: "0.68rem",
-                  backgroundColor: event.precision === p ? colors.gold : "transparent",
-                  color: event.precision === p ? colors.bgVoid : colors.gold,
-                  border: `1px solid ${colors.gold}77`,
-                }}
+                style={{ padding: "0.25rem 0.5rem", fontSize: "0.68rem" }}
               >
                 {p === "year"
                   ? t("timeline.balloon.year")
                   : p === "month"
                     ? t("timeline.balloon.month")
                     : t("timeline.balloon.day")}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -423,18 +403,16 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
               ))}
             </select>
           ) : linkedArticle ? (
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              pill
+              icon={ScrollText}
               onClick={() => onNavigateToArticle?.(linkedArticle.id)}
-              style={{
-                ...btnBase,
-                backgroundColor: `${colors.gold}1f`,
-                color: colors.gold,
-                border: `1px solid ${colors.gold}59`,
-                borderRadius: radii.pill,
-              }}
+              style={{ backgroundColor: `${colors.gold}1f`, color: colors.gold, borderColor: `${colors.gold}59` }}
             >
-              📜 {linkedArticle.title} →
-            </button>
+              {linkedArticle.title} →
+            </Button>
           ) : (
             <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>
               {t("timeline.balloon.noCatM")}
@@ -458,18 +436,16 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
               ))}
             </select>
           ) : linkedMap ? (
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
+              pill
+              icon={MapIcon}
               onClick={() => onNavigateToMap?.(linkedMap.id)}
-              style={{
-                ...btnBase,
-                backgroundColor: `${colors.gold}1f`,
-                color: colors.gold,
-                border: `1px solid ${colors.gold}59`,
-                borderRadius: radii.pill,
-              }}
+              style={{ backgroundColor: `${colors.gold}1f`, color: colors.gold, borderColor: `${colors.gold}59` }}
             >
-              🗺️ {linkedMap.title} →
-            </button>
+              {linkedMap.title} →
+            </Button>
           ) : (
             <span style={{ color: colors.textFaint, fontStyle: "italic", fontSize: "0.78rem" }}>
               {t("timeline.balloon.noCatF")}
@@ -481,43 +457,19 @@ export const TimelineEventBalloon: React.FC<TimelineEventBalloonProps> = ({
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.4rem" }}>
         {isEditing ? (
           <>
-            <button
-              onClick={onSave}
-              style={{
-                ...btnBase,
-                backgroundColor: colors.gold,
-                color: colors.bgVoid,
-                border: "none",
-              }}
-            >
+            <Button variant="primary" size="sm" onClick={onSave}>
               {t("common.save")}
-            </button>
+            </Button>
             {event.id && (
-              <button
-                onClick={onDelete}
-                style={{
-                  ...btnBase,
-                  backgroundColor: "transparent",
-                  color: colors.crimson,
-                  border: `1px solid ${colors.crimson}77`,
-                }}
-              >
+              <Button variant="danger" size="sm" onClick={onDelete}>
                 {t("common.delete")}
-              </button>
+              </Button>
             )}
           </>
         ) : (
-          <button
-            onClick={onEdit}
-            style={{
-              ...btnBase,
-              backgroundColor: "transparent",
-              color: colors.gold,
-              border: `1px solid ${colors.gold}77`,
-            }}
-          >
+          <Button variant="secondary" size="sm" onClick={onEdit}>
             {t("common.edit")}
-          </button>
+          </Button>
         )}
       </div>
     </div>

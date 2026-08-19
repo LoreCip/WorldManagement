@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { X } from "lucide-react";
 import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphNodeData, NodeType } from "../../types/relations";
 import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
 
 interface QuickNodeModalProps {
   onClose: () => void;
@@ -38,38 +40,24 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({
   return (
     <Modal isOpen onClose={onClose} width="360px" title={t("relations.header.addNode")}>
       <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem" }}>
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
+          active={mode === "new"}
           onClick={() => setMode("new")}
-          style={{
-            flex: 1,
-            padding: "0.4rem",
-            borderRadius: radii.sm,
-            border: `1px solid ${mode === "new" ? colors.gold : colors.border}`,
-            backgroundColor: mode === "new" ? colors.goldWash : "transparent",
-            color: mode === "new" ? colors.goldBright : colors.textSecondary,
-            cursor: "pointer",
-            fontSize: "0.78rem",
-            fontWeight: 600,
-          }}
+          style={{ flex: 1 }}
         >
           {t("relations.quickNode.tabNew")}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          active={mode === "existing"}
           onClick={() => setMode("existing")}
-          style={{
-            flex: 1,
-            padding: "0.4rem",
-            borderRadius: radii.sm,
-            border: `1px solid ${mode === "existing" ? colors.gold : colors.border}`,
-            backgroundColor: mode === "existing" ? colors.goldWash : "transparent",
-            color: mode === "existing" ? colors.goldBright : colors.textSecondary,
-            cursor: "pointer",
-            fontSize: "0.78rem",
-            fontWeight: 600,
-          }}
+          style={{ flex: 1 }}
         >
           {t("relations.quickNode.tabExisting")}
-        </button>
+        </Button>
       </div>
 
       {mode === "new" ? (
@@ -96,55 +84,24 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({
 
           <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.1rem" }}>
             {TYPE_OPTIONS.map((opt) => (
-              <button
+              <Button
                 key={opt}
+                variant="secondary"
+                size="sm"
+                active={type === opt}
                 onClick={() => setType(opt)}
-                style={{
-                  flex: 1,
-                  padding: "0.5rem 0.3rem",
-                  borderRadius: radii.sm,
-                  border: `1px solid ${type === opt ? colors.gold : colors.border}`,
-                  backgroundColor: type === opt ? colors.goldWash : "transparent",
-                  color: type === opt ? colors.goldBright : colors.textSecondary,
-                  cursor: "pointer",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                }}
+                style={{ flex: 1, padding: "0.5rem 0.3rem", fontSize: "0.72rem" }}
               >
                 {t(`relations.nodeTypes.${opt}`)}
-              </button>
+              </Button>
             ))}
           </div>
 
           <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              onClick={submit}
-              style={{
-                flex: 1,
-                padding: "0.55rem",
-                backgroundColor: colors.gold,
-                color: colors.bgVoid,
-                border: "none",
-                borderRadius: radii.sm,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
+            <Button variant="primary" onClick={submit} style={{ flex: 1 }}>
               {t("common.save")}
-            </button>
-            <button
-              onClick={onClose}
-              style={{
-                padding: "0.55rem 1rem",
-                backgroundColor: "transparent",
-                color: colors.textSecondary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: radii.sm,
-                cursor: "pointer",
-              }}
-            >
-              ✕
-            </button>
+            </Button>
+            <Button variant="secondary" iconOnly icon={X} onClick={onClose} />
           </div>
         </>
       ) : (
@@ -209,20 +166,9 @@ export const QuickNodeModal: React.FC<QuickNodeModalProps> = ({
               ))
             )}
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              width: "100%",
-              padding: "0.5rem",
-              backgroundColor: "transparent",
-              color: colors.textSecondary,
-              border: `1px solid ${colors.border}`,
-              borderRadius: radii.sm,
-              cursor: "pointer",
-            }}
-          >
+          <Button variant="secondary" onClick={onClose} style={{ width: "100%" }}>
             {t("relations.quickNode.close")}
-          </button>
+          </Button>
         </>
       )}
     </Modal>

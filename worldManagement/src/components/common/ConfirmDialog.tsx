@@ -1,7 +1,8 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { colors, radii } from "../theme/theme";
+import { colors } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { Modal } from "./Modal";
+import { Button } from "./Button";
 
 type ConfirmFn = (message: string, title?: string) => Promise<boolean>;
 
@@ -42,33 +43,12 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({ child
         title={pending?.title ?? t("common.confirm")}
         footer={
           <>
-            <button
-              onClick={() => resolvePending(false)}
-              style={{
-                padding: "0.5rem 1rem",
-                background: "transparent",
-                color: colors.textPrimary,
-                border: `1px solid ${colors.border}`,
-                borderRadius: radii.sm,
-                cursor: "pointer",
-              }}
-            >
+            <Button variant="secondary" onClick={() => resolvePending(false)}>
               {t("common.cancel")}
-            </button>
-            <button
-              onClick={() => resolvePending(true)}
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: colors.gold,
-                color: colors.bgVoid,
-                border: "none",
-                borderRadius: radii.sm,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
+            </Button>
+            <Button variant="primary" onClick={() => resolvePending(true)}>
               {t("common.confirm")}
-            </button>
+            </Button>
           </>
         }
       >

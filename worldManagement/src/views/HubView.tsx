@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
+import type { LucideIcon } from "lucide-react";
+import { Settings } from "lucide-react";
 import { invokeSafe } from "../lib/ipc";
 import { useLocalization } from "../context/LocalizationContext";
 import { colors, fonts, radii } from "../components/theme/theme";
 import { LAST_VISITED_TAB_KEY } from "../hooks/useAppShell";
+import { Button } from "../components/common/Button";
+import { navIcons } from "../components/common/navIcons";
 import styles from "./HubView.module.css";
 
 // Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
@@ -16,7 +20,7 @@ interface HubViewProps {
 interface HubModuleDef {
   key: HubModuleKey;
   numeral: string;
-  icon: string;
+  icon: LucideIcon;
   titleKey: string;
   descriptionKey: string;
   countKey: string;
@@ -25,11 +29,13 @@ interface HubModuleDef {
 
 // Definizione statica dei moduli: icona, colore d'accento e texture
 // sono identità proprie del modulo, indipendenti da quale slot occupa.
+// Le icone riusano la stessa mappa della nav rail (navIcons) cosi'
+// l'identita' visiva di ogni modulo resta coerente tra hub e nav.
 const MODULES: HubModuleDef[] = [
   {
     key: "wiki",
     numeral: "I",
-    icon: "📜",
+    icon: navIcons.wiki,
     titleKey: "hub.wikiTitle",
     descriptionKey: "hub.wikiDescription",
     countKey: "hub.wikiCount",
@@ -38,7 +44,7 @@ const MODULES: HubModuleDef[] = [
   {
     key: "maps",
     numeral: "II",
-    icon: "🗺️",
+    icon: navIcons.maps,
     titleKey: "hub.mapsTitle",
     descriptionKey: "hub.mapsDescription",
     countKey: "hub.mapsCount",
@@ -47,7 +53,7 @@ const MODULES: HubModuleDef[] = [
   {
     key: "characters",
     numeral: "III",
-    icon: "🎭",
+    icon: navIcons.characters,
     titleKey: "hub.charactersTitle",
     descriptionKey: "hub.charactersDescription",
     countKey: "hub.charactersCount",
@@ -56,7 +62,7 @@ const MODULES: HubModuleDef[] = [
   {
     key: "timeline",
     numeral: "IV",
-    icon: "⏳",
+    icon: navIcons.timeline,
     titleKey: "hub.timelineTitle",
     descriptionKey: "hub.timelineDescription",
     countKey: "hub.timelineCount",
@@ -65,7 +71,7 @@ const MODULES: HubModuleDef[] = [
   {
     key: "relations",
     numeral: "V",
-    icon: "🌳",
+    icon: navIcons.relations,
     titleKey: "hub.relationsTitle",
     descriptionKey: "hub.relationsDescription",
     countKey: "hub.relationsCount",
@@ -157,25 +163,14 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
         position: "relative",
       }}
     >
-      <button
+      <Button
+        variant="icon"
+        size="lg"
+        icon={Settings}
         onClick={onOpenSettings}
         title={t("hub.settingsTooltip")}
-        style={{
-          position: "fixed",
-          top: "1.4rem",
-          right: "1.6rem",
-          width: "38px",
-          height: "38px",
-          borderRadius: "50%",
-          border: `1px solid ${colors.border}`,
-          backgroundColor: colors.bgPanel,
-          color: colors.textFaint,
-          fontSize: "1rem",
-          cursor: "pointer",
-        }}
-      >
-        ⚙️
-      </button>
+        style={{ position: "fixed", top: "1.4rem", right: "1.6rem" }}
+      />
 
       <div style={{ width: "100%", maxWidth: "860px" }}>
         <div style={{ textAlign: "center", marginBottom: "2.6rem" }}>
@@ -282,11 +277,8 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                     >
                       {mod.numeral}
                     </span>
-                    <span
-                      className={styles["hub-tile-icon"]}
-                      style={{ zIndex: 2, fontSize: "1.5rem" }}
-                    >
-                      {mod.icon}
+                    <span className={styles["hub-tile-icon"]} style={{ zIndex: 2 }}>
+                      <mod.icon size={24} color={mod.accent} strokeWidth={1.5} aria-hidden="true" />
                     </span>
                     <span
                       className={styles["hub-tile-title"]}
@@ -343,10 +335,14 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
                         top: "0.95rem",
                         right: "1.1rem",
                         zIndex: 2,
-                        fontSize: "1.5rem",
                       }}
                     >
-                      {mod.icon}
+                      <mod.icon
+                        size={slot === "hero" ? 34 : 24}
+                        color={mod.accent}
+                        strokeWidth={1.5}
+                        aria-hidden="true"
+                      />
                     </span>
 
                     <span

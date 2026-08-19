@@ -9,6 +9,7 @@ import { MapMeta, MapPortal } from "../../types/map";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { Z_INDEX } from "../common/zIndex";
+import { Button } from "../common/Button";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
   const map = useMap();
@@ -132,36 +133,28 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
                     justifyContent: "center",
                   }}
                 >
-                  <button
+                  <Button
+                    variant="primary"
+                    size="sm"
                     /* Controllo con && per garantire che target_map_id sia definito per TypeScript */
                     onClick={() => portal.target_map_id && onEnterPortal(portal.target_map_id)}
-                    style={{
-                      padding: "0.25rem 0.6rem",
-                      borderRadius: "4px",
-                      backgroundColor: colors.gold,
-                      color: colors.bgVoid,
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                      fontSize: "0.75rem",
-                    }}
+                    style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}
                   >
                     {t("maps.canvas.enterPortal")}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
                     onClick={() => onDeletePortal(portal.id)}
                     style={{
                       padding: "0.25rem 0.5rem",
-                      borderRadius: "4px",
+                      fontSize: "0.75rem",
                       backgroundColor: colors.crimson,
                       color: "#fff",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: "0.75rem",
                     }}
                   >
                     {t("common.delete")}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </Popup>

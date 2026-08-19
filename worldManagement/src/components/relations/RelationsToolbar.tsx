@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { Trash2, Minus, Plus, Check, X, TreePine } from "lucide-react";
 import { colors, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphView, GraphViewType } from "../../types/relations";
 import { ViewHeader } from "../common/ViewHeader";
 import { ToolbarButton } from "../common/Toolbar";
+import { Button } from "../common/Button";
+import { Icon } from "../common/Icon";
 
 interface RelationsToolbarProps {
   views: GraphView[];
@@ -76,30 +79,15 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
         </select>
 
         {currentView && (
-          <button
+          <Button
+            variant="danger"
+            iconOnly
+            size="sm"
+            icon={Trash2}
             onClick={() => onDeleteView(currentView)}
             title={t("relations.views.deleteView")}
-            style={{
-              width: "30px",
-              height: "30px",
-              borderRadius: radii.sm,
-              border: `1px solid ${colors.border}`,
-              backgroundColor: "transparent",
-              color: colors.textFaint,
-              cursor: "pointer",
-              fontSize: "0.85rem",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = colors.crimsonBright;
-              e.currentTarget.style.borderColor = `${colors.crimson}77`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = colors.textFaint;
-              e.currentTarget.style.borderColor = colors.border;
-            }}
-          >
-            🗑
-          </button>
+            style={{ borderRadius: radii.sm }}
+          />
         )}
       </div>
 
@@ -136,10 +124,8 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
             <option value="genealogy">{t("relations.views.genealogy")}</option>
             <option value="network">{t("relations.views.network")}</option>
           </select>
-          <ToolbarButton active onClick={submitNewView}>
-            ✓
-          </ToolbarButton>
-          <ToolbarButton onClick={() => setIsCreating(false)}>✕</ToolbarButton>
+          <ToolbarButton active onClick={submitNewView} icon={Check} />
+          <ToolbarButton onClick={() => setIsCreating(false)} icon={X} />
         </div>
       ) : (
         <ToolbarButton onClick={() => setIsCreating(true)}>
@@ -201,12 +187,11 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
           <span style={{ fontSize: "0.68rem", color: colors.textFaint, paddingLeft: "0.3rem" }}>
             {t("relations.focus.depthLabel")}
           </span>
-          <button
+          <Button
+            variant="stepper"
+            icon={Minus}
             onClick={() => onFocusDepthChange(Math.max(1, focusDepth - 1))}
-            style={stepperBtnStyle}
-          >
-            −
-          </button>
+          />
           <span
             style={{
               fontSize: "0.8rem",
@@ -217,35 +202,23 @@ export const RelationsToolbar: React.FC<RelationsToolbarProps> = ({
           >
             {focusDepth}
           </span>
-          <button
+          <Button
+            variant="stepper"
+            icon={Plus}
             onClick={() => onFocusDepthChange(Math.min(6, focusDepth + 1))}
-            style={stepperBtnStyle}
-          >
-            +
-          </button>
+          />
         </div>
       )}
     </>
   );
 
   return (
-    <ViewHeader icon="🌳" title={t("relations.header.title")} actions={actions}>
+    <ViewHeader
+      icon={<Icon icon={TreePine} color={colors.goldBright} size={20} />}
+      title={t("relations.header.title")}
+      actions={actions}
+    >
       {viewControls}
     </ViewHeader>
   );
-};
-
-const stepperBtnStyle: React.CSSProperties = {
-  width: "20px",
-  height: "20px",
-  borderRadius: "50%",
-  border: "none",
-  backgroundColor: colors.bgPanel,
-  color: colors.textPrimary,
-  cursor: "pointer",
-  fontSize: "0.8rem",
-  lineHeight: 1,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
 };

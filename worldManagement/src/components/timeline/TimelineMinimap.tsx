@@ -1,8 +1,9 @@
 import React, { useRef, useState, useCallback } from "react";
 import { TimelineEventListItem } from "../../types/timeline";
-import { colors, fonts, radii } from "../theme/theme";
+import { colors, fonts } from "../theme/theme";
 import { Viewport } from "./TimelineCanvas";
 import { useLocalization } from "../../context/LocalizationContext";
+import { Button } from "../common/Button";
 
 interface TimelineMinimapProps {
   events: TimelineEventListItem[];
@@ -166,7 +167,9 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
       </div>
 
       {isWindowed && (
-        <button
+        <Button
+          variant="secondary"
+          pill
           onClick={(e) => {
             e.stopPropagation();
             onShowAll();
@@ -177,16 +180,12 @@ export const TimelineMinimap: React.FC<TimelineMinimapProps> = ({
             right: "6px",
             fontSize: "0.62rem",
             padding: "1px 6px",
-            backgroundColor: "transparent",
             color: colors.gold,
-            border: `1px solid ${colors.gold}55`,
-            borderRadius: radii.pill,
-            cursor: "pointer",
-            fontFamily: fonts.body,
+            borderColor: `${colors.gold}55`,
           }}
         >
           {t("timeline.minimap.showAll")}
-        </button>
+        </Button>
       )}
     </div>
   );

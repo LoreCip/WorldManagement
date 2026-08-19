@@ -261,6 +261,8 @@
     "header": {
       "title": "Linea del Tempo",
       "searchPlaceholder": "Cerca eventi…",
+      "zoomOut": "Riduci zoom",
+      "zoomIn": "Aumenta zoom",
       "autoFit": "Adatta tutto",
       "filters": "Filtri",
       "clearFilters": "Rimuovi filtri",

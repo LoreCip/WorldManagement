@@ -1,8 +1,12 @@
 import React from "react";
+import { Search } from "lucide-react";
 import { ArticleItem } from "../../types/wiki";
 import { colors, fonts, radii, getCategoryColor, getCategoryLabel } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { SidebarLayout } from "../common/SidebarLayout";
+import { Button } from "../common/Button";
+import { Icon } from "../common/Icon";
+import { CompendiumIcon } from "../common/icons/CompendiumIcon";
 
 interface SidebarProps {
   articles: ArticleItem[];
@@ -12,18 +16,6 @@ interface SidebarProps {
   onSelectArticle: (id: string) => void;
   onNewArticle: () => void;
 }
-
-const CompendiumIcon: React.FC = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z"
-      stroke={colors.gold}
-      strokeWidth="1.1"
-      strokeLinejoin="round"
-    />
-    <circle cx="12" cy="12" r="1.6" fill={colors.gold} />
-  </svg>
-);
 
 export const Sidebar: React.FC<SidebarProps> = ({
   articles,
@@ -41,47 +33,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
       title={t("wiki.sidebar.title")}
       subtitle={t("wiki.sidebar.subtitle")}
     >
-      <button
+      <Button
+        variant="primary"
         onClick={onNewArticle}
         style={{
-          padding: "0.6rem 1rem",
-          backgroundColor: colors.gold,
-          color: colors.bgVoid,
-          border: "none",
-          borderRadius: radii.md,
-          cursor: "pointer",
-          fontFamily: fonts.body,
-          fontWeight: 600,
-          fontSize: "0.88rem",
+          width: "100%",
           letterSpacing: "0.01em",
           marginBottom: "1.1rem",
-          transition: "background-color 0.15s ease",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.goldBright)}
-        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
       >
         {t("wiki.sidebar.newWiki")}
-      </button>
+      </Button>
 
       <div style={{ position: "relative", marginBottom: "1.3rem" }}>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={colors.textFaint}
-          strokeWidth="2"
-          style={{
-            position: "absolute",
-            left: "0.15rem",
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+        <Icon
+          icon={Search}
+          size={14}
+          color={colors.textFaint}
+          style={{ position: "absolute", left: "0.15rem", top: "50%", transform: "translateY(-50%)" }}
+        />
         <input
           type="text"
           placeholder={t("wiki.sidebar.searchPlaceholder")}

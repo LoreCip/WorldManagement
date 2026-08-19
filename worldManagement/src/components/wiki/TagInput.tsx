@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { X } from "lucide-react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
+import { Button } from "../common/Button";
 
 interface TagInputProps {
   tags: string[];
@@ -53,32 +55,15 @@ export const TagInput: React.FC<TagInputProps> = ({ tags, isEditing, onAddTag, o
           <span style={{ opacity: 0.65 }}>#</span>
           {tag}
           {isEditing && (
-            <button
+            <Button
+              variant="danger"
+              iconOnly
+              icon={X}
+              iconSize={12}
               onClick={() => onRemoveTag(tag)}
               aria-label={`Rimuovi tag ${tag}`}
-              style={{
-                background: "none",
-                border: "none",
-                color: colors.goldBright,
-                cursor: "pointer",
-                fontWeight: "bold",
-                fontSize: "0.95rem",
-                padding: 0,
-                lineHeight: 1,
-                opacity: 0.6,
-                transition: "opacity 0.15s ease, color 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "1";
-                e.currentTarget.style.color = colors.crimsonBright;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "0.6";
-                e.currentTarget.style.color = colors.goldBright;
-              }}
-            >
-              {t("wiki.tag.delete")}
-            </button>
+              style={{ width: "16px", height: "16px", border: "none", background: "none" }}
+            />
           )}
         </span>
       ))}

@@ -1,8 +1,10 @@
 import React from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
+import { Link2 } from "lucide-react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphNodeData } from "../../types/relations";
+import { Button } from "../common/Button";
 
 export interface CharacterNodeFlowData extends Record<string, unknown> {
   node: GraphNodeData;
@@ -67,7 +69,10 @@ const PortalBadge: React.FC<{
   const { t } = useLocalization();
   if (!node.linkedViewId) return null;
   return (
-    <button
+    <Button
+      variant="icon"
+      icon={Link2}
+      iconSize={12}
       onClick={(e) => {
         e.stopPropagation();
         onNavigateToView?.(node.linkedViewId!);
@@ -78,22 +83,14 @@ const PortalBadge: React.FC<{
         position: "absolute",
         top: -8,
         right: -8,
-        width: 22,
-        height: 22,
-        borderRadius: "50%",
-        border: `1.5px solid ${colors.indigo}`,
+        width: "22px",
+        height: "22px",
+        borderColor: colors.indigo,
         backgroundColor: colors.bgPanel,
         color: colors.indigo,
-        fontSize: "0.7rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer",
         zIndex: 5,
       }}
-    >
-      🔗
-    </button>
+    />
   );
 };
 

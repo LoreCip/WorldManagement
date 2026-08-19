@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { colors, fonts, radii } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { GraphEdgeData, GraphNodeData, RelationType } from "../../types/relations";
 import { Z_INDEX } from "../common/zIndex";
+import { Button } from "../common/Button";
 
 interface EdgeDrawerProps {
   edge: Partial<GraphEdgeData> & { sourceNodeId: string; targetNodeId: string };
@@ -135,12 +137,14 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
         <h4 style={{ margin: 0, fontFamily: fonts.display, fontSize: "1.02rem" }}>
           {edge.id ? t("relations.edgeDrawer.editTitle") : t("relations.header.addEdge")}
         </h4>
-        <button
+        <Button
+          variant="ghost"
+          iconOnly
+          size="sm"
+          icon={X}
           onClick={onClose}
-          style={{ background: "none", border: "none", color: colors.textFaint, cursor: "pointer" }}
-        >
-          ✕
-        </button>
+          style={{ border: "none" }}
+        />
       </div>
 
       <div style={{ fontSize: "0.78rem", color: colors.textSecondary }}>
@@ -254,37 +258,17 @@ export const EdgeDrawer: React.FC<EdgeDrawerProps> = ({
       </label>
 
       <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.3rem" }}>
-        <button
-          onClick={handleSave}
-          disabled={isBlocked}
-          style={{
-            flex: 1,
-            padding: "0.5rem",
-            backgroundColor: isBlocked ? colors.border : colors.gold,
-            color: isBlocked ? colors.textFaint : colors.bgVoid,
-            border: "none",
-            borderRadius: radii.sm,
-            fontWeight: 600,
-            cursor: isBlocked ? "not-allowed" : "pointer",
-          }}
-        >
+        <Button variant="primary" onClick={handleSave} disabled={isBlocked} style={{ flex: 1 }}>
           {t("common.save")}
-        </button>
+        </Button>
         {edge.id && onDelete && (
-          <button
+          <Button
+            variant="danger"
             onClick={() => onDelete(edge.id!)}
             title={t("relations.edgeDrawer.deleteTooltip")}
-            style={{
-              padding: "0.5rem 0.8rem",
-              backgroundColor: "transparent",
-              color: colors.crimson,
-              border: `1px solid ${colors.crimson}77`,
-              borderRadius: radii.sm,
-              cursor: "pointer",
-            }}
           >
             {t("common.delete")}
-          </button>
+          </Button>
         )}
       </div>
     </div>

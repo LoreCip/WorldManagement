@@ -9,6 +9,7 @@ import { useLinkableOptions } from "../../hooks/useLinkableOptions";
 import { useAsync } from "../../hooks/useAsync";
 import { useToast } from "../common/Toast";
 import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
 
 interface MapFormModalProps {
   mode: "add" | "edit";
@@ -223,22 +224,9 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
                 fontSize: "0.85rem",
               }}
             />
-            <button
-              type="button"
-              onClick={handleSelectFile}
-              style={{
-                padding: "0.6rem 1rem",
-                borderRadius: radii.sm,
-                backgroundColor: colors.bgPanelRaised,
-                color: colors.gold,
-                border: `1px solid ${colors.border}`,
-                cursor: "pointer",
-                fontWeight: 600,
-                fontSize: "0.85rem",
-              }}
-            >
+            <Button type="button" variant="secondary" size="sm" onClick={handleSelectFile}>
               {mode === "add" ? t("common.browse") : t("maps.form.changeFile")}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -352,41 +340,20 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
         <div
           style={{ display: "flex", justifyContent: "flex-end", gap: "0.8rem", marginTop: "1rem" }}
         >
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isLoading}
-            style={{
-              padding: "0.55rem 1.2rem",
-              borderRadius: radii.md,
-              backgroundColor: "transparent",
-              color: colors.textSecondary,
-              border: `1px solid ${colors.border}`,
-              cursor: "pointer",
-            }}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>
             {t("common.cancel")}
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
+            variant="primary"
             disabled={isLoading || (mode === "add" && (!title.trim() || !selectedFilePath))}
-            style={{
-              padding: "0.55rem 1.2rem",
-              borderRadius: radii.md,
-              backgroundColor: colors.gold,
-              color: colors.bgVoid,
-              border: "none",
-              fontWeight: 600,
-              cursor: isLoading ? "wait" : "pointer",
-              opacity: mode === "add" && (!title.trim() || !selectedFilePath) ? 0.5 : 1,
-            }}
           >
             {isLoading
               ? t("common.saving")
               : mode === "add"
                 ? t("maps.form.saveMap")
                 : t("common.save")}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

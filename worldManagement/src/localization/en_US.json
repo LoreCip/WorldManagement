@@ -261,6 +261,8 @@
     "header": {
       "title": "Timeline",
       "searchPlaceholder": "Search events…",
+      "zoomOut": "Zoom out",
+      "zoomIn": "Zoom in",
       "autoFit": "Fit all",
       "filters": "Filters",
       "clearFilters": "Clear filters",
