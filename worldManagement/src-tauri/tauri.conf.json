@@ -9,7 +9,7 @@
 		"endpoints": [
 			"https://github.com/lorecip/WorldManagement/releases/latest/download/latest.json"
 		],
-		"dialog": true,
+		"dialog": false,
 		"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEEyQzhGOTZCQTk4NTg0NkYKUldSdmhJV3BhL25Jb3BoeElIMk9wWjVXT1VOLzJNMXFKcCtreDlTV2hta0gyalBBRVJqdVlHT00K%"
 		}
 	},

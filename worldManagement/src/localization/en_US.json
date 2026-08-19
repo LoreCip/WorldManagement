@@ -20,6 +20,13 @@
     "save": "Save",
     "saving": "Saving..."
   },
+  "updater": {
+    "available": "Version {{version}} is available",
+    "update": "Update",
+    "downloading": "Downloading…",
+    "restarting": "Restarting…",
+    "error": "Update failed"
+  },
   "app": {
     "nav": {
       "hub": "Back to Hub",
