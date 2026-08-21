@@ -1,5 +1,6 @@
 use crate::modules::characters::models::*;
 use crate::services::AppPaths;
+use crate::services::AppPathsState;
 use crate::services::DbState;
 use crate::utils::ResultExt;
 
@@ -64,8 +65,9 @@ pub async fn load_sheet_pdf_bytes(
     sheet_id: String,
     variant: String,
     template_filename: String,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<Response, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     // 1. Prova prima a cercare il PDF specifico salvato per questa scheda+variante
     // 2. Se non esiste, fallback sul file predefinito per il sistema di gioco
     let target_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant)? {
@@ -96,8 +98,9 @@ pub fn save_character_pdf(
     sheet_id: String,
     variant: String,
     pdf_bytes: Vec<u8>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<bool, String>  {
+    let paths = paths_state.0.lock().map_str()?.clone();
     sanitize_path_component(&sheet_id, "sheet_id")?;
     sanitize_path_component(&variant, "variant")?;
 
@@ -121,8 +124,9 @@ pub fn export_character_pdf(
     variant: String,
     template_filename: String,
     output_path: String,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<(), String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let source_path = match resolve_saved_pdf_path(&paths, &sheet_id, &variant)? {
         Some(p) => p,
         None => {
@@ -271,8 +275,9 @@ pub fn save_game_system(
 pub fn delete_game_system(
     id: String,
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<(), String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let conn = state.0.lock().map_str()?;
 
     // 1. Verifica che non sia un sistema di sistema/builtin
@@ -415,10 +420,11 @@ pub fn save_character_sheet(
 pub fn delete_character_sheet(
     id: String,
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<(), String> {
     sanitize_path_component(&id, "id")?;
 
+    let paths = paths_state.0.lock().map_str()?.clone();
     let conn = state.0.lock().map_str()?;
     conn.execute("DELETE FROM character_sheets WHERE id = ?1", [&id])
         .map_err(|e| format!("Errore nell'eliminazione della scheda: {}", e))?;
@@ -449,8 +455,9 @@ pub fn delete_character_sheet(
 pub fn upload_pdf_template(
     filename: String,
     pdf_bytes: Vec<u8>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
 ) -> Result<String, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     if !paths.templates_dir.exists() {
         fs::create_dir_all(&paths.templates_dir)
             .map_err(|e| format!("Impossibile creare la cartella sheetTemplates: {}", e))?;

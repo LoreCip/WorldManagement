@@ -205,7 +205,6 @@ pub fn init_database(conn: &Connection) -> Result<(), rusqlite::Error> {
         "
     )?;
 
-    ensure_root_map_exists(conn)?;
     ensure_default_game_systems_exist(conn)?;
     ensure_sheet_variant_column_exists(conn)?;
     ensure_timeline_category_column_exists(conn)?;
@@ -358,21 +357,6 @@ pub fn delete_image_if_unused(
             }
         }
     }
-}
-
-pub fn ensure_root_map_exists(conn: &Connection) -> Result<(), rusqlite::Error> {
-    let count: i64 = conn.query_row("SELECT COUNT(*) FROM maps", [], |row| row.get(0))?;
-
-    if count == 0 {
-        let root_id = Uuid::new_v4().to_string();
-        conn.execute(
-            "INSERT INTO maps (id, title, image_path, parent_map_id, width, height)
-             VALUES (?1, ?2, ?3, NULL, 1920, 1080)",
-            (&root_id, "Mappa del Mondo", "placeholder_world.png"),
-        )?;
-    }
-
-    Ok(())
 }
 
 pub fn ensure_default_game_systems_exist(conn: &Connection) -> Result<(), rusqlite::Error> {

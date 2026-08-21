@@ -33,6 +33,7 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
     handleDeletePortal,
     handleDeleteMap,
     refreshMaps,
+    refreshCurrentMap,
     error,
     clearError,
   } = useMaps();
@@ -275,7 +276,10 @@ export const MapView: React.FC<MapViewProps> = ({ onOpenArticle, initialMapId })
           currentMap={currentMapData.map}
           existingMaps={maps}
           onClose={() => setIsEditMapOpen(false)}
-          onSaved={refreshMaps}
+          onSaved={() => {
+            refreshMaps();
+            refreshCurrentMap();
+          }}
         />
       )}
     </div>

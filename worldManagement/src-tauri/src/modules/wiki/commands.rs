@@ -1,12 +1,13 @@
 use crate::db::delete_image_if_unused;
 use crate::modules::wiki::models::{Article, ArticleMeta, SearchResultItem};
-use crate::services::{extract_image_filenames, AppPaths, DbState};
+use crate::services::{extract_image_filenames, AppPathsState, DbState};
 use crate::utils::ResultExt;
 use tauri::State;
 use uuid::Uuid;
 
 #[tauri::command]
-pub fn save_image(paths: State<'_, AppPaths>, file_path: String) -> Result<String, String> {
+pub fn save_image(paths_state: State<'_, AppPathsState>, file_path: String) -> Result<String, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     crate::services::save_image(&paths, &file_path)
 }
 
@@ -165,9 +166,10 @@ pub fn get_article_by_id(state: State<'_, DbState>, id: String) -> Result<Articl
 #[tauri::command]
 pub fn delete_article(
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
     id: String,
 ) -> Result<(), String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let conn = state.0.lock().map_str()?;
 
     let content: Option<String> = conn

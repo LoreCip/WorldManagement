@@ -7,6 +7,7 @@ import { colors, fonts, radii } from "../components/theme/theme";
 import { LAST_VISITED_TAB_KEY } from "../hooks/useAppShell";
 import { Button } from "../components/common/Button";
 import { navIcons } from "../components/common/navIcons";
+import { WorldInfo } from "../types/world";
 import styles from "./HubView.module.css";
 
 // Tutte le tab di contenuto rappresentate nella hub, incluse Relazioni.
@@ -109,6 +110,15 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
     relations: null,
   });
 
+  // Nome del mondo attivo: se impostato sostituisce il titolo generico "Your World".
+  const [worldName, setWorldName] = useState<string | null>(null);
+
+  useEffect(() => {
+    invokeSafe<WorldInfo>("get_active_world").then((world) => {
+      if (world) setWorldName(world.name);
+    });
+  }, []);
+
   useEffect(() => {
     let lastVisited: HubModuleKey | null = null;
     try {
@@ -196,7 +206,7 @@ export const HubView: React.FC<HubViewProps> = ({ onNavigate, onOpenSettings }) 
               color: colors.textPrimary,
             }}
           >
-            {t("hub.title")}
+            {worldName || t("hub.title")}
           </h1>
           <div
             style={{

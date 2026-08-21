@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useSettings } from "../context/SettingsContext";
 import { useSettingsRegistry, SettingDefinition } from "../types/settingsRegistry";
 import { SettingsField } from "../components/settings/SettingsField";
+import { WorldSwitcher } from "../components/settings/WorldSwitcher";
 import { colors, fonts } from "../components/theme/theme";
 import { useLocalization } from "../context/LocalizationContext";
 
@@ -57,6 +58,7 @@ export const SettingsView: React.FC = () => {
       </p>
 
       <div style={{ maxWidth: "680px" }}>
+        <WorldSwitcher />
         {grouped.map(([category, defs]) => (
           <div key={category} style={{ marginBottom: "2.2rem" }}>
             <h2

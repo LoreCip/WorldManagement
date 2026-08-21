@@ -196,7 +196,8 @@
       "portalDefault": "Portal",
       "enterPortal": "Enter ➔",
       "clickToPlacePortal": "Click a point on the map to place the portal",
-      "selectTargetFirst": "First select a destination map"
+      "selectTargetFirst": "First select a destination map",
+      "imageMissing": "This map's image could not be found."
     },
     "header": {
       "changeMap": "Edit map",
@@ -400,6 +401,18 @@
     "title": "Settings",
     "subtitle": "General application preferences for the entire world setting.",
     "loadMessage": "Loading settings…",
+    "worlds": {
+      "title": "Worlds",
+      "subtitle": "Keep several independent worlds in the same app and switch between them.",
+      "createButton": "Add world",
+      "namePlaceholder": "New world name…",
+      "renameTooltip": "Rename",
+      "deleteTooltip": "Delete world",
+      "deleteConfirm": "Delete the world \"{{name}}\"? All its wiki, maps, characters, and timeline data will be permanently lost.",
+      "activeLabel": "Active",
+      "cannotDeleteActive": "Cannot delete the active world",
+      "switching": "Entering the world…"
+    },
     "categories": {
       "general": "General",
       "wiki": "Wiki",

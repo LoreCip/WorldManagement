@@ -1,6 +1,6 @@
 use super::models::{MapMeta, MapPortal, MapWithPortals};
 use crate::db::delete_image_if_unused;
-use crate::services::{save_image, AppPaths, DbState};
+use crate::services::{save_image, AppPathsState, DbState};
 use crate::utils::ResultExt;
 use tauri::State;
 use uuid::Uuid;
@@ -8,9 +8,10 @@ use uuid::Uuid;
 #[tauri::command]
 pub fn delete_map(
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
     id: String,
 ) -> Result<(), String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let conn = state.0.lock().map_str()?;
 
     // 1. Controlla che non sia l'ultima mappa rimasta
@@ -43,7 +44,7 @@ pub fn delete_map(
 #[tauri::command]
 pub fn update_map(
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
     id: String,
     title: String,
     image_path: Option<String>,
@@ -51,7 +52,8 @@ pub fn update_map(
     article_id: Option<String>,
     width: Option<u32>,
     height: Option<u32>,
-) -> Result<(), String> {
+) -> Result<String, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let conn = state.0.lock().map_str()?;
 
     let old_image_path: Option<String> = conn
@@ -92,13 +94,13 @@ pub fn update_map(
         }
     }
 
-    Ok(())
+    Ok(id)
 }
 
 #[tauri::command]
 pub fn save_map(
     state: State<'_, DbState>,
-    paths: State<'_, AppPaths>,
+    paths_state: State<'_, AppPathsState>,
     title: String,
     image_path: String,
     parent_map_id: Option<String>,
@@ -106,6 +108,7 @@ pub fn save_map(
     width: u32,
     height: u32,
 ) -> Result<String, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
     let id = Uuid::new_v4().to_string();
     let stored_path = save_image(&paths, &image_path)?;
 

@@ -4,6 +4,7 @@ pub mod relations;
 pub mod settings;
 pub mod timeline;
 pub mod wiki;
+pub mod worlds;
 
 pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
     tauri::generate_handler![
@@ -11,6 +12,13 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         settings::commands::get_all_settings,
         settings::commands::save_setting,
         settings::commands::delete_setting,
+        // Worlds
+        worlds::commands::list_worlds,
+        worlds::commands::get_active_world,
+        worlds::commands::create_world,
+        worlds::commands::switch_world,
+        worlds::commands::rename_world,
+        worlds::commands::delete_world,
         // Comandi Wiki
         wiki::save_image,
         wiki::save_article,

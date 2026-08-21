@@ -64,6 +64,17 @@ export const useMaps = () => {
     }
   }, [loadMapDetails]);
 
+  // Ricarica i dettagli della mappa attualmente aperta (titolo, immagine,
+  // portali...): fetchMaps() da solo aggiorna solo l'elenco in sidebar, non
+  // currentMapData, quindi dopo una modifica (es. cambio immagine) la vista
+  // resterebbe con i dati vecchi finché non si cambia mappa.
+  const refreshCurrentMap = useCallback(async () => {
+    const current = currentMapDataRef.current;
+    if (current) {
+      await loadMapDetails(current.map.id);
+    }
+  }, [loadMapDetails]);
+
   const runTransition = useCallback(
     (targetMapId: string, updateHistory: (leavingMapId: string | undefined) => void) => {
       clearPendingTransitions();
@@ -85,7 +96,15 @@ export const useMaps = () => {
   // a due tempi e la cronologia per il tasto "indietro".
   const navigateToMap = useCallback(
     (targetMapId: string) => {
-      if (!currentMapData || targetMapId === currentMapData.map.id || isTransitioning) return;
+      if (targetMapId === currentMapData?.map.id || isTransitioning) return;
+
+      if (!currentMapData) {
+        // Nessuna mappa correntemente aperta (es. la mappa attiva è stata appena
+        // eliminata e non aveva un genitore): carica direttamente, senza
+        // animazione di transizione (non c'è nulla da cui "uscire").
+        loadMapDetails(targetMapId);
+        return;
+      }
 
       runTransition(targetMapId, (leavingMapId) => {
         if (!leavingMapId) return;
@@ -94,7 +113,7 @@ export const useMaps = () => {
         );
       });
     },
-    [currentMapData, isTransitioning, runTransition],
+    [currentMapData, isTransitioning, runTransition, loadMapDetails],
   );
 
   const navigateBack = useCallback(() => {
@@ -236,5 +255,6 @@ export const useMaps = () => {
     handleDeletePortal,
     handleDeleteMap,
     refreshMaps: fetchMaps,
+    refreshCurrentMap,
   };
 };

@@ -196,7 +196,8 @@
       "portalDefault": "Portale",
       "enterPortal": "Entra ➔",
       "clickToPlacePortal": "Clicca un punto sulla mappa per posizionare il portale",
-      "selectTargetFirst": "Seleziona prima una mappa di destinazione"
+      "selectTargetFirst": "Seleziona prima una mappa di destinazione",
+      "imageMissing": "Impossibile trovare l'immagine di questa mappa."
     },
     "header": {
       "changeMap": "Modifica mappa",
@@ -400,6 +401,18 @@
     "title": "Impostazioni",
     "subtitle": "Preferenze generali dell'applicazione, valide per tutta l'ambientazione.",
     "loadMessage": "Caricamento impostazioni…",
+    "worlds": {
+      "title": "Mondi",
+      "subtitle": "Tieni più mondi indipendenti nella stessa app e passa dall'uno all'altro.",
+      "createButton": "Aggiungi mondo",
+      "namePlaceholder": "Nome del nuovo mondo…",
+      "renameTooltip": "Rinomina",
+      "deleteTooltip": "Elimina mondo",
+      "deleteConfirm": "Eliminare il mondo \"{{name}}\"? Tutti i suoi dati di wiki, mappe, personaggi e timeline andranno persi definitivamente.",
+      "activeLabel": "Attivo",
+      "cannotDeleteActive": "Non è possibile eliminare il mondo attivo",
+      "switching": "Ingresso nel mondo…"
+    },
     "categories": {
       "general": "Generale",
       "wiki": "Wiki",

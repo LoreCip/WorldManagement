@@ -96,6 +96,35 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     [map.height || 1080, map.width || 1920],
   ];
 
+  const [imageError, setImageError] = React.useState(false);
+  useEffect(() => {
+    setImageError(false);
+  }, [map.id, map.image_path]);
+
+  if (imageError) {
+    return (
+      <div
+        className={`map-transition-overlay ${isTransitioning ? "fading" : ""}`}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1.2rem",
+          width: "100%",
+          height: "100%",
+          color: colors.textFaint,
+        }}
+      >
+        <span style={{ fontSize: "3rem", opacity: 0.3 }}>🗺️</span>
+        <p style={{ fontFamily: fonts.display, fontSize: "1.2rem", color: colors.textSecondary }}>
+          {t("maps.canvas.imageMissing")}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`map-transition-overlay ${isTransitioning ? "fading" : ""}`}
@@ -111,7 +140,11 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
         style={{ width: "100%", height: "100%" }}
       >
         <MapAutoFit bounds={bounds} />
-        <ImageOverlay url={imageUrl} bounds={bounds} />
+        <ImageOverlay
+          url={imageUrl}
+          bounds={bounds}
+          eventHandlers={{ error: () => setImageError(true) }}
+        />
 
         <MapClickHandler
           isAddingPortal={isAddingPortal && hasSelectedTarget}
