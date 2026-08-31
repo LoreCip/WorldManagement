@@ -34,7 +34,8 @@
                 "default-src": "'self' asset: https://asset.localhost",
                 "img-src": "'self' asset: https://asset.localhost data:",
                 "frame-src": "'self' asset: https://asset.localhost blob:",
-                "object-src": "'self' asset: https://asset.localhost blob:"
+                "object-src": "'self' asset: https://asset.localhost blob:",
+                "style-src": "'self' 'unsafe-inline'"
             },
             "assetProtocol": {
                 "enable": true,

@@ -11,9 +11,11 @@ interface MarkdownPreviewProps {
 
 const wikiLinkToMarkdown = (content: string) =>
   content
-    ? content.replace(/\[\[(.*?)\]\]/g, (_, title) => {
-        const clean = title.trim();
-        return `[${clean}](#wikilink-${encodeURIComponent(clean)})`;
+    ? content.replace(/\[\[(.*?)\]\]/g, (_, inner) => {
+        const [rawTitle, rawLabel] = inner.split("|");
+        const title = rawTitle.trim();
+        const label = (rawLabel ?? rawTitle).trim();
+        return `[${label}](#wikilink-${encodeURIComponent(title)})`;
       })
     : "";
 

@@ -55,5 +55,5 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'App Release ${{ github.ref_name }}'
           releaseBody: 'Vedi i cambiamenti nel commit log.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
