@@ -31,12 +31,16 @@
 		],
 		"security": {
 			"csp": {
-                "default-src": "'self' asset: https://asset.localhost",
-                "img-src": "'self' asset: https://asset.localhost data:",
-                "frame-src": "'self' asset: https://asset.localhost blob:",
-                "object-src": "'self' asset: https://asset.localhost blob:",
+                "default-src": "'self' asset: http://asset.localhost https://asset.localhost",
+                "connect-src": "'self' ipc: http://ipc.localhost https://ipc.localhost asset: http://asset.localhost https://asset.localhost",
+                "img-src": "'self' asset: http://asset.localhost https://asset.localhost data: blob:",
+                "font-src": "'self' data:",
+                "worker-src": "'self' blob:",
+                "frame-src": "'self' asset: http://asset.localhost https://asset.localhost blob:",
+                "object-src": "'self' asset: http://asset.localhost https://asset.localhost blob:",
                 "style-src": "'self' 'unsafe-inline'"
             },
+            "dangerousDisableAssetCspModification": ["style-src"],
             "assetProtocol": {
                 "enable": true,
                 "scope": [
