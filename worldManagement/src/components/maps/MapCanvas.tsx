@@ -3,12 +3,11 @@ import { useMap, MapContainer, ImageOverlay, Marker, Popup, useMapEvents } from 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import { convertFileSrc } from "@tauri-apps/api/core";
-
 import { MapMeta, MapPortal } from "../../types/map";
 import { colors, fonts, radii, Z_INDEX } from "../theme/theme";
 import { useLocalization } from "../../context/LocalizationContext";
 import { Button } from "../common/Button";
+import { useIpcImageUrl } from "../../hooks/useIpcImageUrl";
 
 const MapAutoFit: React.FC<{ bounds: L.LatLngBoundsExpression }> = ({ bounds }) => {
   const map = useMap();
@@ -53,6 +52,15 @@ const portalIcon = new L.DivIcon({
   iconAnchor: [12, 12],
 });
 
+// Placeholder trasparente usato come `url` iniziale dell'ImageOverlay finche'
+// i byte reali non sono arrivati via IPC: l'overlay resta montato fin dal
+// primo render (Leaflet aggiorna l'url in-place con `setUrl`), cosi' il pane
+// dei marker non riceve un inserimento tardivo nel DOM che in alcune webview
+// Chromium/WebView2 lascia i marker dipinti ma non ridisegnati finche' non
+// avviene un'interazione che forza un repaint.
+const TRANSPARENT_PIXEL =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7";
+
 // Sub-componente per catturare i click sulla mappa durante l'inserimento di un portale
 const MapClickHandler: React.FC<{
   isAddingPortal: boolean;
@@ -90,7 +98,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
   onDeletePortal,
 }) => {
   const { t } = useLocalization();
-  const imageUrl = convertFileSrc(map.image_path);
+  const { url: imageUrl, error: imageLoadError } = useIpcImageUrl("read_map_image_bytes", {
+    imagePath: map.image_path,
+  });
   const bounds: L.LatLngBoundsExpression = [
     [0, 0],
     [map.height || 1080, map.width || 1920],
@@ -101,7 +111,7 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
     setImageError(false);
   }, [map.id, map.image_path]);
 
-  if (imageError) {
+  if (imageError || imageLoadError) {
     return (
       <div
         className={`map-transition-overlay ${isTransitioning ? "fading" : ""}`}
@@ -141,9 +151,9 @@ export const MapCanvas: React.FC<MapCanvasProps> = ({
       >
         <MapAutoFit bounds={bounds} />
         <ImageOverlay
-          url={imageUrl}
+          url={imageUrl || TRANSPARENT_PIXEL}
           bounds={bounds}
-          eventHandlers={{ error: () => setImageError(true) }}
+          eventHandlers={{ error: () => imageUrl && setImageError(true) }}
         />
 
         <MapClickHandler

@@ -2,8 +2,43 @@ use super::models::{MapMeta, MapPortal, MapWithPortals};
 use crate::db::delete_image_if_unused;
 use crate::services::{save_image, AppPathsState, DbState};
 use crate::utils::ResultExt;
+use std::fs;
+use tauri::ipc::Response;
 use tauri::State;
 use uuid::Uuid;
+
+/// Legge i byte di un'immagine gia salvata nella cartella media del mondo attivo.
+/// Usato dal frontend al posto del protocollo `asset://` per evitare i problemi
+/// di risoluzione/canonicalizzazione dello scope su Windows: qui la lettura e
+/// diretta e limitata a `media_dir`, senza passare per il matching di pattern glob.
+#[tauri::command]
+pub fn read_map_image_bytes(
+    paths_state: State<'_, AppPathsState>,
+    image_path: String,
+) -> Result<Response, String> {
+    let paths = paths_state.0.lock().map_str()?.clone();
+
+    let canonical_media_dir = fs::canonicalize(&paths.media_dir).map_str()?;
+    let canonical_target = fs::canonicalize(&image_path)
+        .map_err(|e| format!("Immagine non trovata: {}", e))?;
+
+    if !canonical_target.starts_with(&canonical_media_dir) {
+        return Err("Percorso immagine non consentito.".to_string());
+    }
+
+    let bytes = fs::read(&canonical_target)
+        .map_err(|e| format!("Errore durante la lettura dell'immagine: {}", e))?;
+    Ok(Response::new(bytes))
+}
+
+/// Legge i byte di un file immagine arbitrario scelto dall'utente tramite il
+/// dialog nativo (usato solo per calcolarne le dimensioni prima del salvataggio).
+#[tauri::command]
+pub fn read_local_image_bytes(path: String) -> Result<Response, String> {
+    let bytes =
+        fs::read(&path).map_err(|e| format!("Errore durante la lettura dell'immagine: {}", e))?;
+    Ok(Response::new(bytes))
+}
 
 #[tauri::command]
 pub fn delete_map(

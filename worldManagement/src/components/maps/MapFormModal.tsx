@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 
 import { colors, radii } from "../theme/theme";
@@ -7,6 +6,7 @@ import { MapItem } from "../../types/map";
 import { useLocalization } from "../../context/LocalizationContext";
 import { useLinkableOptions } from "../../hooks/useLinkableOptions";
 import { useAsync } from "../../hooks/useAsync";
+import { invokeSafe } from "../../lib/ipc";
 import { useToast } from "../common/Toast";
 import { Modal } from "../common/Modal";
 import { Button } from "../common/Button";
@@ -127,14 +127,21 @@ export const MapFormModal: React.FC<MapFormModalProps> = ({
     // In "add" c'e sempre un'immagine da misurare; in "edit" solo se ne e
     // stata scelta una nuova (altrimenti Rust mantiene le dimensioni esistenti).
     if (selectedFilePath) {
-      const img = new Image();
-      img.src = convertFileSrc(selectedFilePath);
-      await new Promise((resolve) => {
-        img.onload = resolve;
-        img.onerror = resolve;
+      const bytes = await invokeSafe<ArrayBuffer>("read_local_image_bytes", {
+        path: selectedFilePath,
       });
-      width = img.naturalWidth || 1920;
-      height = img.naturalHeight || 1080;
+      if (bytes) {
+        const objectUrl = URL.createObjectURL(new Blob([bytes]));
+        const img = new Image();
+        img.src = objectUrl;
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+        URL.revokeObjectURL(objectUrl);
+        width = img.naturalWidth || 1920;
+        height = img.naturalHeight || 1080;
+      }
     }
 
     const payload: Record<string, unknown> = {

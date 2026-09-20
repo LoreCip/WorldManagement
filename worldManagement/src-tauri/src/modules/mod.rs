@@ -36,6 +36,8 @@ pub fn register_commands() -> impl Fn(tauri::ipc::Invoke) -> bool {
         maps::get_map_details,
         maps::add_portal,
         maps::delete_portal,
+        maps::read_map_image_bytes,
+        maps::read_local_image_bytes,
         // Characters & Systems
         characters::commands::get_game_systems,
         characters::commands::save_game_system,
