@@ -64,7 +64,7 @@ export function useLinkableOptions({
 
   useEffect(() => {
     if (!gameSystems) return;
-    invokeSafe<GameSystemOption[]>("get_all_game_systems").then((res) => {
+    invokeSafe<GameSystemOption[]>("get_game_systems").then((res) => {
       if (res) setGameSystemOptions(res);
     });
   }, [gameSystems]);
